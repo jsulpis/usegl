@@ -31,18 +31,30 @@ export const useWebGLCanvas = <Uniforms extends UniformsObj>(props: WebGLCanvasP
 	gl.enableVertexAttribArray(positionAttributeLocation);
 	gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
-	const timeUniformLocation = gl.getUniformLocation(program, "uTime");
+	const timeUniformName = fragment
+		.split("\n")
+		.find((line) => /^uniform.*time/i.test(line))
+		?.replace(/uniform float (.*);/, "$1");
+
+	const timeUniformLocation = gl.getUniformLocation(program, timeUniformName);
 	const resolutionUniformLocation = gl.getUniformLocation(program, "uResolution");
 
-	requestAnimationFrame(function renderLoop(time) {
-		requestAnimationFrame(renderLoop);
+	if (timeUniformName) {
+		requestAnimationFrame(function renderLoop(time) {
+			requestAnimationFrame(renderLoop);
+			render(time);
+		});
+	}
+
+	function render(time: number) {
 		gl.uniform1f(timeUniformLocation, time / 500);
 		gl.drawArrays(gl.TRIANGLES, 0, 6);
-	});
+	}
 
 	function setSize({ width, height }: { width: number; height: number }) {
 		setCanvasSize(width, height);
 		gl.uniform2f(resolutionUniformLocation, width, height);
+		if (!timeUniformName) render(0);
 	}
 
 	const uniformsLocations =
