@@ -27,7 +27,7 @@ void main() {
 
 	const canvas = document.querySelector("canvas");
 
-	const { setSize } = useWebGLCanvas({ canvas, vertex, fragment });
+	const { setSize } = useWebGLCanvas({ canvas, fragment });
 
 	onCanvasResize(canvas, ({ devicePixelSize }) => {
 		setSize(devicePixelSize);
