@@ -6,22 +6,23 @@ import Layout from "../layouts/Layout.astro";
 	import { useWebGLCanvas } from "../lib/useWebGLCanvas";
 	import { onCanvasResize } from "../lib/onCanvasResize";
 
-	export const fragment = /* glsl */ `
+	export const fragment = /* glsl */ `#version 300 es
 precision highp float;
 
-varying vec2 vUv;
+in vec2 vUv;
 uniform float uTime;
+out vec4 fragColor;
 
 void main() {
-  gl_FragColor = vec4(vUv, sin(uTime) / 2. + .5, 1.);
+  fragColor = vec4(vUv, sin(uTime) / 2. + .5, 1.);
 }
 `;
 
-	export const vertex = /* glsl */ `
+	export const vertex = /* glsl */ `#version 300 es
 precision highp float;
 
-attribute vec3 aPosition;
-varying vec2 vUv;
+in vec3 aPosition;
+out vec2 vUv;
 
 void main() {
    vUv = aPosition.xy;
@@ -31,7 +32,7 @@ void main() {
 
 	const canvas = document.querySelector("canvas");
 
-	const { setSize } = useWebGLCanvas({ canvas, vertex, fragment });
+	const { setSize } = useWebGLCanvas({ canvas, fragment });
 
 	onCanvasResize(canvas, ({ devicePixelSize }) => {
 		setSize(devicePixelSize);
