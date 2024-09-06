@@ -22,7 +22,16 @@ export const useWebGLCanvas = <Uniforms extends UniformsObj>(props: WebGLCanvasP
 	const { gl, setSize: setCanvasSize } = useWebGLContext(canvas, webglContextOptions);
 	if (!gl) return { setSize: () => {} };
 
-	const program = createProgram(gl, fragment, vertex || quadVertexShaderSource);
+	const timeUniformName = findName(fragment, "uniform", "time");
+	const uvVaryingName = findName(fragment, "varying", "uv") || findName(fragment, "in", "uv");
+
+	const vertexShader =
+		vertex ||
+		(uvVaryingName
+			? quadVertexShaderSource.replace(/\bvUv\b/g, uvVaryingName)
+			: quadVertexShaderSource);
+
+	const program = createProgram(gl, fragment, vertexShader);
 	gl.useProgram(program);
 
 	const positionsBuffer = createBuffer(gl, quadVertexPositions);
@@ -30,11 +39,6 @@ export const useWebGLCanvas = <Uniforms extends UniformsObj>(props: WebGLCanvasP
 	const positionAttributeLocation = gl.getAttribLocation(program, "aPosition");
 	gl.enableVertexAttribArray(positionAttributeLocation);
 	gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
-
-	const timeUniformName = fragment
-		.split("\n")
-		.find((line) => /^uniform.*time/i.test(line))
-		?.replace(/uniform float (.*);/, "$1");
 
 	const timeUniformLocation = gl.getUniformLocation(program, timeUniformName);
 	const resolutionUniformLocation = gl.getUniformLocation(program, "uResolution");
@@ -98,3 +102,10 @@ export const useWebGLCanvas = <Uniforms extends UniformsObj>(props: WebGLCanvasP
 
 	return { canvas, setSize, setUniform, uniforms: uniformsProxy, gl };
 };
+
+function findName(source: string, keyword: string, word: string) {
+	return source
+		.split("\n")
+		.find((line) => new RegExp(`^${keyword}.*${word};`, "i").test(line))
+		?.match(/(\w+);$/)[1];
+}
