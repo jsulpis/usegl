@@ -1,17 +1,16 @@
 {
-  "name": "simple-webgl-library",
-  "type": "module",
-  "version": "0.0.1",
-  "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro check && astro build",
-    "preview": "astro preview",
-    "astro": "astro"
-  },
-  "dependencies": {
-    "astro": "^4.15.2",
-    "@astrojs/check": "^0.9.3",
-    "typescript": "^5.5.4"
-  }
+	"name": "simple-webgl-library",
+	"version": "0.0.1",
+	"type": "module",
+	"scripts": {
+		"astro": "astro",
+		"build": "astro build",
+		"dev": "astro dev",
+		"preview": "astro preview",
+		"start": "astro dev"
+	},
+	"dependencies": {
+		"astro": "^4.15.2",
+		"typescript": "^5.5.4"
+	}
 }

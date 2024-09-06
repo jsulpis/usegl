@@ -1,0 +1,43 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<script>
+	import { useWebGLCanvas } from "../lib/useWebGLCanvas";
+	import { onCanvasResize } from "../lib/onCanvasResize";
+
+	export const fragment = /* glsl */ `
+precision highp float;
+
+varying vec2 vUv;
+uniform float uTime;
+
+void main() {
+  gl_FragColor = vec4(vUv, sin(uTime) / 2. + .5, 1.);
+}
+`;
+
+	export const vertex = /* glsl */ `
+precision highp float;
+
+attribute vec3 aPosition;
+varying vec2 vUv;
+
+void main() {
+   vUv = aPosition.xy;
+   gl_Position = vec4(2.0 * aPosition - 1.0, 1.0);
+}
+`;
+
+	const canvas = document.querySelector("canvas");
+
+	const { setSize } = useWebGLCanvas({ canvas, vertex, fragment });
+
+	onCanvasResize(canvas, ({ devicePixelSize }) => {
+		setSize(devicePixelSize);
+	});
+</script>
+
+<Layout title="Gradient">
+	<canvas></canvas>
+</Layout>
