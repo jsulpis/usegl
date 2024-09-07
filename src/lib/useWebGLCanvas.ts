@@ -106,6 +106,6 @@ export const useWebGLCanvas = <Uniforms extends UniformsObj>(props: WebGLCanvasP
 function findName(source: string, keyword: string, word: string) {
 	return source
 		.split("\n")
-		.find((line) => new RegExp(`^${keyword}.*${word};`, "i").test(line))
+		.find((line) => new RegExp(`^${keyword}.*${word};`, "i").test(line.trim()))
 		?.match(/(\w+);$/)[1];
 }
