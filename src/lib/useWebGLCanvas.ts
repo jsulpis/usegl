@@ -1,5 +1,6 @@
 import { createBuffer } from "./createBuffer";
 import { createProgram } from "./createProgram";
+import { onCanvasResize } from "./onCanvasResize";
 import { quadVertexPositions, quadVertexShaderSource } from "./quad";
 import { useWebGLContext } from "./useWebGLContext";
 
@@ -44,8 +45,7 @@ export const useWebGLCanvas = <Uniforms extends UniformsObj>(props: WebGLCanvasP
 	const timeUniformLocation = gl.getUniformLocation(program, timeUniformName);
 	const resolutionUniformLocation = gl.getUniformLocation(program, resolutionUniformName);
 
-	function render(time: number) {
-		gl.uniform1f(timeUniformLocation, time / 500);
+	function render() {
 		gl.drawArrays(gl.TRIANGLES, 0, 6);
 	}
 
@@ -56,14 +56,21 @@ export const useWebGLCanvas = <Uniforms extends UniformsObj>(props: WebGLCanvasP
 			gl.uniform2f(resolutionUniformLocation, width, height);
 		}
 		if (!timeUniformName) {
-			render(0);
+			render();
 		}
 	}
 
 	if (timeUniformName) {
 		requestAnimationFrame(function renderLoop(time) {
 			requestAnimationFrame(renderLoop);
-			render(time);
+			gl.uniform1f(timeUniformLocation, time / 500);
+			render();
+		});
+	}
+
+	if (!(canvas instanceof OffscreenCanvas)) {
+		onCanvasResize(canvas, ({ devicePixelSize }) => {
+			setSize(devicePixelSize);
 		});
 	}
 
