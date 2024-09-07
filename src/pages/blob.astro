@@ -1,0 +1,71 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<script>
+	import { useWebGLCanvas } from "../lib/useWebGLCanvas";
+	import { onCanvasResize } from "../lib/onCanvasResize";
+	import { fragment, vertex } from "../shaders/blob";
+	import { onPointerEvents } from "../lib/onPointerEvents";
+	import { loop } from "../lib/loop";
+
+	const canvas = document.querySelector("canvas");
+
+	const { uniforms, setSize } = useWebGLCanvas({
+		canvas,
+		fragment,
+		vertex,
+		uniforms: {
+			uPointer: [0, 0],
+		},
+	});
+
+	onCanvasResize(canvas, ({ devicePixelSize }) => {
+		setSize(devicePixelSize);
+	});
+
+	const canvasGeometry = getCanvasGeometry(canvas);
+	const targetPointer = { x: 0, y: 0 };
+
+	onPointerEvents(canvas, {
+		move: ({ x, y }) => {
+			targetPointer.x = (x - canvasGeometry.center.x) / (canvasGeometry.width / 2);
+			targetPointer.y = (y - canvasGeometry.center.y) / (canvasGeometry.height / 2);
+		},
+		leave: () => {
+			targetPointer.x = targetPointer.y = 0;
+		},
+	});
+
+	loop(() => {
+		const currentPointerCoord = { x: uniforms.uPointer[0], y: uniforms.uPointer[1] };
+
+		uniforms.uPointer = [
+			currentPointerCoord.x + (targetPointer.x - currentPointerCoord.x) * 0.05,
+			currentPointerCoord.y + (targetPointer.y - currentPointerCoord.y) * 0.05,
+		];
+	});
+
+	function getCanvasGeometry(canvas: HTMLCanvasElement) {
+		const canvasGeometry = { center: { x: 0, y: 0 }, width: 0, height: 0 };
+
+		function updateGeometry() {
+			const { top, right, bottom, left } = canvas.getBoundingClientRect();
+			canvasGeometry.center = {
+				x: (left + right) / 2,
+				y: (top + bottom) / 2,
+			};
+			canvasGeometry.width = right - left;
+			canvasGeometry.height = top - bottom;
+		}
+
+		updateGeometry();
+		window.addEventListener("resize", updateGeometry);
+
+		return canvasGeometry;
+	}
+</script>
+
+<Layout title="Blob">
+	<canvas></canvas>
+</Layout>
