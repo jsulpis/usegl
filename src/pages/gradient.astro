@@ -3,7 +3,7 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <script>
-	import { useWebGLCanvas } from "../lib/useWebGLCanvas";
+	import { useWebGLCanvas } from "../lib";
 
 	useWebGLCanvas({
 		canvas: document.querySelector("canvas"),
@@ -15,15 +15,15 @@ import Layout from "../layouts/Layout.astro";
 				gl_FragColor = vec4(vUv, sin(uTime) / 2. + .5, 1.);
 			}
 		`,
-		// vertex: /* glsl */ `
-		// 	attribute vec3 aPosition;
-		// 	varying vec2 vUv;
+		vertex: /* glsl */ `
+			attribute vec3 aPosition;
+			varying vec2 vUv;
 
-		// 	void main() {
-		// 		vUv = aPosition.xy;
-		// 		gl_Position = vec4(2.0 * aPosition - 1.0, 1.0);
-		// 	}
-		// `,
+			void main() {
+				vUv = aPosition.xy;
+				gl_Position = vec4(2.0 * aPosition - 1.0, 1.0);
+			}
+		`,
 	});
 </script>
 

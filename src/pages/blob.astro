@@ -3,10 +3,8 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <script>
-	import { useWebGLCanvas } from "../lib/useWebGLCanvas";
+	import { loop, onPointerEvents, useWebGLCanvas } from "../lib";
 	import { fragment, vertex } from "../shaders/blob";
-	import { onPointerEvents } from "../lib/onPointerEvents";
-	import { loop } from "../lib/loop";
 
 	const canvas = document.querySelector("canvas");
 
