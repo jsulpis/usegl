@@ -4,12 +4,9 @@ import Layout from "../layouts/Layout.astro";
 
 <script>
 	import { useWebGLCanvas } from "../lib/useWebGLCanvas";
-	import { onCanvasResize } from "../lib/onCanvasResize";
 
-	const canvas = document.querySelector("canvas");
-
-	const { setSize } = useWebGLCanvas({
-		canvas,
+	useWebGLCanvas({
+		canvas: document.querySelector("canvas"),
 		fragment: /* glsl */ `
 			varying vec2 vUv;
 			uniform float uTime;
@@ -27,10 +24,6 @@ import Layout from "../layouts/Layout.astro";
 		// 		gl_Position = vec4(2.0 * aPosition - 1.0, 1.0);
 		// 	}
 		// `,
-	});
-
-	onCanvasResize(canvas, ({ devicePixelSize }) => {
-		setSize(devicePixelSize);
 	});
 </script>
 

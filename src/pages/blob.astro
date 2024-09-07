@@ -4,24 +4,19 @@ import Layout from "../layouts/Layout.astro";
 
 <script>
 	import { useWebGLCanvas } from "../lib/useWebGLCanvas";
-	import { onCanvasResize } from "../lib/onCanvasResize";
 	import { fragment, vertex } from "../shaders/blob";
 	import { onPointerEvents } from "../lib/onPointerEvents";
 	import { loop } from "../lib/loop";
 
 	const canvas = document.querySelector("canvas");
 
-	const { uniforms, setSize } = useWebGLCanvas({
+	const { uniforms } = useWebGLCanvas({
 		canvas,
 		fragment,
 		vertex,
 		uniforms: {
 			uPointer: [0, 0],
 		},
-	});
-
-	onCanvasResize(canvas, ({ devicePixelSize }) => {
-		setSize(devicePixelSize);
 	});
 
 	const canvasGeometry = getCanvasGeometry(canvas);
