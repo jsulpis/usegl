@@ -1,7 +1,7 @@
-import { createBuffer } from "./createBuffer";
-import { createProgram } from "./createProgram";
-import { onCanvasResize } from "./onCanvasResize";
-import { quadVertexPositions, quadVertexShaderSource } from "./quad";
+import { createBuffer } from "../core/buffer";
+import { createProgram } from "../core/program";
+import { onCanvasResize } from "../helpers/resize";
+import { quadVertexPositions, quadVertexShaderSource } from "../helpers/quad";
 import { useWebGLContext } from "./useWebGLContext";
 
 type VectorUniform = [number, number] | [number, number, number] | [number, number, number, number];
