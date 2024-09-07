@@ -23,6 +23,7 @@ export const useWebGLCanvas = <Uniforms extends UniformsObj>(props: WebGLCanvasP
 	if (!gl) return { setSize: () => {} };
 
 	const timeUniformName = findName(fragment, "uniform", "time");
+	const resolutionUniformName = findName(fragment, "uniform", "resolution");
 	const uvVaryingName = findName(fragment, "varying", "uv") || findName(fragment, "in", "uv");
 
 	const vertexShader =
@@ -41,14 +42,7 @@ export const useWebGLCanvas = <Uniforms extends UniformsObj>(props: WebGLCanvasP
 	gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
 	const timeUniformLocation = gl.getUniformLocation(program, timeUniformName);
-	const resolutionUniformLocation = gl.getUniformLocation(program, "uResolution");
-
-	if (timeUniformName) {
-		requestAnimationFrame(function renderLoop(time) {
-			requestAnimationFrame(renderLoop);
-			render(time);
-		});
-	}
+	const resolutionUniformLocation = gl.getUniformLocation(program, resolutionUniformName);
 
 	function render(time: number) {
 		gl.uniform1f(timeUniformLocation, time / 500);
@@ -57,8 +51,20 @@ export const useWebGLCanvas = <Uniforms extends UniformsObj>(props: WebGLCanvasP
 
 	function setSize({ width, height }: { width: number; height: number }) {
 		setCanvasSize(width, height);
-		gl.uniform2f(resolutionUniformLocation, width, height);
-		if (!timeUniformName) render(0);
+
+		if (resolutionUniformName) {
+			gl.uniform2f(resolutionUniformLocation, width, height);
+		}
+		if (!timeUniformName) {
+			render(0);
+		}
+	}
+
+	if (timeUniformName) {
+		requestAnimationFrame(function renderLoop(time) {
+			requestAnimationFrame(renderLoop);
+			render(time);
+		});
 	}
 
 	const uniformsLocations =
