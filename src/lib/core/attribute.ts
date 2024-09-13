@@ -1,21 +1,11 @@
+import type { Attribute } from "../types";
 import { createBuffer, isSharedBufferSource } from "./buffer";
-
-type TypedArray = ArrayBufferView & { length: number };
-
-export interface AttributeObj {
-	size: number;
-	data: TypedArray | number[];
-	type?: GLenum;
-	normalize?: boolean;
-	stride?: number;
-	offset?: number;
-}
 
 export function setAttribute(
 	gl: WebGL2RenderingContext,
 	program: WebGLProgram,
 	name: string,
-	attribute: AttributeObj
+	attribute: Attribute
 ) {
 	const location = gl.getAttribLocation(program, name);
 	if (location === -1) return { location, vertexCount: 0 };

@@ -3,11 +3,27 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <script>
-	import { useWebGLCanvas } from "../lib";
+	import { loop, onCanvasResize, useWebGLCanvas } from "../lib";
+	import { useRawWebGLCanvas } from "../lib/hooks/useRawWebGLCanvas";
 
-	useWebGLCanvas({
-		canvas: document.querySelector("canvas"),
+	// useWebGLCanvas({
+	// 	canvas: document.querySelector("canvas"),
+	// 	fragment: /* glsl */ `
+	// 		varying vec2 vUv;
+	// 		uniform float uTime;
+
+	// 		void main() {
+	// 			gl_FragColor = vec4(vUv, sin(uTime) / 2. + .5, 1.);
+	// 		}
+	// 	`,
+	// });
+
+	const canvas = document.querySelector("canvas");
+
+	const { setSize, render, uniforms } = useRawWebGLCanvas({
+		canvas,
 		fragment: /* glsl */ `
+			precision highp float;
 			varying vec2 vUv;
 			uniform float uTime;
 
@@ -16,6 +32,7 @@ import Layout from "../layouts/Layout.astro";
 			}
 		`,
 		vertex: /* glsl */ `
+			precision highp float;
 			attribute vec3 aPosition;
 			varying vec2 vUv;
 
@@ -24,6 +41,24 @@ import Layout from "../layouts/Layout.astro";
 				gl_Position = vec4(2.0 * aPosition - 1.0, 1.0);
 			}
 		`,
+		uniforms: {
+			uTime: 0,
+		},
+		attributes: {
+			aPosition: {
+				data: [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1],
+				size: 2,
+			},
+		},
+	});
+
+	loop(({ time }) => {
+		uniforms.uTime = time / 500;
+		render();
+	});
+
+	onCanvasResize(canvas, ({ devicePixelSize }) => {
+		setSize(devicePixelSize.width, devicePixelSize.height);
 	});
 </script>
 
