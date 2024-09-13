@@ -1,6 +1,7 @@
 export * from "./core/buffer";
 export * from "./core/program";
 export * from "./core/shader";
+export * from "./core/attribute";
 
 export * from "./hooks/useWebGLCanvas";
 export * from "./hooks/useWebGLContext";

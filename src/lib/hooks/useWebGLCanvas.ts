@@ -1,8 +1,8 @@
-import { createBuffer } from "../core/buffer";
 import { createProgram } from "../core/program";
 import { onCanvasResize } from "../helpers/resize";
 import { quadVertexPositions, quadVertexShaderSource } from "../helpers/quad";
 import { useWebGLContext } from "./useWebGLContext";
+import { setAttribute, type AttributeObj } from "../core/attribute";
 
 type VectorUniform = [number, number] | [number, number, number] | [number, number, number, number];
 type UniformValue = number | VectorUniform;
@@ -13,6 +13,7 @@ interface WebGLCanvasProps<Uniforms extends UniformsObj> {
 	fragment: string;
 	vertex?: string;
 	uniforms?: Uniforms;
+	attributes?: Record<string, AttributeObj>;
 	webglContextOptions?: WebGLContextAttributes;
 }
 
@@ -36,17 +37,36 @@ export const useWebGLCanvas = <Uniforms extends UniformsObj>(props: WebGLCanvasP
 	const program = createProgram(gl, fragment, vertexShader);
 	gl.useProgram(program);
 
-	const positionsBuffer = createBuffer(gl, quadVertexPositions);
-	gl.bindBuffer(gl.ARRAY_BUFFER, positionsBuffer);
-	const positionAttributeLocation = gl.getAttribLocation(program, "aPosition");
-	gl.enableVertexAttribArray(positionAttributeLocation);
-	gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+	let maxVertexCount = 0;
+	let hasProvidedPositionAttribute = false;
+
+	Object.entries(props.attributes || {}).forEach(([attributeName, attributeObj]) => {
+		const { vertexCount } = setAttribute(gl, program, attributeName, attributeObj);
+		maxVertexCount = Math.max(maxVertexCount, vertexCount);
+
+		if (attributeName.toLocaleLowerCase().endsWith("position")) {
+			hasProvidedPositionAttribute = true;
+		}
+	});
+
+	if (!hasProvidedPositionAttribute) {
+		const positionAttributeName =
+			findName(vertex, "attribute", "position") ||
+			findName(vertex, "in", "position") ||
+			"aPosition";
+
+		setAttribute(gl, program, positionAttributeName, {
+			size: 2,
+			data: quadVertexPositions,
+		});
+		maxVertexCount = 6;
+	}
 
 	const timeUniformLocation = gl.getUniformLocation(program, timeUniformName);
 	const resolutionUniformLocation = gl.getUniformLocation(program, resolutionUniformName);
 
 	function render() {
-		gl.drawArrays(gl.TRIANGLES, 0, 6);
+		gl.drawArrays(gl.TRIANGLES, 0, maxVertexCount);
 	}
 
 	function setSize({ width, height }: { width: number; height: number }) {
@@ -118,7 +138,7 @@ export const useWebGLCanvas = <Uniforms extends UniformsObj>(props: WebGLCanvasP
 
 function findName(source: string, keyword: string, word: string) {
 	return source
-		.split("\n")
+		?.split("\n")
 		.find((line) => new RegExp(`^${keyword}.*${word};`, "i").test(line.trim()))
 		?.match(/(\w+);$/)[1];
 }
