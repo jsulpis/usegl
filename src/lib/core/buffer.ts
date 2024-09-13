@@ -8,6 +8,6 @@ export function createBuffer(gl: WebGLRenderingContext, data: AllowSharedBufferS
 	return buffer;
 }
 
-function isSharedBufferSource(value: unknown): value is AllowSharedBufferSource {
+export function isSharedBufferSource(value: unknown): value is AllowSharedBufferSource {
 	return value instanceof ArrayBuffer || ArrayBuffer.isView(value);
 }
