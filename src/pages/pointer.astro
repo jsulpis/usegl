@@ -1,0 +1,49 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<script>
+	import { onPointerEvents, useWebGLCanvas } from "../lib";
+
+	const canvas = document.querySelector("canvas");
+
+	const { uniforms } = useWebGLCanvas({
+		canvas,
+		fragment: /* glsl */ `
+			varying vec2 vUv;
+			uniform vec2 uPointerPosition;
+			uniform vec2 uResolution;
+
+			void main() {
+				vec2 uv = (vUv - .5) * uResolution / min(uResolution.x, uResolution.y);
+				float dist = distance(uv, uPointerPosition);
+				float circle = 1. - smoothstep(.099, .101, dist);
+				gl_FragColor = vec4(vec3(circle), 1.);
+			}
+		`,
+		uniforms: {
+			uPointerPosition: [0, 0],
+		},
+	});
+
+	onPointerEvents(canvas, {
+		move: ({ clientX, clientY }) => {
+			const { left, bottom, width, height } = canvas.getBoundingClientRect();
+			uniforms.uPointerPosition = [
+				(clientX - (left + width / 2)) / Math.min(width, height),
+				(bottom - height / 2 - clientY) / Math.min(width, height),
+			];
+		},
+	});
+</script>
+
+<Layout title="Circle">
+	<canvas></canvas>
+</Layout>
+
+<style>
+	canvas {
+		aspect-ratio: 3 / 2;
+		height: auto;
+	}
+</style>
