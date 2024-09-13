@@ -3,6 +3,7 @@ import { onCanvasResize } from "../helpers/resize";
 import { quadVertexPositions, quadVertexShaderSource } from "../helpers/quad";
 import { useWebGLContext } from "./useWebGLContext";
 import { setAttribute, type AttributeObj } from "../core/attribute";
+import { loop } from "../helpers/loop";
 
 type VectorUniform = [number, number] | [number, number, number] | [number, number, number, number];
 type UniformValue = number | VectorUniform;
@@ -15,10 +16,18 @@ interface WebGLCanvasProps<Uniforms extends UniformsObj> {
 	uniforms?: Uniforms;
 	attributes?: Record<string, AttributeObj>;
 	webglContextOptions?: WebGLContextAttributes;
+	dpr?: number;
 }
 
-export const useWebGLCanvas = <Uniforms extends UniformsObj>(props: WebGLCanvasProps<Uniforms>) => {
-	const { canvas, fragment, vertex, uniforms, webglContextOptions } = props;
+export const useWebGLCanvas = <Uniforms extends UniformsObj>({
+	canvas,
+	fragment,
+	vertex,
+	uniforms,
+	attributes,
+	webglContextOptions,
+	dpr = window.devicePixelRatio,
+}: WebGLCanvasProps<Uniforms>) => {
 	type UniformName = Extract<keyof Uniforms, string>;
 
 	const { gl, setSize: setCanvasSize } = useWebGLContext(canvas, webglContextOptions);
@@ -40,7 +49,7 @@ export const useWebGLCanvas = <Uniforms extends UniformsObj>(props: WebGLCanvasP
 	let maxVertexCount = 0;
 	let hasProvidedPositionAttribute = false;
 
-	Object.entries(props.attributes || {}).forEach(([attributeName, attributeObj]) => {
+	Object.entries(attributes || {}).forEach(([attributeName, attributeObj]) => {
 		const { vertexCount } = setAttribute(gl, program, attributeName, attributeObj);
 		maxVertexCount = Math.max(maxVertexCount, vertexCount);
 
@@ -62,8 +71,21 @@ export const useWebGLCanvas = <Uniforms extends UniformsObj>(props: WebGLCanvasP
 		maxVertexCount = 6;
 	}
 
-	const timeUniformLocation = gl.getUniformLocation(program, timeUniformName);
-	const resolutionUniformLocation = gl.getUniformLocation(program, resolutionUniformName);
+	const uniformsLocations = new Map(
+		Object.keys(uniforms || {})
+			.concat(resolutionUniformName, timeUniformName)
+			.map((uniformName) => [uniformName, gl.getUniformLocation(program, uniformName)])
+	);
+
+	const uniformsProxy = new Proxy(uniforms || ({} as Uniforms), {
+		set(target, prop: UniformName, value) {
+			const result = setUniform(prop, value);
+			Object.assign(target, { [prop]: value });
+			return result !== -1;
+		},
+	});
+
+	let renderHandle: number | null = null;
 
 	function render() {
 		gl.drawArrays(gl.TRIANGLES, 0, maxVertexCount);
@@ -73,51 +95,38 @@ export const useWebGLCanvas = <Uniforms extends UniformsObj>(props: WebGLCanvasP
 		setCanvasSize(width, height);
 
 		if (resolutionUniformName) {
-			gl.uniform2f(resolutionUniformLocation, width, height);
-		}
-		if (!timeUniformName) {
-			render();
+			// @ts-expect-error the resolution uniform is not registered in the Uniforms type
+			setUniform(resolutionUniformName, [width, height]);
 		}
 	}
 
 	if (timeUniformName) {
-		requestAnimationFrame(function renderLoop(time) {
-			requestAnimationFrame(renderLoop);
-			gl.uniform1f(timeUniformLocation, time / 500);
-			render();
+		loop(({ time }) => {
+			// @ts-expect-error the time uniform is not registered in the Uniforms type
+			setUniform(timeUniformName, time / 500);
 		});
 	}
 
 	if (!(canvas instanceof OffscreenCanvas)) {
-		onCanvasResize(canvas, ({ devicePixelSize }) => {
-			setSize(devicePixelSize);
+		onCanvasResize(canvas, ({ size }) => {
+			setSize({ width: size.width * dpr, height: size.height * dpr });
 		});
 	}
 
-	const uniformsLocations =
-		uniforms != undefined
-			? new Map(
-					Object.keys(uniforms).map((uniformName) => [
-						uniformName,
-						gl.getUniformLocation(program, uniformName),
-					])
-			  )
-			: new Map();
+	Object.entries(uniforms || {}).forEach(([uniformName, uniformValue]) => {
+		setUniform(uniformName as UniformName, uniformValue as Uniforms[UniformName], false);
+	});
 
-	const uniformsProxy =
-		uniforms != undefined
-			? new Proxy(uniforms, {
-					set(target, prop: UniformName, value) {
-						const result = setUniform(prop, value);
-						Object.assign(target, { [prop]: value });
-						return result !== -1;
-					},
-			  })
-			: uniforms;
-
-	function setUniform<U extends UniformName>(uniform: U, value: Uniforms[U]): void | -1 {
+	function setUniform<U extends UniformName>(uniform: U, value: Uniforms[U], triggerRender = true) {
 		const uniformLocation = uniformsLocations.get(uniform);
 		if (uniformLocation === -1) return -1;
+
+		if (renderHandle == null && triggerRender) {
+			renderHandle = requestAnimationFrame(() => {
+				render();
+				renderHandle = null;
+			});
+		}
 
 		if (typeof value === "number") return gl.uniform1f(uniformLocation, value);
 
@@ -133,7 +142,7 @@ export const useWebGLCanvas = <Uniforms extends UniformsObj>(props: WebGLCanvasP
 		}
 	}
 
-	return { canvas, setSize, setUniform, uniforms: uniformsProxy, gl };
+	return { canvas, render, setSize, dpr, setUniform, uniforms: uniformsProxy, gl };
 };
 
 function findName(source: string, keyword: string, word: string) {
