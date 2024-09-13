@@ -21,7 +21,7 @@ export function onCanvasResize(
 		devicePixelSize = entries[0].devicePixelContentBoxSize[0];
 		size = entries[0].contentBoxSize[0];
 
-		// resize after next paint, otherwise there is a glitch
+		// resize after next paint, otherwise there are glitches if a render loop is active
 		setTimeout(() => {
 			callback({
 				size: { width: size.inlineSize, height: size.blockSize },
