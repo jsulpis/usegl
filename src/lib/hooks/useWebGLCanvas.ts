@@ -2,54 +2,45 @@ import { createProgram } from "../core/program";
 import { onCanvasResize } from "../helpers/resize";
 import { quadVertexPositions, quadVertexShaderSource } from "../helpers/quad";
 import { useWebGLContext } from "./useWebGLContext";
-import { setAttribute, type AttributeObj } from "../core/attribute";
+import { setAttribute } from "../core/attribute";
 import { loop } from "../helpers/loop";
+import type { Uniforms } from "../types";
+import type { WebGLCanvasProps } from "./useRawWebGLCanvas";
+import { convertToGLSL300 } from "../core/shader";
 
-type VectorUniform = [number, number] | [number, number, number] | [number, number, number, number];
-type UniformValue = number | VectorUniform;
-type UniformsObj = Record<string, UniformValue> | {};
-
-interface WebGLCanvasProps<Uniforms extends UniformsObj> {
-	canvas: HTMLCanvasElement | OffscreenCanvas;
-	fragment: string;
-	vertex?: string;
-	uniforms?: Uniforms;
-	attributes?: Record<string, AttributeObj>;
-	webglContextOptions?: WebGLContextAttributes;
-	dpr?: number;
-}
-
-export const useWebGLCanvas = <Uniforms extends UniformsObj>({
+export const useWebGLCanvas = <UniformsObj extends Uniforms>({
 	canvas,
 	fragment,
 	vertex,
-	uniforms,
-	attributes,
+	uniforms = {} as UniformsObj,
+	attributes = {},
 	webglContextOptions,
 	dpr = window.devicePixelRatio,
-}: WebGLCanvasProps<Uniforms>) => {
-	type UniformName = Extract<keyof Uniforms, string>;
+}: WebGLCanvasProps<UniformsObj>) => {
+	type UniformName = Extract<keyof UniformsObj, string>;
 
 	const { gl, setSize: setCanvasSize } = useWebGLContext(canvas, webglContextOptions);
 	if (!gl) return { setSize: () => {} };
 
-	const timeUniformName = findName(fragment, "uniform", "time");
-	const resolutionUniformName = findName(fragment, "uniform", "resolution");
-	const uvVaryingName = findName(fragment, "varying", "uv") || findName(fragment, "in", "uv");
+	const fragmentShader = convertToGLSL300(fragment);
 
-	const vertexShader =
-		vertex ||
-		(uvVaryingName
-			? quadVertexShaderSource.replace(/\bvUv\b/g, uvVaryingName)
-			: quadVertexShaderSource);
+	const timeUniformName = findName(fragmentShader, "uniform", "time");
+	const resolutionUniformName = findName(fragmentShader, "uniform", "resolution");
+	const uvVaryingName = findName(fragmentShader, "in", "uv");
 
-	const program = createProgram(gl, fragment, vertexShader);
+	const vertexShader = vertex
+		? convertToGLSL300(vertex)
+		: uvVaryingName
+		? quadVertexShaderSource.replace(/\bvUv\b/g, uvVaryingName)
+		: quadVertexShaderSource;
+
+	const program = createProgram(gl, fragmentShader, vertexShader);
 	gl.useProgram(program);
 
 	let maxVertexCount = 0;
 	let hasProvidedPositionAttribute = false;
 
-	Object.entries(attributes || {}).forEach(([attributeName, attributeObj]) => {
+	Object.entries(attributes).forEach(([attributeName, attributeObj]) => {
 		const { vertexCount } = setAttribute(gl, program, attributeName, attributeObj);
 		maxVertexCount = Math.max(maxVertexCount, vertexCount);
 
@@ -72,12 +63,12 @@ export const useWebGLCanvas = <Uniforms extends UniformsObj>({
 	}
 
 	const uniformsLocations = new Map(
-		Object.keys(uniforms || {})
+		Object.keys(uniforms)
 			.concat(resolutionUniformName, timeUniformName)
 			.map((uniformName) => [uniformName, gl.getUniformLocation(program, uniformName)])
 	);
 
-	const uniformsProxy = new Proxy(uniforms || ({} as Uniforms), {
+	const uniformsProxy = new Proxy(uniforms, {
 		set(target, prop: UniformName, value) {
 			const result = setUniform(prop, value);
 			Object.assign(target, { [prop]: value });
@@ -113,11 +104,15 @@ export const useWebGLCanvas = <Uniforms extends UniformsObj>({
 		});
 	}
 
-	Object.entries(uniforms || {}).forEach(([uniformName, uniformValue]) => {
-		setUniform(uniformName as UniformName, uniformValue as Uniforms[UniformName], false);
+	Object.entries(uniforms).forEach(([uniformName, uniformValue]) => {
+		setUniform(uniformName as UniformName, uniformValue as UniformsObj[UniformName], false);
 	});
 
-	function setUniform<U extends UniformName>(uniform: U, value: Uniforms[U], triggerRender = true) {
+	function setUniform<U extends UniformName>(
+		uniform: U,
+		value: UniformsObj[U],
+		triggerRender = true
+	) {
 		const uniformLocation = uniformsLocations.get(uniform);
 		if (uniformLocation === -1) return -1;
 
