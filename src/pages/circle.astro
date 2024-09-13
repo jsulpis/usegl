@@ -1,0 +1,34 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<script>
+	import { useWebGLCanvas } from "../lib";
+
+	useWebGLCanvas({
+		canvas: document.querySelector("canvas"),
+		fragment: /* glsl */ `
+			varying vec2 uv;
+			uniform vec2 resolution;
+
+			void main() {
+				vec2 center = resolution / 2.;
+				float dist = distance(uv * resolution, center);
+				float radius = min(resolution.x, resolution.y) / 3.;
+				float circle = 1. - smoothstep(radius * .99, radius * 1.01, dist);
+				gl_FragColor = vec4(vec3(circle), 1.);
+			}
+		`,
+	});
+</script>
+
+<Layout title="Circle">
+	<canvas></canvas>
+</Layout>
+
+<style>
+	canvas {
+		aspect-ratio: 3 / 2;
+		height: auto;
+	}
+</style>
