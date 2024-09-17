@@ -23,7 +23,6 @@ import Layout from "../layouts/Layout.astro";
 	const { setSize, render, uniforms } = useRawWebGLCanvas({
 		canvas,
 		fragment: /* glsl */ `
-			precision highp float;
 			varying vec2 vUv;
 			uniform float uTime;
 
@@ -32,7 +31,6 @@ import Layout from "../layouts/Layout.astro";
 			}
 		`,
 		vertex: /* glsl */ `
-			precision highp float;
 			attribute vec3 aPosition;
 			varying vec2 vUv;
 

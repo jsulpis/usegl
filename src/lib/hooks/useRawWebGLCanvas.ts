@@ -3,14 +3,13 @@ import { useWebGLContext } from "./useWebGLContext";
 import { setAttribute } from "../core/attribute";
 import type { Attribute, Uniforms } from "../types";
 
-export interface WebGLCanvasProps<U extends Uniforms> {
+export interface WebGLCanvasProps<U extends Uniforms = {}> {
 	canvas: HTMLCanvasElement | OffscreenCanvas;
 	fragment: string;
 	vertex?: string;
 	uniforms?: U;
 	attributes?: Record<string, Attribute>;
-	webglContextOptions?: WebGLContextAttributes;
-	dpr?: number;
+	webglOptions?: WebGLContextAttributes;
 }
 
 export const useRawWebGLCanvas = <UniformsObj extends Uniforms>({
@@ -19,12 +18,11 @@ export const useRawWebGLCanvas = <UniformsObj extends Uniforms>({
 	vertex,
 	uniforms = {} as UniformsObj,
 	attributes,
-	webglContextOptions,
-	dpr = window.devicePixelRatio,
+	webglOptions,
 }: WebGLCanvasProps<UniformsObj>) => {
 	type UniformName = Extract<keyof UniformsObj, string>;
 
-	const { gl, setSize } = useWebGLContext(canvas, webglContextOptions);
+	const { gl, setSize } = useWebGLContext(canvas, webglOptions);
 	if (!gl) return { setSize: () => {} };
 
 	const program = createProgram(gl, fragment, vertex);
@@ -37,12 +35,12 @@ export const useRawWebGLCanvas = <UniformsObj extends Uniforms>({
 		maxVertexCount = Math.max(maxVertexCount, vertexCount);
 	});
 
-	const uniformsLocations = new Map(
-		Object.keys(uniforms).map((uniformName) => [
-			uniformName,
-			gl.getUniformLocation(program, uniformName),
-		])
-	);
+	const uniformsLocations = new Map<UniformName, WebGLUniformLocation>();
+	const uniformsCount = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+	for (let i = 0; i < uniformsCount; i++) {
+		const uniformName = gl.getActiveUniform(program, i)?.name;
+		uniformsLocations.set(uniformName as UniformName, gl.getUniformLocation(program, uniformName));
+	}
 
 	const uniformsProxy = new Proxy(uniforms, {
 		set(target, prop: UniformName, value) {
@@ -78,5 +76,22 @@ export const useRawWebGLCanvas = <UniformsObj extends Uniforms>({
 		gl.drawArrays(gl.TRIANGLES, 0, maxVertexCount);
 	}
 
-	return { canvas, gl, render, setSize, dpr, setUniform, uniforms: uniformsProxy };
+	let requestedRender = false;
+
+	/**
+	 * Request a render to be executed on the next animation frame.
+	 * If this function is called multiple times before the next animation frame,
+	 * the render will only be executed once.
+	 */
+	function requestRender() {
+		if (requestedRender) return;
+		requestedRender = true;
+
+		requestAnimationFrame(() => {
+			requestedRender = false;
+			render();
+		});
+	}
+
+	return { canvas, gl, render, requestRender, setSize, uniforms: uniformsProxy };
 };
