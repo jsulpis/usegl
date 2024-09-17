@@ -1,6 +1,6 @@
 export function createShader(gl: WebGL2RenderingContext, source: string, type: GLenum) {
 	const shader = gl.createShader(type);
-	gl.shaderSource(shader, source);
+	gl.shaderSource(shader, convertToGLSL300(source));
 	gl.compileShader(shader);
 
 	if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
@@ -10,7 +10,7 @@ export function createShader(gl: WebGL2RenderingContext, source: string, type: G
 	return shader;
 }
 
-export function convertToGLSL300(shader: string): string {
+function convertToGLSL300(shader: string): string {
 	let glsl300Shader = shader.replace(/\battribute\b/g, "in").replace(/\btexture2D\b/g, "texture");
 
 	if (shader.includes("gl_FragColor")) {
