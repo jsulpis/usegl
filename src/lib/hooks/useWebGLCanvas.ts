@@ -9,19 +9,19 @@ interface Props<U extends UniformsType> extends WebGLCanvasProps<U> {
 }
 
 export const useWebGLCanvas = <Uniforms extends UniformsType>(props: Props<Uniforms>) => {
-	const { canvas, fragment, dpr = window.devicePixelRatio } = props;
+	const { canvas, fragment, vertex, dpr = window.devicePixelRatio } = props;
 
-	const timeUniformName = findName(fragment, "uniform", "time");
+	const timeUniformName =
+		findName(fragment, "uniform", "time") || findName(vertex, "uniform", "time");
 	const resolutionUniformName = findName(fragment, "uniform", "resolution");
 
 	const glCanvas = useRawWebGLCanvas({ ...props, ...getDefaultProps(props) });
-	const { gl, requestRender, uniforms, setSize: setCanvasSize } = glCanvas;
-
-	if (!gl) return { setSize: () => {} };
+	const { requestRender, uniforms, setSize: setCanvasSize } = glCanvas;
 
 	const uniformsProxy = new Proxy(uniforms, {
 		set(target, uniform, value) {
 			target[uniform] = value;
+
 			requestRender();
 			return true;
 		},
@@ -31,6 +31,8 @@ export const useWebGLCanvas = <Uniforms extends UniformsType>(props: Props<Unifo
 		setCanvasSize(width, height);
 		if (resolutionUniformName) {
 			uniformsProxy[resolutionUniformName] = [width, height];
+		} else {
+			requestRender();
 		}
 	}
 
@@ -57,9 +59,10 @@ function getDefaultProps({ fragment, vertex, attributes = {} }: WebGLCanvasProps
 	const uvVaryingName = findName(fragment, "varying", "uv") || findName(fragment, "in", "uv");
 
 	const vertexShader =
-		vertex || uvVaryingName
+		vertex ||
+		(uvVaryingName
 			? quadVertexShaderSource.replace(/\bvUv\b/g, uvVaryingName)
-			: quadVertexShaderSource;
+			: quadVertexShaderSource);
 
 	const hasPositionAttribute = Object.keys(attributes).some((attributeName) =>
 		attributeName.toLocaleLowerCase().endsWith("position")
