@@ -4,8 +4,7 @@ export function useWebGLContext(
 ) {
 	const gl = canvas.getContext("webgl2", options);
 	if (!gl) {
-		console.error("WebGL2 context unavailable");
-		return {};
+		throw new Error("No WebGL2 context available.");
 	}
 
 	function setSize(width: number, height: number) {

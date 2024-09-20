@@ -1,5 +1,5 @@
 import type { Attribute } from "../types";
-import { createBuffer, isSharedBufferSource } from "./buffer";
+import { createAndBindBuffer, isSharedBufferSource } from "./buffer";
 
 export function setAttribute(
 	gl: WebGL2RenderingContext,
@@ -7,17 +7,20 @@ export function setAttribute(
 	name: string,
 	attribute: Attribute
 ) {
+	const bufferData = getBufferData(attribute.data, name === "index");
 	const location = gl.getAttribLocation(program, name);
-	if (location === -1) return { location, vertexCount: 0 };
 
-	const bufferData = isSharedBufferSource(attribute.data)
-		? attribute.data
-		: new Float32Array(attribute.data);
-	const buffer = createBuffer(gl, bufferData);
-	gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+	if (name === "index") {
+		createAndBindBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, bufferData);
+	}
+
+	if (location === -1) {
+		return { location, vertexCount: 0 };
+	}
+
+	createAndBindBuffer(gl, gl.ARRAY_BUFFER, bufferData);
 
 	gl.enableVertexAttribArray(location);
-
 	gl.vertexAttribPointer(
 		location,
 		attribute.size,
@@ -33,6 +36,16 @@ export function setAttribute(
 		: bufferData.length / attribute.size;
 
 	return { location, vertexCount };
+}
+
+function getBufferData(data: Attribute["data"], isIndex: boolean) {
+	if (isSharedBufferSource(data)) {
+		return data;
+	}
+	if (isIndex) {
+		return data.length < 65536 ? new Uint16Array(data) : new Uint32Array(data);
+	}
+	return new Float32Array(data);
 }
 
 function getGLType(gl: WebGL2RenderingContext, data: ArrayBufferView) {

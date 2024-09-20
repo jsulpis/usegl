@@ -3,6 +3,15 @@ import { useWebGLContext } from "./useWebGLContext";
 import { setAttribute } from "../core/attribute";
 import type { Attribute, Uniforms } from "../types";
 
+type DrawMode =
+	| "POINTS"
+	| "LINES"
+	| "LINE_STRIP"
+	| "LINE_LOOP"
+	| "TRIANGLES"
+	| "TRIANGLE_STRIP"
+	| "TRIANGLE_FAN";
+
 export interface WebGLCanvasProps<U extends Uniforms = {}> {
 	canvas: HTMLCanvasElement | OffscreenCanvas;
 	fragment: string;
@@ -10,6 +19,7 @@ export interface WebGLCanvasProps<U extends Uniforms = {}> {
 	uniforms?: U;
 	attributes?: Record<string, Attribute>;
 	webglOptions?: WebGLContextAttributes;
+	drawMode?: DrawMode;
 }
 
 export const useRawWebGLCanvas = <UniformsObj extends Uniforms>({
@@ -17,22 +27,25 @@ export const useRawWebGLCanvas = <UniformsObj extends Uniforms>({
 	fragment,
 	vertex,
 	uniforms = {} as UniformsObj,
-	attributes,
+	attributes = {},
 	webglOptions,
+	drawMode,
 }: WebGLCanvasProps<UniformsObj>) => {
 	type UniformName = Extract<keyof UniformsObj, string>;
 
 	const { gl, setSize } = useWebGLContext(canvas, webglOptions);
-	if (!gl) return { setSize: () => {} };
 
 	const program = createProgram(gl, fragment, vertex);
 	gl.useProgram(program);
 
-	let maxVertexCount = 0;
+	gl.enable(gl.BLEND);
+	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-	Object.entries(attributes || {}).forEach(([attributeName, attributeObj]) => {
-		const { vertexCount } = setAttribute(gl, program, attributeName, attributeObj);
-		maxVertexCount = Math.max(maxVertexCount, vertexCount);
+	let vertexCount = 0;
+
+	Object.entries(attributes).forEach(([attributeName, attributeObj]) => {
+		const attr = setAttribute(gl, program, attributeName, attributeObj);
+		vertexCount = Math.max(vertexCount, attr.vertexCount);
 	});
 
 	const uniformsLocations = new Map<UniformName, WebGLUniformLocation>();
@@ -72,8 +85,18 @@ export const useRawWebGLCanvas = <UniformsObj extends Uniforms>({
 		}
 	}
 
+	const hasIndices = attributes.index != undefined;
+	const indexType = attributes.index?.data.length < 65536 ? gl.UNSIGNED_SHORT : gl.UNSIGNED_INT;
+	const finalDrawMode = drawMode || (vertex.includes("gl_PointSize") ? "POINTS" : "TRIANGLES");
+
 	function render() {
-		gl.drawArrays(gl.TRIANGLES, 0, maxVertexCount);
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+		if (hasIndices) {
+			gl.drawElements(gl[finalDrawMode], vertexCount, indexType, 0);
+		} else {
+			gl.drawArrays(gl[finalDrawMode], 0, vertexCount);
+		}
 	}
 
 	let requestedRender = false;

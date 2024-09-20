@@ -1,9 +1,12 @@
-export function createBuffer(gl: WebGLRenderingContext, data: AllowSharedBufferSource | number[]) {
+export function createAndBindBuffer(
+	gl: WebGLRenderingContext,
+	target: GLenum,
+	data: AllowSharedBufferSource | number[]
+) {
 	const buffer = gl.createBuffer();
 	const bufferData = isSharedBufferSource(data) ? data : new Float32Array(data);
-	gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-	gl.bufferData(gl.ARRAY_BUFFER, bufferData, gl.STATIC_DRAW);
-	gl.bindBuffer(gl.ARRAY_BUFFER, null);
+	gl.bindBuffer(target, buffer);
+	gl.bufferData(target, bufferData, gl.STATIC_DRAW);
 
 	return buffer;
 }
