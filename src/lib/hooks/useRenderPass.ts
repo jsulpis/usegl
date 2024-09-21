@@ -1,45 +1,35 @@
-import { createProgram } from "../core/program";
-import { useWebGLContext } from "./useWebGLContext";
+import type { Attribute, DrawMode, RenderTarget, Uniforms as UniformsType } from "../types";
 import { setAttribute } from "../core/attribute";
-import type { Attribute, Uniforms } from "../types";
+import { createProgram } from "../core/program";
+import { setRenderTarget } from "../core/renderTarget";
 
-type DrawMode =
-	| "POINTS"
-	| "LINES"
-	| "LINE_STRIP"
-	| "LINE_LOOP"
-	| "TRIANGLES"
-	| "TRIANGLE_STRIP"
-	| "TRIANGLE_FAN";
-
-export interface WebGLCanvasProps<U extends Uniforms = {}> {
-	canvas: HTMLCanvasElement | OffscreenCanvas;
+export type RenderPassOptions<Uniforms extends UniformsType = {}> = {
+	target?: RenderTarget | null;
 	fragment: string;
 	vertex?: string;
-	uniforms?: U;
 	attributes?: Record<string, Attribute>;
-	webglOptions?: WebGLContextAttributes;
+	uniforms?: Uniforms;
 	drawMode?: DrawMode;
-}
+};
 
-export const useRawWebGLCanvas = <UniformsObj extends Uniforms>({
-	canvas,
-	fragment,
-	vertex,
-	uniforms = {} as UniformsObj,
-	attributes = {},
-	webglOptions,
-	drawMode,
-}: WebGLCanvasProps<UniformsObj>) => {
-	type UniformName = Extract<keyof UniformsObj, string>;
-
-	const { gl, setSize } = useWebGLContext(canvas, webglOptions);
+export function useRenderPass<Uniforms extends UniformsType>(
+	gl: WebGL2RenderingContext,
+	{
+		target = null,
+		fragment,
+		vertex,
+		attributes = {},
+		uniforms = {} as Uniforms,
+		drawMode,
+	}: RenderPassOptions<Uniforms>
+) {
+	type UniformName = Extract<keyof Uniforms, string>;
 
 	const program = createProgram(gl, fragment, vertex);
 	gl.useProgram(program);
 
-	gl.enable(gl.BLEND);
-	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+	const vao = gl.createVertexArray();
+	gl.bindVertexArray(vao);
 
 	let vertexCount = 0;
 
@@ -55,22 +45,23 @@ export const useRawWebGLCanvas = <UniformsObj extends Uniforms>({
 		uniformsLocations.set(uniformName as UniformName, gl.getUniformLocation(program, uniformName));
 	}
 
-	const uniformsProxy = new Proxy(uniforms, {
-		set(target, prop: UniformName, value) {
-			const result = setUniform(prop, value);
-			Object.assign(target, { [prop]: value });
-			return result !== -1;
-		},
-	});
-
-	Object.entries(uniforms).forEach(([uniformName, uniformValue]) => {
-		setUniform(uniformName as UniformName, uniformValue as UniformsObj[UniformName]);
-	});
-
 	let textureUnitIndex = 0;
 	const textureUnits = new Map<UniformName, number>();
 
-	function setUniform<U extends UniformName>(name: U, value: UniformsObj[U]) {
+	const liveUniforms = { ...uniforms };
+
+	function setUniforms() {
+		Object.entries(liveUniforms).forEach(([uniformName, uniformValue]) => {
+			setUniform(
+				uniformName as UniformName,
+				(typeof uniformValue === "function"
+					? uniformValue()
+					: uniformValue) as Uniforms[UniformName]
+			);
+		});
+	}
+
+	function setUniform<U extends UniformName>(name: U, value: Uniforms[U]) {
 		const uniformLocation = uniformsLocations.get(name);
 		if (uniformLocation === -1) return -1;
 
@@ -103,7 +94,10 @@ export const useRawWebGLCanvas = <UniformsObj extends Uniforms>({
 	const finalDrawMode = drawMode || (vertex.includes("gl_PointSize") ? "POINTS" : "TRIANGLES");
 
 	function render() {
-		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+		setRenderTarget(gl, target);
+		gl.useProgram(program);
+		gl.bindVertexArray(vao);
+		setUniforms();
 
 		if (hasIndices) {
 			gl.drawElements(gl[finalDrawMode], vertexCount, indexType, 0);
@@ -112,22 +106,5 @@ export const useRawWebGLCanvas = <UniformsObj extends Uniforms>({
 		}
 	}
 
-	let requestedRender = false;
-
-	/**
-	 * Request a render to be executed on the next animation frame.
-	 * If this function is called multiple times before the next animation frame,
-	 * the render will only be executed once.
-	 */
-	function requestRender() {
-		if (requestedRender) return;
-		requestedRender = true;
-
-		requestAnimationFrame(() => {
-			requestedRender = false;
-			render();
-		});
-	}
-
-	return { canvas, gl, render, requestRender, setSize, uniforms: uniformsProxy };
-};
+	return { render, uniforms: liveUniforms };
+}

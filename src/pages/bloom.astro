@@ -5,7 +5,7 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <script>
-	import { createRenderPass, onCanvasResize, useWebGLContext } from "../lib";
+	import { useEffectPass, onCanvasResize, useWebGLContext } from "../lib";
 
 	// Shader sources
 	const vertexShaderSource = /*glsl*/ `
@@ -226,7 +226,7 @@ vec3 GetBloom(vec2 coord) {
 		}
 	}
 
-	const particlesPass = createRenderPass(gl, {
+	const particlesPass = useEffectPass(gl, {
 		fragment: fragmentShaderSource,
 		vertex: vertexShaderSource,
 		attributes: {
@@ -238,10 +238,9 @@ vec3 GetBloom(vec2 coord) {
 		uniforms: {
 			u_resolution: [canvas.width, canvas.height],
 		},
-		drawMode: gl.POINTS,
 	});
 
-	const mipmapsPass = createRenderPass(gl, {
+	const mipmapsPass = useEffectPass(gl, {
 		fragment: mipmapFragmentShaderSource,
 		uniforms: {
 			u_resolution: [canvas.width, canvas.height],
@@ -249,7 +248,7 @@ vec3 GetBloom(vec2 coord) {
 		},
 	});
 
-	const horizontalBlurPass = createRenderPass(gl, {
+	const horizontalBlurPass = useEffectPass(gl, {
 		fragment: blurFragmentShaderSource,
 		uniforms: {
 			u_resolution: [canvas.width, canvas.height],
@@ -258,7 +257,7 @@ vec3 GetBloom(vec2 coord) {
 		},
 	});
 
-	const verticalBlurPass = createRenderPass(gl, {
+	const verticalBlurPass = useEffectPass(gl, {
 		fragment: blurFragmentShaderSource,
 		uniforms: {
 			u_resolution: [canvas.width, canvas.height],
@@ -267,7 +266,7 @@ vec3 GetBloom(vec2 coord) {
 		},
 	});
 
-	const combinePass = createRenderPass(gl, {
+	const combinePass = useEffectPass(gl, {
 		target: null,
 		fragment: combineFragmentShaderSource,
 		uniforms: {
@@ -289,7 +288,7 @@ vec3 GetBloom(vec2 coord) {
 		resizeCanvas(devicePixelSize.width, devicePixelSize.height);
 
 		renderPasses.forEach((pass) => {
-			pass.updateUniform("u_resolution", [canvas.width, canvas.height]);
+			pass.uniforms.u_resolution = [canvas.width, canvas.height];
 			pass.target?.setSize(canvas.width, canvas.height);
 			pass.render();
 		});
