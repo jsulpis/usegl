@@ -24,3 +24,12 @@ export interface RenderTarget {
 	height: number;
 	setSize: (width: number, height: number) => void;
 }
+
+export type DrawMode =
+	| "POINTS"
+	| "LINES"
+	| "LINE_STRIP"
+	| "LINE_LOOP"
+	| "TRIANGLES"
+	| "TRIANGLE_STRIP"
+	| "TRIANGLE_FAN";
