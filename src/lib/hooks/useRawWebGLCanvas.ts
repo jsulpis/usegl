@@ -67,11 +67,24 @@ export const useRawWebGLCanvas = <UniformsObj extends Uniforms>({
 		setUniform(uniformName as UniformName, uniformValue as UniformsObj[UniformName]);
 	});
 
-	function setUniform<U extends UniformName>(uniform: U, value: UniformsObj[U]) {
-		const uniformLocation = uniformsLocations.get(uniform);
+	let textureUnitIndex = 0;
+	const textureUnits = new Map<UniformName, number>();
+
+	function setUniform<U extends UniformName>(name: U, value: UniformsObj[U]) {
+		const uniformLocation = uniformsLocations.get(name);
 		if (uniformLocation === -1) return -1;
 
 		if (typeof value === "number") return gl.uniform1f(uniformLocation, value);
+
+		if (value instanceof WebGLTexture) {
+			if (!textureUnits.has(name)) {
+				textureUnits.set(name, textureUnitIndex++);
+			}
+			gl.activeTexture(gl.TEXTURE0 + textureUnits.get(name));
+			gl.bindTexture(gl.TEXTURE_2D, value);
+
+			return gl.uniform1i(uniformLocation, textureUnits.get(name));
+		}
 
 		if (Array.isArray(value)) {
 			switch (value.length) {
