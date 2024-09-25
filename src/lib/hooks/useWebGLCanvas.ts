@@ -1,8 +1,10 @@
 import { onCanvasResize } from "../helpers/resize";
 import { loop } from "../helpers/loop";
-import type { Attribute, DrawMode, Uniforms as UniformsType } from "../types";
+import type { Attribute, DrawMode, PostEffect, Uniforms as UniformsType } from "../types";
 import { useWebGLContext } from "./useWebGLContext";
 import { useQuadRenderPass } from "./useQuadRenderPass";
+import { useCompositor } from "./useCompositor";
+import { findUniformName } from "../utils/findName";
 
 interface Props<U extends UniformsType> {
 	canvas: HTMLCanvasElement | OffscreenCanvas;
@@ -13,22 +15,20 @@ interface Props<U extends UniformsType> {
 	webglOptions?: WebGLContextAttributes;
 	drawMode?: DrawMode;
 	dpr?: number;
+	postEffects?: PostEffect[];
 }
 
 export const useWebGLCanvas = <Uniforms extends UniformsType>(props: Props<Uniforms>) => {
-	const { canvas, fragment, vertex, dpr = window.devicePixelRatio } = props;
+	const { canvas, fragment, vertex, dpr = window.devicePixelRatio, postEffects = [] } = props;
 
 	const { gl, setSize: setCanvasSize } = useWebGLContext(canvas);
-	const { render, uniforms } = useQuadRenderPass(gl, props);
 
-	const timeUniformName =
-		findName(fragment, "uniform", "time") || findName(vertex, "uniform", "time");
-	const resolutionUniformName = findName(fragment, "uniform", "resolution");
+	const primaryPass = useQuadRenderPass(gl, props);
+	const compositor = useCompositor(gl, primaryPass, postEffects);
 
-	const uniformsProxy = new Proxy(uniforms, {
+	const uniformsProxy = new Proxy(primaryPass.uniforms, {
 		set(target, uniform, value) {
 			target[uniform] = value;
-
 			requestRender();
 			return true;
 		},
@@ -36,14 +36,13 @@ export const useWebGLCanvas = <Uniforms extends UniformsType>(props: Props<Unifo
 
 	function setSize({ width, height }: { width: number; height: number }) {
 		setCanvasSize(width, height);
-		if (resolutionUniformName) {
-			uniformsProxy[resolutionUniformName] = [width, height];
-		} else {
-			requestRender();
-		}
+		compositor.setSize({ width, height });
+		requestRender();
 	}
 
-	if (timeUniformName) {
+	const timeUniformName = findUniformName(fragment + vertex, "time");
+
+	if (timeUniformName && primaryPass.uniforms[timeUniformName] === undefined) {
 		loop(({ time }) => {
 			uniformsProxy[timeUniformName] = time / 500;
 		});
@@ -54,6 +53,10 @@ export const useWebGLCanvas = <Uniforms extends UniformsType>(props: Props<Unifo
 		onCanvasResize(canvas, ({ size }) => {
 			setSize({ width: size.width * dpr, height: size.height * dpr });
 		});
+	}
+
+	function render() {
+		compositor.render();
 	}
 
 	let requestedRender = false;
@@ -75,13 +78,3 @@ export const useWebGLCanvas = <Uniforms extends UniformsType>(props: Props<Unifo
 
 	return { gl, render, setSize, dpr, uniforms: uniformsProxy };
 };
-
-/**
- * Find the name of an attribute, uniform or varying in a shader source.
- */
-function findName(source: string, keyword: string, word: string) {
-	return source
-		?.split("\n")
-		.find((line) => new RegExp(`^${keyword}.*${word};`, "i").test(line.trim()))
-		?.match(/(\w+);$/)[1];
-}

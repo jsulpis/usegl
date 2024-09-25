@@ -18,6 +18,7 @@ export function createRenderTarget(
 
 	gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
 	gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, _texture, 0);
+	gl.bindTexture(gl.TEXTURE_2D, null);
 
 	function setSize(width: number, height: number) {
 		_width = width;

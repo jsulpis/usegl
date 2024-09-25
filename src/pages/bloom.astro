@@ -5,7 +5,13 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <script>
-	import { useEffectPass, onCanvasResize, useWebGLContext } from "../lib";
+	import {
+		useEffectPass,
+		onCanvasResize,
+		useWebGLContext,
+		useCompositor,
+		useRenderPass,
+	} from "../lib";
 
 	// Shader sources
 	const vertexShaderSource = /*glsl*/ `
@@ -91,8 +97,6 @@ import Layout from "../layouts/Layout.astro";
    uniform sampler2D u_image;
    uniform vec2 u_resolution;
    uniform vec2 u_direction;
-   uniform float uScale;
-   uniform float uLod;
    in vec2 vUv;
    out vec4 outColor;
 
@@ -143,8 +147,7 @@ import Layout from "../layouts/Layout.astro";
 
 	const combineFragmentShaderSource = /* glsl */ `
    uniform sampler2D u_image;
-   uniform sampler2D u_bloomTexture1;
-   uniform sampler2D u_bloomTexture2;
+   uniform sampler2D u_bloomTexture;
    uniform vec2 u_resolution;
    in vec2 vUv;
    out vec4 outColor;
@@ -156,7 +159,7 @@ vec3 ColorFetch(vec2 coord) {
 }
 
 vec3 BloomFetch(vec2 coord) {
- 	return texture(u_bloomTexture1, coord).rgb;
+ 	return texture(u_bloomTexture, coord).rgb;
 }
 
 
@@ -226,7 +229,7 @@ vec3 GetBloom(vec2 coord) {
 		}
 	}
 
-	const particlesPass = useEffectPass(gl, {
+	const particlesPass = useRenderPass(gl, {
 		fragment: fragmentShaderSource,
 		vertex: vertexShaderSource,
 		attributes: {
@@ -235,66 +238,56 @@ vec3 GetBloom(vec2 coord) {
 				size: 2,
 			},
 		},
-		uniforms: {
-			u_resolution: [canvas.width, canvas.height],
-		},
 	});
 
-	const mipmapsPass = useEffectPass(gl, {
+	const mipmapsPass = useEffectPass({
 		fragment: mipmapFragmentShaderSource,
-		uniforms: {
-			u_resolution: [canvas.width, canvas.height],
-			u_image: () => particlesPass.target.texture,
-		},
 	});
 
-	const horizontalBlurPass = useEffectPass(gl, {
+	const horizontalBlurPass = useEffectPass({
 		fragment: blurFragmentShaderSource,
 		uniforms: {
-			u_resolution: [canvas.width, canvas.height],
 			u_direction: [1, 0],
-			u_image: () => mipmapsPass.target.texture,
 		},
 	});
 
-	const verticalBlurPass = useEffectPass(gl, {
+	const verticalBlurPass = useEffectPass({
 		fragment: blurFragmentShaderSource,
 		uniforms: {
-			u_resolution: [canvas.width, canvas.height],
 			u_direction: [0, 1],
-			u_image: () => horizontalBlurPass.target.texture,
 		},
 	});
 
-	const combinePass = useEffectPass(gl, {
-		target: null,
+	const combinePass = useEffectPass({
 		fragment: combineFragmentShaderSource,
 		uniforms: {
-			u_resolution: [canvas.width, canvas.height],
 			u_image: () => particlesPass.target.texture,
-			u_bloomTexture1: () => verticalBlurPass.target.texture,
+			u_bloomTexture: () => verticalBlurPass.target.texture,
 		},
 	});
 
-	const renderPasses = [
-		particlesPass,
+	const compositor = useCompositor(gl, particlesPass, [
 		mipmapsPass,
 		horizontalBlurPass,
 		verticalBlurPass,
 		combinePass,
-	];
+	]);
 
 	onCanvasResize(canvas, ({ devicePixelSize }) => {
 		resizeCanvas(devicePixelSize.width, devicePixelSize.height);
 
-		renderPasses.forEach((pass) => {
-			pass.uniforms.u_resolution = [canvas.width, canvas.height];
-			pass.target?.setSize(canvas.width, canvas.height);
-			pass.render();
-		});
+		compositor.setSize(devicePixelSize);
+		compositor.render();
 	});
 </script>
 
 <Layout title="Bloom">
 	<canvas></canvas>
 </Layout>
+
+<style>
+	canvas {
+		aspect-ratio: 3/2;
+		height: auto;
+	}
+</style>
