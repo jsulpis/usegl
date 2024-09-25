@@ -1,7 +1,14 @@
-import type { Attribute, DrawMode, RenderTarget, Uniforms as UniformsType } from "../types";
+import type {
+	Attribute,
+	DrawMode,
+	RenderPass,
+	RenderTarget,
+	Uniforms as UniformsType,
+} from "../types";
 import { setAttribute } from "../core/attribute";
 import { createProgram } from "../core/program";
 import { setRenderTarget } from "../core/renderTarget";
+import { findUniformName } from "../utils/findName";
 
 export type RenderPassOptions<Uniforms extends UniformsType = {}> = {
 	target?: RenderTarget | null;
@@ -22,8 +29,10 @@ export function useRenderPass<Uniforms extends UniformsType>(
 		uniforms = {} as Uniforms,
 		drawMode,
 	}: RenderPassOptions<Uniforms>
-) {
+): RenderPass<Uniforms> {
 	type UniformName = Extract<keyof Uniforms, string>;
+
+	let _target = target;
 
 	const program = createProgram(gl, fragment, vertex);
 	gl.useProgram(program);
@@ -45,10 +54,10 @@ export function useRenderPass<Uniforms extends UniformsType>(
 		uniformsLocations.set(uniformName as UniformName, gl.getUniformLocation(program, uniformName));
 	}
 
+	const liveUniforms = { ...uniforms };
+
 	let textureUnitIndex = 0;
 	const textureUnits = new Map<UniformName, number>();
-
-	const liveUniforms = { ...uniforms };
 
 	function setUniforms() {
 		Object.entries(liveUniforms).forEach(([uniformName, uniformValue]) => {
@@ -89,12 +98,27 @@ export function useRenderPass<Uniforms extends UniformsType>(
 		}
 	}
 
+	const resolutionUniformName = findUniformName(fragment + vertex, "resolution");
+
+	function setSize(size: { width: number; height: number }) {
+		if (resolutionUniformName && uniforms[resolutionUniformName] === undefined) {
+			liveUniforms[resolutionUniformName] = [size.width, size.height];
+		}
+		if (_target != null) {
+			_target.setSize(size.width, size.height);
+		}
+	}
+
+	function setTarget(target: RenderTarget | null) {
+		_target = target;
+	}
+
 	const hasIndices = attributes.index != undefined;
 	const indexType = attributes.index?.data.length < 65536 ? gl.UNSIGNED_SHORT : gl.UNSIGNED_INT;
 	const finalDrawMode = drawMode || (vertex.includes("gl_PointSize") ? "POINTS" : "TRIANGLES");
 
 	function render() {
-		setRenderTarget(gl, target);
+		setRenderTarget(gl, _target);
 		gl.useProgram(program);
 		gl.bindVertexArray(vao);
 		setUniforms();
@@ -106,5 +130,15 @@ export function useRenderPass<Uniforms extends UniformsType>(
 		}
 	}
 
-	return { render, uniforms: liveUniforms };
+	return {
+		render,
+		get target() {
+			return _target;
+		},
+		setTarget,
+		setSize,
+		uniforms: liveUniforms,
+		vertex,
+		fragment,
+	};
 }

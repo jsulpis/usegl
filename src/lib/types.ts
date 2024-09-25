@@ -18,12 +18,31 @@ export interface Attribute {
 
 export interface RenderTarget {
 	framebuffer: WebGLFramebuffer;
-	getTexture?: () => WebGLTexture;
 	texture?: WebGLTexture;
 	width: number;
 	height: number;
 	setSize: (width: number, height: number) => void;
 }
+
+export interface RenderPass<U extends Uniforms = {}> extends Resizable {
+	render: () => void;
+	target: RenderTarget | null;
+	setTarget: (target: RenderTarget | null) => void;
+	uniforms: U;
+	vertex: string;
+	fragment: string;
+}
+
+/**
+ * An EffectPass can be created without the GL context, and must be initialized
+ */
+export interface EffectPass<U extends Uniforms = {}> extends RenderPass<U> {
+	initialize: (gl: WebGL2RenderingContext, target: RenderTarget | null) => void;
+}
+
+export type CompositeEffect = EffectPass[];
+
+export type PostEffect = EffectPass;
 
 export type DrawMode =
 	| "POINTS"
@@ -33,3 +52,7 @@ export type DrawMode =
 	| "TRIANGLES"
 	| "TRIANGLE_STRIP"
 	| "TRIANGLE_FAN";
+
+export interface Resizable {
+	setSize: ({ width, height }: { width: number; height: number }) => void;
+}

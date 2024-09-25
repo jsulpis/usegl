@@ -1,12 +1,13 @@
 import type { Uniforms as UniformsType } from "../types";
 import { useRenderPass, type RenderPassOptions } from "./useRenderPass";
 import { quadVertexPositions, quadVertexShaderSource } from "../helpers/quad";
+import { findAttributeName, findVaryingName } from "../utils/findName";
 
 export function useQuadRenderPass<Uniforms extends UniformsType>(
 	gl: WebGL2RenderingContext,
 	{ attributes = {}, fragment, vertex, ...renderPassOptions }: RenderPassOptions<Uniforms>
 ) {
-	const uvVaryingName = findName(fragment, "varying", "uv") || findName(fragment, "in", "uv");
+	const uvVaryingName = findVaryingName(fragment, "uv");
 
 	const vertexShader =
 		vertex ||
@@ -19,10 +20,7 @@ export function useQuadRenderPass<Uniforms extends UniformsType>(
 	);
 
 	if (!hasPositionAttribute) {
-		const positionAttributeName =
-			findName(vertex, "attribute", "position") ||
-			findName(vertex, "in", "position") ||
-			"aPosition";
+		const positionAttributeName = findAttributeName(vertex, "position") || "aPosition";
 
 		attributes[positionAttributeName] = {
 			size: 2,
@@ -36,14 +34,4 @@ export function useQuadRenderPass<Uniforms extends UniformsType>(
 		fragment,
 		vertex: vertexShader,
 	});
-}
-
-/**
- * Find the name of an attribute, uniform or varying in a shader source.
- */
-function findName(source: string, keyword: string, word: string) {
-	return source
-		?.split("\n")
-		.find((line) => new RegExp(`^${keyword}.*${word};`, "i").test(line.trim()))
-		?.match(/(\w+);$/)[1];
 }

@@ -5,8 +5,10 @@ export * from "./core/renderTarget";
 export * from "./core/shader";
 export * from "./core/texture";
 
+export * from "./hooks/useCompositor";
 export * from "./hooks/useEffectPass";
 export * from "./hooks/useQuadRenderPass";
+export * from "./hooks/useRenderPass";
 export * from "./hooks/useWebGLCanvas";
 export * from "./hooks/useWebGLContext";
 
