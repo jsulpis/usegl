@@ -26,12 +26,8 @@ export const useWebGLCanvas = <Uniforms extends UniformsType>(props: Props<Unifo
 	const primaryPass = useQuadRenderPass(gl, props);
 	const compositor = useCompositor(gl, primaryPass, postEffects);
 
-	const uniformsProxy = new Proxy(primaryPass.uniforms, {
-		set(target, uniform, value) {
-			target[uniform] = value;
-			requestRender();
-			return true;
-		},
+	compositor.allPasses.forEach((pass) => {
+		pass.onUpdated(requestRender);
 	});
 
 	function setSize({ width, height }: { width: number; height: number }) {
@@ -44,7 +40,7 @@ export const useWebGLCanvas = <Uniforms extends UniformsType>(props: Props<Unifo
 
 	if (timeUniformName && primaryPass.uniforms[timeUniformName] === undefined) {
 		loop(({ time }) => {
-			uniformsProxy[timeUniformName] = time / 500;
+			primaryPass.uniforms[timeUniformName] = time / 500;
 		});
 	}
 
@@ -76,5 +72,5 @@ export const useWebGLCanvas = <Uniforms extends UniformsType>(props: Props<Unifo
 		});
 	}
 
-	return { gl, render, setSize, dpr, uniforms: uniformsProxy };
+	return { gl, render, setSize, dpr, uniforms: primaryPass.uniforms };
 };

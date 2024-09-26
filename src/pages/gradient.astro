@@ -3,8 +3,27 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <script>
-	import { loop, onCanvasResize, useWebGLCanvas } from "../lib";
-	import { useRawWebGLCanvas } from "../lib/hooks/useRawWebGLCanvas";
+	import { createRenderTarget } from "../lib";
+	import { useQuadRenderPass } from "../lib";
+	import { useCompositor } from "../lib";
+	import { loop, useEffectPass, onCanvasResize, useWebGLCanvas, useWebGLContext } from "../lib";
+	import { useRenderPass } from "../lib/hooks/useRenderPass";
+
+	const redColorPass = useEffectPass({
+		fragment: /* glsl */ `
+			uniform sampler2D uTexture;
+			uniform float uStrength;
+			varying vec2 vUv;
+
+			void main() {
+				vec3 color = mix(texture(uTexture, vUv).rgb, texture(uTexture, vUv).rrr, uStrength);
+				gl_FragColor = vec4(color, 1.);
+			}
+		`,
+		uniforms: {
+			uStrength: 0.5,
+		},
+	});
 
 	// useWebGLCanvas({
 	// 	canvas: document.querySelector("canvas"),
@@ -16,12 +35,20 @@ import Layout from "../layouts/Layout.astro";
 	// 			gl_FragColor = vec4(vUv, sin(uTime) / 2. + .5, 1.);
 	// 		}
 	// 	`,
+	// 	uniforms: {
+	// 		uTime: 0,
+	// 	},
+	// 	postEffects: [redColorPass],
+	// });
+
+	// loop(({ time }) => {
+	// 	redColorPass.uniforms.uStrength = Math.sin(time / 500) / 2 + 0.5;
 	// });
 
 	const canvas = document.querySelector("canvas");
+	const { gl, setSize } = useWebGLContext(canvas);
 
-	const { setSize, render, uniforms } = useRawWebGLCanvas({
-		canvas,
+	const renderPass = useRenderPass(gl, {
 		fragment: /* glsl */ `
 			varying vec2 vUv;
 			uniform float uTime;
@@ -50,9 +77,11 @@ import Layout from "../layouts/Layout.astro";
 		},
 	});
 
+	const compositor = useCompositor(gl, renderPass, [redColorPass]);
+
 	loop(({ time }) => {
-		uniforms.uTime = time / 500;
-		render();
+		redColorPass.uniforms.uStrength = Math.sin(time / 500) / 2 + 0.5;
+		compositor.render();
 	});
 
 	onCanvasResize(canvas, ({ devicePixelSize }) => {

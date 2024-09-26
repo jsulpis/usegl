@@ -31,18 +31,15 @@ export interface RenderPass<U extends Uniforms = {}> extends Resizable {
 	uniforms: U;
 	vertex: string;
 	fragment: string;
+	onUpdated: (callback: UpdatedCallback<U>) => void;
+	onBeforeRender: (callback: RenderCallback<U>) => void;
+	onAfterRender: (callback: RenderCallback<U>) => void;
+	initialize: (gl: WebGL2RenderingContext) => void;
 }
 
-/**
- * An EffectPass can be created without the GL context, and must be initialized
- */
-export interface EffectPass<U extends Uniforms = {}> extends RenderPass<U> {
-	initialize: (gl: WebGL2RenderingContext, target: RenderTarget | null) => void;
-}
+export type CompositeEffect = RenderPass[];
 
-export type CompositeEffect = EffectPass[];
-
-export type PostEffect = EffectPass;
+export type PostEffect = RenderPass;
 
 export type DrawMode =
 	| "POINTS"
@@ -56,3 +53,10 @@ export type DrawMode =
 export interface Resizable {
 	setSize: ({ width, height }: { width: number; height: number }) => void;
 }
+
+export type RenderCallback<U extends Uniforms> = (args: Readonly<{ uniforms: U }>) => void;
+
+export type UpdatedCallback<U extends Uniforms> = (
+	uniforms: Readonly<U>,
+	oldUniforms: Readonly<U>
+) => void;

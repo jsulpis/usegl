@@ -12,7 +12,8 @@ export function useCompositor(
 	}
 
 	effects.forEach((effect, index) => {
-		effect.initialize(gl, index === effects.length - 1 ? null : undefined);
+		effect.initialize(gl);
+		effect.setTarget(index === effects.length - 1 ? null : createRenderTarget(gl));
 
 		const textureUniformName =
 			findUniformName(effect.fragment, "image") ||
@@ -39,5 +40,5 @@ export function useCompositor(
 		});
 	}
 
-	return { render, setSize };
+	return { render, setSize, allPasses };
 }

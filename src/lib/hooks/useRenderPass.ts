@@ -1,9 +1,11 @@
 import type {
 	Attribute,
 	DrawMode,
+	RenderCallback,
 	RenderPass,
 	RenderTarget,
 	Uniforms as UniformsType,
+	UpdatedCallback,
 } from "../types";
 import { setAttribute } from "../core/attribute";
 import { createProgram } from "../core/program";
@@ -33,34 +35,57 @@ export function useRenderPass<Uniforms extends UniformsType>(
 	type UniformName = Extract<keyof Uniforms, string>;
 
 	let _target = target;
-
-	const program = createProgram(gl, fragment, vertex);
-	gl.useProgram(program);
-
-	const vao = gl.createVertexArray();
-	gl.bindVertexArray(vao);
+	let _program: WebGLProgram;
+	let _vao: WebGLVertexArrayObject;
+	let _gl: WebGL2RenderingContext;
 
 	let vertexCount = 0;
-
-	Object.entries(attributes).forEach(([attributeName, attributeObj]) => {
-		const attr = setAttribute(gl, program, attributeName, attributeObj);
-		vertexCount = Math.max(vertexCount, attr.vertexCount);
-	});
-
 	const uniformsLocations = new Map<UniformName, WebGLUniformLocation>();
-	const uniformsCount = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
-	for (let i = 0; i < uniformsCount; i++) {
-		const uniformName = gl.getActiveUniform(program, i)?.name;
-		uniformsLocations.set(uniformName as UniformName, gl.getUniformLocation(program, uniformName));
+
+	if (gl) {
+		initialize(gl);
 	}
 
-	const liveUniforms = { ...uniforms };
+	function initialize(gl: WebGL2RenderingContext) {
+		_gl = gl;
+		_program = createProgram(_gl, fragment, vertex);
+		_gl.useProgram(_program);
+
+		_vao = _gl.createVertexArray();
+		_gl.bindVertexArray(_vao);
+
+		Object.entries(attributes).forEach(([attributeName, attributeObj]) => {
+			const attr = setAttribute(_gl, _program, attributeName, attributeObj);
+			vertexCount = Math.max(vertexCount, attr.vertexCount);
+		});
+
+		const uniformsCount = _gl.getProgramParameter(_program, _gl.ACTIVE_UNIFORMS);
+		for (let i = 0; i < uniformsCount; i++) {
+			const uniformName = _gl.getActiveUniform(_program, i)?.name;
+			uniformsLocations.set(
+				uniformName as UniformName,
+				_gl.getUniformLocation(_program, uniformName)
+			);
+		}
+	}
+
+	const uniformsProxy = new Proxy(uniforms, {
+		set(target, uniform, value) {
+			if (value !== target[uniform]) {
+				const oldTarget = getSnapshot(target);
+				target[uniform] = value;
+				const newTarget = getSnapshot(target);
+				onUpdatedCallbacks.forEach((callback) => callback(newTarget, oldTarget));
+			}
+			return true;
+		},
+	});
 
 	let textureUnitIndex = 0;
 	const textureUnits = new Map<UniformName, number>();
 
 	function setUniforms() {
-		Object.entries(liveUniforms).forEach(([uniformName, uniformValue]) => {
+		Object.entries(uniformsProxy).forEach(([uniformName, uniformValue]) => {
 			setUniform(
 				uniformName as UniformName,
 				(typeof uniformValue === "function"
@@ -74,26 +99,26 @@ export function useRenderPass<Uniforms extends UniformsType>(
 		const uniformLocation = uniformsLocations.get(name);
 		if (uniformLocation === -1) return -1;
 
-		if (typeof value === "number") return gl.uniform1f(uniformLocation, value);
+		if (typeof value === "number") return _gl.uniform1f(uniformLocation, value);
 
 		if (value instanceof WebGLTexture) {
 			if (!textureUnits.has(name)) {
 				textureUnits.set(name, textureUnitIndex++);
 			}
-			gl.activeTexture(gl.TEXTURE0 + textureUnits.get(name));
-			gl.bindTexture(gl.TEXTURE_2D, value);
+			_gl.activeTexture(_gl.TEXTURE0 + textureUnits.get(name));
+			_gl.bindTexture(_gl.TEXTURE_2D, value);
 
-			return gl.uniform1i(uniformLocation, textureUnits.get(name));
+			return _gl.uniform1i(uniformLocation, textureUnits.get(name));
 		}
 
 		if (Array.isArray(value)) {
 			switch (value.length) {
 				case 2:
-					return gl.uniform2fv(uniformLocation, value);
+					return _gl.uniform2fv(uniformLocation, value);
 				case 3:
-					return gl.uniform3fv(uniformLocation, value);
+					return _gl.uniform3fv(uniformLocation, value);
 				case 4:
-					return gl.uniform4fv(uniformLocation, value);
+					return _gl.uniform4fv(uniformLocation, value);
 			}
 		}
 	}
@@ -102,7 +127,7 @@ export function useRenderPass<Uniforms extends UniformsType>(
 
 	function setSize(size: { width: number; height: number }) {
 		if (resolutionUniformName && uniforms[resolutionUniformName] === undefined) {
-			liveUniforms[resolutionUniformName] = [size.width, size.height];
+			uniformsProxy[resolutionUniformName] = [size.width, size.height];
 		}
 		if (_target != null) {
 			_target.setSize(size.width, size.height);
@@ -114,31 +139,64 @@ export function useRenderPass<Uniforms extends UniformsType>(
 	}
 
 	const hasIndices = attributes.index != undefined;
-	const indexType = attributes.index?.data.length < 65536 ? gl.UNSIGNED_SHORT : gl.UNSIGNED_INT;
+	const indexType =
+		attributes.index?.data.length < 65536
+			? WebGL2RenderingContext.UNSIGNED_SHORT
+			: WebGL2RenderingContext.UNSIGNED_INT;
 	const finalDrawMode = drawMode || (vertex.includes("gl_PointSize") ? "POINTS" : "TRIANGLES");
 
+	const beforeRenderCallbacks: RenderCallback<Uniforms>[] = [];
+	const afterRenderCallbacks: RenderCallback<Uniforms>[] = [];
+	const onUpdatedCallbacks: UpdatedCallback<Uniforms>[] = [];
+
+	function onUpdated(callback: UpdatedCallback<Uniforms>) {
+		onUpdatedCallbacks.push(callback);
+	}
+
+	function onBeforeRender(callback: RenderCallback<Uniforms>) {
+		beforeRenderCallbacks.push(callback);
+	}
+	function onAfterRender(callback: RenderCallback<Uniforms>) {
+		afterRenderCallbacks.push(callback);
+	}
+
 	function render() {
-		setRenderTarget(gl, _target);
-		gl.useProgram(program);
-		gl.bindVertexArray(vao);
+		if (_gl == undefined) {
+			throw new Error("The render pass must be initialized before calling the render function");
+		}
+		beforeRenderCallbacks.forEach((callback) => callback({ uniforms: getSnapshot(uniformsProxy) }));
+
+		setRenderTarget(_gl, _target);
+		_gl.useProgram(_program);
+		_gl.bindVertexArray(_vao);
 		setUniforms();
 
 		if (hasIndices) {
-			gl.drawElements(gl[finalDrawMode], vertexCount, indexType, 0);
+			_gl.drawElements(_gl[finalDrawMode], vertexCount, indexType, 0);
 		} else {
-			gl.drawArrays(gl[finalDrawMode], 0, vertexCount);
+			_gl.drawArrays(_gl[finalDrawMode], 0, vertexCount);
 		}
+
+		afterRenderCallbacks.forEach((callback) => callback({ uniforms: getSnapshot(uniformsProxy) }));
 	}
 
 	return {
 		render,
+		initialize,
+		setTarget,
 		get target() {
 			return _target;
 		},
-		setTarget,
 		setSize,
-		uniforms: liveUniforms,
+		uniforms: uniformsProxy,
 		vertex,
 		fragment,
+		onUpdated,
+		onBeforeRender,
+		onAfterRender,
 	};
+}
+
+function getSnapshot<Obj extends Record<string, unknown>>(object: Obj): Obj {
+	return Object.freeze({ ...object });
 }
