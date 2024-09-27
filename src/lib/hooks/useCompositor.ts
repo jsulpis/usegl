@@ -1,6 +1,6 @@
 import { createRenderTarget } from "../core/renderTarget";
 import type { PostEffect, RenderPass } from "../types";
-import { findUniformName } from "../utils/findName";
+import { findUniformName } from "../internal/findName";
 
 export function useCompositor(
 	gl: WebGL2RenderingContext,
