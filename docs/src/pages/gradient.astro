@@ -3,11 +3,15 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <script>
-	import { createRenderTarget } from "../lib";
-	import { useQuadRenderPass } from "../lib";
-	import { useCompositor } from "../lib";
-	import { loop, useEffectPass, onCanvasResize, useWebGLCanvas, useWebGLContext } from "../lib";
-	import { useRenderPass } from "../lib/hooks/useRenderPass";
+	import {
+		loop,
+		useEffectPass,
+		useRenderPass,
+		onCanvasResize,
+		useWebGLCanvas,
+		useWebGLContext,
+		useCompositor,
+	} from "usegl";
 
 	const redColorPass = useEffectPass({
 		fragment: /* glsl */ `
