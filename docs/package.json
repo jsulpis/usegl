@@ -1,6 +1,6 @@
 {
-	"name": "simple-webgl-library",
-	"version": "0.0.1",
+	"name": "usegl-docs",
+	"private": true,
 	"type": "module",
 	"scripts": {
 		"astro": "astro",
@@ -11,6 +11,7 @@
 	},
 	"dependencies": {
 		"astro": "^4.15.2",
-		"typescript": "^5.5.4"
+		"typescript": "^5.5.4",
+		"usegl": "workspace:usegl"
 	}
 }
