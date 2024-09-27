@@ -1,7 +1,7 @@
 import type { Uniforms as UniformsType } from "../types";
 import { useRenderPass, type RenderPassOptions } from "./useRenderPass";
 import { quadVertexPositions, quadVertexShaderSource } from "../helpers/quad";
-import { findAttributeName, findVaryingName } from "../utils/findName";
+import { findAttributeName, findVaryingName } from "../internal/findName";
 
 export function useQuadRenderPass<Uniforms extends UniformsType>(
 	gl: WebGL2RenderingContext,

@@ -4,7 +4,7 @@ import type { Attribute, DrawMode, PostEffect, Uniforms as UniformsType } from "
 import { useWebGLContext } from "./useWebGLContext";
 import { useQuadRenderPass } from "./useQuadRenderPass";
 import { useCompositor } from "./useCompositor";
-import { findUniformName } from "../utils/findName";
+import { findUniformName } from "../internal/findName";
 
 interface Props<U extends UniformsType> {
 	canvas: HTMLCanvasElement | OffscreenCanvas;
