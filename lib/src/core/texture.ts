@@ -1,6 +1,6 @@
 export function createTexture(
 	gl: WebGL2RenderingContext,
-	{ data = null, width, height }: { data: ArrayBufferView; width: number; height: number }
+	{ data = null, width, height }: { data: ArrayBufferView | null; width: number; height: number },
 ) {
 	const texture = gl.createTexture();
 

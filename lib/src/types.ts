@@ -3,7 +3,7 @@ export type VectorUniform =
 	| [number, number, number]
 	| [number, number, number, number];
 export type UniformValue = number | VectorUniform;
-export type Uniforms = Record<string, UniformValue | (() => UniformValue)> | {};
+export type Uniforms = Record<string, UniformValue | (() => UniformValue)>;
 
 type TypedArray = ArrayBufferView & { length: number };
 
@@ -17,14 +17,14 @@ export interface Attribute {
 }
 
 export interface RenderTarget {
-	framebuffer: WebGLFramebuffer;
-	texture?: WebGLTexture;
+	framebuffer: WebGLFramebuffer | null;
+	texture: WebGLTexture | null;
 	width: number;
 	height: number;
 	setSize: (width: number, height: number) => void;
 }
 
-export interface RenderPass<U extends Uniforms = {}> extends Resizable {
+export interface RenderPass<U extends Uniforms = Record<string, never>> extends Resizable {
 	render: () => void;
 	target: RenderTarget | null;
 	setTarget: (target: RenderTarget | null) => void;
@@ -58,5 +58,5 @@ export type RenderCallback<U extends Uniforms> = (args: Readonly<{ uniforms: U }
 
 export type UpdatedCallback<U extends Uniforms> = (
 	uniforms: Readonly<U>,
-	oldUniforms: Readonly<U>
+	oldUniforms: Readonly<U>,
 ) => void;

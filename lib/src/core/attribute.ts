@@ -5,7 +5,7 @@ export function setAttribute(
 	gl: WebGL2RenderingContext,
 	program: WebGLProgram,
 	name: string,
-	attribute: Attribute
+	attribute: Attribute,
 ) {
 	const bufferData = getBufferData(attribute.data, name === "index");
 	const location = gl.getAttribLocation(program, name);
@@ -27,7 +27,7 @@ export function setAttribute(
 		attribute.type || getGLType(gl, bufferData),
 		attribute.normalize || false,
 		attribute.stride || 0,
-		attribute.offset || 0
+		attribute.offset || 0,
 	);
 	gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
@@ -43,7 +43,7 @@ function getBufferData(data: Attribute["data"], isIndex: boolean) {
 		return data;
 	}
 	if (isIndex) {
-		return data.length < 65536 ? new Uint16Array(data) : new Uint32Array(data);
+		return data.length < 65_536 ? new Uint16Array(data) : new Uint32Array(data);
 	}
 	return new Float32Array(data);
 }
@@ -56,4 +56,5 @@ function getGLType(gl: WebGL2RenderingContext, data: ArrayBufferView) {
 	if (data instanceof Int16Array) return gl.SHORT;
 	if (data instanceof Uint32Array) return gl.UNSIGNED_INT;
 	if (data instanceof Int32Array) return gl.INT;
+	return gl.FLOAT;
 }
