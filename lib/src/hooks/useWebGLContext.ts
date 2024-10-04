@@ -1,8 +1,8 @@
 export function useWebGLContext(
 	canvas: HTMLCanvasElement | OffscreenCanvas,
-	options?: WebGLContextAttributes
+	options?: WebGLContextAttributes,
 ) {
-	const gl = canvas.getContext("webgl2", options);
+	const gl = canvas.getContext("webgl2", options) as WebGL2RenderingContext;
 	if (!gl) {
 		throw new Error("No WebGL2 context available.");
 	}

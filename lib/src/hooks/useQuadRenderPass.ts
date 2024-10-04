@@ -4,8 +4,13 @@ import { quadVertexPositions, quadVertexShaderSource } from "../helpers/quad";
 import { findAttributeName, findVaryingName } from "../internal/findName";
 
 export function useQuadRenderPass<Uniforms extends UniformsType>(
-	gl: WebGL2RenderingContext,
-	{ attributes = {}, fragment, vertex, ...renderPassOptions }: RenderPassOptions<Uniforms>
+	gl: WebGL2RenderingContext | undefined,
+	{
+		attributes = {},
+		fragment,
+		vertex,
+		...renderPassOptions
+	}: Omit<RenderPassOptions<Uniforms>, "vertex"> & { vertex?: string },
 ) {
 	const uvVaryingName = findVaryingName(fragment, "uv");
 
@@ -16,7 +21,7 @@ export function useQuadRenderPass<Uniforms extends UniformsType>(
 			: quadVertexShaderSource);
 
 	const hasPositionAttribute = Object.keys(attributes).some((attributeName) =>
-		attributeName.toLocaleLowerCase().endsWith("position")
+		attributeName.toLocaleLowerCase().endsWith("position"),
 	);
 
 	if (!hasPositionAttribute) {

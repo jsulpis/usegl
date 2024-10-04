@@ -1,5 +1,10 @@
 export function createShader(gl: WebGL2RenderingContext, source: string, type: GLenum) {
 	const shader = gl.createShader(type);
+	if (shader == null) {
+		console.error("could not create shader");
+		gl.deleteShader(shader);
+		return null;
+	}
 	gl.shaderSource(shader, convertToGLSL300(source));
 	gl.compileShader(shader);
 
