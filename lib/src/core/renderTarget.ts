@@ -3,7 +3,7 @@ import { createTexture } from "./texture";
 
 export function createRenderTarget(
 	gl: WebGL2RenderingContext,
-	size?: { width: number; height: number }
+	size?: { width: number; height: number },
 ): RenderTarget {
 	let _width = size?.width ?? gl.canvas.width;
 	let _height = size?.height ?? gl.canvas.height;

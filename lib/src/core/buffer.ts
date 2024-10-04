@@ -1,7 +1,7 @@
 export function createAndBindBuffer(
 	gl: WebGLRenderingContext,
 	target: GLenum,
-	data: AllowSharedBufferSource | number[]
+	data: AllowSharedBufferSource | number[],
 ) {
 	const buffer = gl.createBuffer();
 	const bufferData = isSharedBufferSource(data) ? data : new Float32Array(data);

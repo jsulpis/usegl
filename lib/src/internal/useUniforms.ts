@@ -17,45 +17,42 @@ export function useUniforms<Uniforms extends UniformsType>(uniforms: Uniforms) {
 
 		const uniformsCount = _gl.getProgramParameter(_program, _gl.ACTIVE_UNIFORMS);
 		for (let i = 0; i < uniformsCount; i++) {
-			const uniformName = _gl.getActiveUniform(_program, i)?.name;
-			uniformsLocations.set(
-				uniformName as UniformName,
-				_gl.getUniformLocation(_program, uniformName)
-			);
+			const uniformName = _gl.getActiveUniform(_program, i)?.name as UniformName;
+			uniformsLocations.set(uniformName, _gl.getUniformLocation(_program, uniformName) ?? -1);
 		}
 	}
 
 	const uniformsProxy = new Proxy(
 		{ ...uniforms },
 		{
-			set(target, uniform, value) {
+			set(target, uniform: string, value) {
 				if (value !== target[uniform]) {
 					const oldTarget = getSnapshot(target);
-					target[uniform] = value;
+					target[uniform as keyof Uniforms] = value;
 					const newTarget = getSnapshot(target);
-					onUpdatedCallbacks.forEach((callback) => callback(newTarget, oldTarget));
+					for (const callback of onUpdatedCallbacks) callback(newTarget, oldTarget);
 				}
 				return true;
 			},
-		}
+		},
 	);
 
 	let textureUnitIndex = 0;
 	const textureUnits = new Map<UniformName, number>();
 
 	function setUniforms() {
-		Object.entries(uniformsProxy).forEach(([uniformName, uniformValue]) => {
+		for (const [uniformName, uniformValue] of Object.entries(uniformsProxy)) {
 			setUniform(
 				uniformName as UniformName,
 				(typeof uniformValue === "function"
 					? uniformValue()
-					: uniformValue) as Uniforms[UniformName]
+					: uniformValue) as Uniforms[UniformName],
 			);
-		});
+		}
 	}
 
 	function setUniform<U extends UniformName>(name: U, value: Uniforms[U]) {
-		const uniformLocation = uniformsLocations.get(name);
+		const uniformLocation = uniformsLocations.get(name) || -1;
 		if (uniformLocation === -1) return -1;
 
 		if (typeof value === "number") return _gl.uniform1f(uniformLocation, value);
@@ -64,20 +61,23 @@ export function useUniforms<Uniforms extends UniformsType>(uniforms: Uniforms) {
 			if (!textureUnits.has(name)) {
 				textureUnits.set(name, textureUnitIndex++);
 			}
-			_gl.activeTexture(_gl.TEXTURE0 + textureUnits.get(name));
+			_gl.activeTexture(_gl.TEXTURE0 + textureUnits.get(name)!);
 			_gl.bindTexture(_gl.TEXTURE_2D, value);
 
-			return _gl.uniform1i(uniformLocation, textureUnits.get(name));
+			return _gl.uniform1i(uniformLocation, textureUnits.get(name)!);
 		}
 
 		if (Array.isArray(value)) {
 			switch (value.length) {
-				case 2:
+				case 2: {
 					return _gl.uniform2fv(uniformLocation, value);
-				case 3:
+				}
+				case 3: {
 					return _gl.uniform3fv(uniformLocation, value);
-				case 4:
+				}
+				case 4: {
 					return _gl.uniform4fv(uniformLocation, value);
+				}
 			}
 		}
 	}
