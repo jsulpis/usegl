@@ -4,9 +4,9 @@ import type { Attribute } from "../types";
 const UNSIGNED_INT = WebGL2RenderingContext.UNSIGNED_INT;
 const UNSIGNED_SHORT = WebGL2RenderingContext.UNSIGNED_SHORT;
 
-export function useAttributes(attributes?: Record<string, Attribute>) {
+export function useAttributes(attributes: Record<string, Attribute>) {
 	let _gl: WebGL2RenderingContext;
-	let _vao: WebGLVertexArrayObject;
+	let _vao: WebGLVertexArrayObject | null;
 
 	let vertexCount = 0;
 
@@ -15,10 +15,10 @@ export function useAttributes(attributes?: Record<string, Attribute>) {
 		_vao = _gl.createVertexArray();
 		_gl.bindVertexArray(_vao);
 
-		Object.entries(attributes).forEach(([attributeName, attributeObj]) => {
+		for (const [attributeName, attributeObj] of Object.entries(attributes)) {
 			const attr = setAttribute(_gl, program, attributeName, attributeObj);
 			vertexCount = Math.max(vertexCount, attr.vertexCount);
-		});
+		}
 	}
 
 	const hasIndices = attributes.index != undefined;

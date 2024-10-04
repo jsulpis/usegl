@@ -12,7 +12,7 @@ export function onCanvasResize(
 		 * canvas size in device pixels
 		 */
 		devicePixelSize: { width: number; height: number };
-	}) => void
+	}) => void,
 ) {
 	let size: ResizeObserverSize;
 	let devicePixelSize: ResizeObserverSize;

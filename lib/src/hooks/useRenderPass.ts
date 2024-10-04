@@ -13,17 +13,17 @@ import { useUniforms } from "../internal/useUniforms";
 import { useAttributes } from "../internal/useAttributes";
 import { useLifeCycleCallback } from "../internal/useLifeCycleCallback";
 
-export type RenderPassOptions<Uniforms extends UniformsType = {}> = {
+export type RenderPassOptions<Uniforms extends UniformsType = Record<string, never>> = {
 	target?: RenderTarget | null;
 	fragment: string;
-	vertex?: string;
+	vertex: string;
 	attributes?: Record<string, Attribute>;
 	uniforms?: Uniforms;
 	drawMode?: DrawMode;
 };
 
 export function useRenderPass<Uniforms extends UniformsType>(
-	gl: WebGL2RenderingContext,
+	gl: WebGL2RenderingContext | undefined,
 	{
 		target = null,
 		fragment,
@@ -31,7 +31,7 @@ export function useRenderPass<Uniforms extends UniformsType>(
 		attributes = {},
 		uniforms: userUniforms = {} as Uniforms,
 		drawMode: userDrawMode,
-	}: RenderPassOptions<Uniforms>
+	}: RenderPassOptions<Uniforms>,
 ): RenderPass<Uniforms> {
 	/**
 	 * INIT
@@ -58,7 +58,11 @@ export function useRenderPass<Uniforms extends UniformsType>(
 
 	function initialize(gl: WebGL2RenderingContext) {
 		_gl = gl;
-		_program = createProgram(_gl, fragment, vertex);
+		const program = createProgram(_gl, fragment, vertex);
+		if (program == null) {
+			throw new Error("could not initialize the render pass");
+		}
+		_program = program;
 		_gl.useProgram(_program);
 
 		initializeUniforms(_gl, _program);
@@ -77,7 +81,7 @@ export function useRenderPass<Uniforms extends UniformsType>(
 
 	function setSize(size: { width: number; height: number }) {
 		if (resolutionUniformName && userUniforms[resolutionUniformName] === undefined) {
-			uniformsProxy[resolutionUniformName] = [size.width, size.height];
+			(uniformsProxy as Record<string, unknown>)[resolutionUniformName] = [size.width, size.height];
 		}
 		if (_target != null) {
 			_target.setSize(size.width, size.height);
@@ -101,7 +105,9 @@ export function useRenderPass<Uniforms extends UniformsType>(
 		if (_gl == undefined) {
 			throw new Error("The render pass must be initialized before calling the render function");
 		}
-		beforeRenderCallbacks.forEach((callback) => callback({ uniforms: getUniformsSnapshot() }));
+		for (const callback of beforeRenderCallbacks) {
+			callback({ uniforms: getUniformsSnapshot() });
+		}
 
 		setRenderTarget(_gl, _target);
 		_gl.useProgram(_program);
@@ -115,7 +121,9 @@ export function useRenderPass<Uniforms extends UniformsType>(
 			_gl.drawArrays(_gl[drawMode], 0, getVertexCount());
 		}
 
-		afterRenderCallbacks.forEach((callback) => callback({ uniforms: getUniformsSnapshot() }));
+		for (const callback of afterRenderCallbacks) {
+			callback({ uniforms: getUniformsSnapshot() });
+		}
 	}
 
 	return {
