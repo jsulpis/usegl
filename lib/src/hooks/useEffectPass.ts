@@ -1,9 +1,6 @@
-import type { RenderPass, Uniforms as UniformsType } from "../types";
-import { useQuadRenderPass } from "./useQuadRenderPass";
-import type { RenderPassOptions } from "./useRenderPass";
+import type { RenderPass, Uniforms } from "../types";
+import { QuadPassOptions, useQuadRenderPass } from "./useQuadRenderPass";
 
-export function useEffectPass<Uniforms extends UniformsType>(
-	options: RenderPassOptions<Uniforms>,
-): RenderPass<Uniforms> {
+export function useEffectPass<U extends Uniforms>(options: QuadPassOptions<U>): RenderPass<U> {
 	return useQuadRenderPass(undefined, options);
 }

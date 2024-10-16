@@ -21,7 +21,6 @@ export function useCompositor<U extends Uniforms>(
 			findUniformName(effect.fragment, "pass");
 
 		if (textureUniformName && effect.uniforms[textureUniformName] === undefined) {
-			/* @ts-expect-error the texture uniform is not declared in the uniforms object of the effect pass */
 			effect.uniforms[textureUniformName] = () =>
 				(index > 0 ? effects[index - 1] : primaryPass).target?.texture;
 		}

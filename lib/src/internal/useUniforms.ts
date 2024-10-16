@@ -1,13 +1,13 @@
-import type { Uniforms as UniformsType, UpdatedCallback } from "../types";
+import type { Uniforms, UpdatedCallback } from "../types";
 import { useLifeCycleCallback } from "./useLifeCycleCallback";
 
-export function useUniforms<Uniforms extends UniformsType>(uniforms: Uniforms) {
-	type UniformName = Extract<keyof Uniforms, string>;
+export function useUniforms<U extends Uniforms>(uniforms: U) {
+	type UniformName = Extract<keyof U, string>;
 
 	let _gl: WebGL2RenderingContext;
 	let _program: WebGLProgram;
 
-	const [onUpdatedCallbacks, onUpdated] = useLifeCycleCallback<UpdatedCallback<Uniforms>>();
+	const [onUpdatedCallbacks, onUpdated] = useLifeCycleCallback<UpdatedCallback<U>>();
 
 	const uniformsLocations = new Map<UniformName, WebGLUniformLocation>();
 
@@ -28,7 +28,7 @@ export function useUniforms<Uniforms extends UniformsType>(uniforms: Uniforms) {
 			set(target, uniform: string, value) {
 				if (value !== target[uniform]) {
 					const oldTarget = getSnapshot(target);
-					target[uniform as keyof Uniforms] = value;
+					target[uniform as keyof U] = value;
 					const newTarget = getSnapshot(target);
 					for (const callback of onUpdatedCallbacks) callback(newTarget, oldTarget);
 				}
@@ -44,14 +44,12 @@ export function useUniforms<Uniforms extends UniformsType>(uniforms: Uniforms) {
 		for (const [uniformName, uniformValue] of Object.entries(uniformsProxy)) {
 			setUniform(
 				uniformName as UniformName,
-				(typeof uniformValue === "function"
-					? uniformValue()
-					: uniformValue) as Uniforms[UniformName],
+				(typeof uniformValue === "function" ? uniformValue() : uniformValue) as U[UniformName],
 			);
 		}
 	}
 
-	function setUniform<U extends UniformName>(name: U, value: Uniforms[U]) {
+	function setUniform<Uname extends UniformName>(name: Uname, value: Uniforms[Uname]) {
 		const uniformLocation = uniformsLocations.get(name) || -1;
 		if (uniformLocation === -1) return -1;
 

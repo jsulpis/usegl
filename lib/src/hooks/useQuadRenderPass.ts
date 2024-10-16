@@ -1,16 +1,16 @@
-import type { Uniforms as UniformsType } from "../types";
+import type { Uniforms } from "../types";
 import { useRenderPass, type RenderPassOptions } from "./useRenderPass";
 import { quadVertexPositions, quadVertexShaderSource } from "../helpers/quad";
 import { findAttributeName, findVaryingName } from "../internal/findName";
 
-export function useQuadRenderPass<Uniforms extends UniformsType>(
+export type QuadPassOptions<U extends Uniforms = Record<string, never>> = Omit<
+	RenderPassOptions<U>,
+	"vertex"
+> & { vertex?: string };
+
+export function useQuadRenderPass<U extends Uniforms>(
 	gl: WebGL2RenderingContext | undefined,
-	{
-		attributes = {},
-		fragment,
-		vertex,
-		...renderPassOptions
-	}: Omit<RenderPassOptions<Uniforms>, "vertex"> & { vertex?: string },
+	{ attributes = {}, fragment, vertex, ...renderPassOptions }: QuadPassOptions<U>,
 ) {
 	const uvVaryingName = findVaryingName(fragment, "uv");
 

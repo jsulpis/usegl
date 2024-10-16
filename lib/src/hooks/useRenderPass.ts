@@ -4,7 +4,7 @@ import type {
 	RenderCallback,
 	RenderPass,
 	RenderTarget,
-	Uniforms as UniformsType,
+	Uniforms,
 } from "../types";
 import { createProgram } from "../core/program";
 import { setRenderTarget } from "../core/renderTarget";
@@ -13,26 +13,26 @@ import { useUniforms } from "../internal/useUniforms";
 import { useAttributes } from "../internal/useAttributes";
 import { useLifeCycleCallback } from "../internal/useLifeCycleCallback";
 
-export type RenderPassOptions<Uniforms extends UniformsType = Record<string, never>> = {
+export type RenderPassOptions<U extends Uniforms = Record<string, never>> = {
 	target?: RenderTarget | null;
 	fragment: string;
 	vertex: string;
 	attributes?: Record<string, Attribute>;
-	uniforms?: Uniforms;
+	uniforms?: U;
 	drawMode?: DrawMode;
 };
 
-export function useRenderPass<Uniforms extends UniformsType>(
+export function useRenderPass<U extends Uniforms>(
 	gl: WebGL2RenderingContext | undefined,
 	{
 		target = null,
 		fragment,
 		vertex,
 		attributes = {},
-		uniforms: userUniforms = {} as Uniforms,
+		uniforms: userUniforms = {} as U,
 		drawMode: userDrawMode,
-	}: RenderPassOptions<Uniforms>,
-): RenderPass<Uniforms> {
+	}: RenderPassOptions<U>,
+): RenderPass<U> {
 	/**
 	 * INIT
 	 */
@@ -98,8 +98,8 @@ export function useRenderPass<Uniforms extends UniformsType>(
 
 	const drawMode = userDrawMode || (vertex.includes("gl_PointSize") ? "POINTS" : "TRIANGLES");
 
-	const [beforeRenderCallbacks, onBeforeRender] = useLifeCycleCallback<RenderCallback<Uniforms>>();
-	const [afterRenderCallbacks, onAfterRender] = useLifeCycleCallback<RenderCallback<Uniforms>>();
+	const [beforeRenderCallbacks, onBeforeRender] = useLifeCycleCallback<RenderCallback<U>>();
+	const [afterRenderCallbacks, onAfterRender] = useLifeCycleCallback<RenderCallback<U>>();
 
 	function render() {
 		if (_gl == undefined) {

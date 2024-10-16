@@ -2,7 +2,7 @@ export type VectorUniform =
 	| [number, number]
 	| [number, number, number]
 	| [number, number, number, number];
-export type UniformValue = number | VectorUniform;
+export type UniformValue = number | VectorUniform | WebGLTexture;
 export type Uniforms = Record<string, UniformValue | (() => UniformValue)>;
 
 type TypedArray = ArrayBufferView & { length: number };
@@ -37,9 +37,9 @@ export interface RenderPass<U extends Uniforms = Record<string, never>> extends 
 	initialize: (gl: WebGL2RenderingContext) => void;
 }
 
-export type CompositeEffect = RenderPass[];
+export type CompositeEffect = RenderPass<any>[];
 
-export type PostEffect = RenderPass;
+export type PostEffect = RenderPass<any>;
 
 export type DrawMode =
 	| "POINTS"
