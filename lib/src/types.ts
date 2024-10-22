@@ -1,4 +1,4 @@
-import { TextureData } from "./core/texture";
+import type { TextureData } from "./core/texture";
 
 export type VectorUniform =
 	| [number, number]

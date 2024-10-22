@@ -1,4 +1,4 @@
-import { TextureUniform } from "../types";
+import type { TextureUniform } from "../types";
 
 export type TextureData = ArrayBufferView | null;
 
