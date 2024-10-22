@@ -1,5 +1,8 @@
-import type { Uniforms, UpdatedCallback } from "../types";
+import { createTexture } from "../core/texture";
+import type { Uniforms, UniformValue, UpdatedCallback } from "../types";
 import { useLifeCycleCallback } from "./useLifeCycleCallback";
+
+let textureUnitIndex = 0;
 
 export function useUniforms<U extends Uniforms>(uniforms: U) {
 	type UniformName = Extract<keyof U, string>;
@@ -37,8 +40,7 @@ export function useUniforms<U extends Uniforms>(uniforms: U) {
 		},
 	);
 
-	let textureUnitIndex = 0;
-	const textureUnits = new Map<UniformName, number>();
+	const textureUnits = new Map<UniformName, { index: number; texture?: WebGLTexture | null }>();
 
 	function setUniforms() {
 		for (const [uniformName, uniformValue] of Object.entries(uniformsProxy)) {
@@ -49,7 +51,7 @@ export function useUniforms<U extends Uniforms>(uniforms: U) {
 		}
 	}
 
-	function setUniform<Uname extends UniformName>(name: Uname, value: Uniforms[Uname]) {
+	function setUniform<Uname extends UniformName>(name: Uname, value: U[Uname] & UniformValue) {
 		const uniformLocation = uniformsLocations.get(name) || -1;
 		if (uniformLocation === -1) return -1;
 
@@ -57,12 +59,13 @@ export function useUniforms<U extends Uniforms>(uniforms: U) {
 
 		if (value instanceof WebGLTexture) {
 			if (!textureUnits.has(name)) {
-				textureUnits.set(name, textureUnitIndex++);
+				textureUnits.set(name, { index: textureUnitIndex++ });
 			}
-			_gl.activeTexture(_gl.TEXTURE0 + textureUnits.get(name)!);
+			const { index } = textureUnits.get(name)!;
+			_gl.activeTexture(_gl.TEXTURE0 + index);
 			_gl.bindTexture(_gl.TEXTURE_2D, value);
 
-			return _gl.uniform1i(uniformLocation, textureUnits.get(name)!);
+			return _gl.uniform1i(uniformLocation, index);
 		}
 
 		if (Array.isArray(value)) {
@@ -77,6 +80,18 @@ export function useUniforms<U extends Uniforms>(uniforms: U) {
 					return _gl.uniform4fv(uniformLocation, value);
 				}
 			}
+		}
+
+		if (value.src) {
+			if (!textureUnits.has(name)) {
+				const texture = createTexture(_gl, { src: value.src });
+				textureUnits.set(name, { index: textureUnitIndex++, texture });
+			}
+			const { index, texture } = textureUnits.get(name)!;
+			_gl.activeTexture(_gl.TEXTURE0 + index);
+			_gl.bindTexture(_gl.TEXTURE_2D, texture!);
+
+			return _gl.uniform1i(uniformLocation, index);
 		}
 	}
 
