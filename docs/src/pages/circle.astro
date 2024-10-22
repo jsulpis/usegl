@@ -6,7 +6,7 @@ import Layout from "../layouts/Layout.astro";
 	import { useWebGLCanvas } from "usegl";
 
 	useWebGLCanvas({
-		canvas: document.querySelector("canvas"),
+		canvas: "#glCanvas",
 		fragment: /* glsl */ `
 			varying vec2 uv;
 			uniform vec2 resolution;
@@ -23,7 +23,7 @@ import Layout from "../layouts/Layout.astro";
 </script>
 
 <Layout title="Circle">
-	<canvas></canvas>
+	<canvas id="glCanvas"></canvas>
 </Layout>
 
 <style>

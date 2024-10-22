@@ -5,12 +5,10 @@ import Layout from "../layouts/Layout.astro";
 <script>
 	import { useWebGLCanvas, loadTexture } from "usegl";
 
-	const canvas = document.querySelector("canvas");
-
 	const texture = await loadTexture("/images/lion.jpg");
 
 	useWebGLCanvas({
-		canvas,
+		canvas: "#glCanvas",
 		fragment: /* glsl */ `
 				in vec2 vUv;
 				uniform sampler2D uTexture;
@@ -48,7 +46,7 @@ import Layout from "../layouts/Layout.astro";
 </script>
 
 <Layout title="Texture">
-	<canvas></canvas>
+	<canvas id="glCanvas"></canvas>
 </Layout>
 
 <style>

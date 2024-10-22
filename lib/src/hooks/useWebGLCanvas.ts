@@ -1,13 +1,13 @@
 import { onCanvasResize } from "../helpers/resize";
 import { loop } from "../helpers/loop";
-import type { Attribute, DrawMode, PostEffect, Uniforms  } from "../types";
+import type { Attribute, DrawMode, PostEffect, Uniforms } from "../types";
 import { useWebGLContext } from "./useWebGLContext";
 import { useQuadRenderPass } from "./useQuadRenderPass";
 import { useCompositor } from "./useCompositor";
 import { findUniformName } from "../internal/findName";
 
 interface Props<U extends Uniforms> {
-	canvas: HTMLCanvasElement | OffscreenCanvas;
+	canvas: HTMLCanvasElement | OffscreenCanvas | string;
 	fragment: string;
 	vertex?: string;
 	uniforms?: U;
@@ -19,9 +19,15 @@ interface Props<U extends Uniforms> {
 }
 
 export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
-	const { canvas, fragment, vertex, dpr = window.devicePixelRatio, postEffects = [] } = props;
+	const {
+		canvas: canvasProp,
+		fragment,
+		vertex,
+		dpr = window.devicePixelRatio,
+		postEffects = [],
+	} = props;
 
-	const { gl, setSize: setCanvasSize } = useWebGLContext(canvas);
+	const { gl, canvas, setSize: setCanvasSize } = useWebGLContext(canvasProp);
 
 	const primaryPass = useQuadRenderPass(gl, props);
 	const compositor = useCompositor(gl, primaryPass, postEffects);
@@ -72,5 +78,5 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
 		});
 	}
 
-	return { gl, render, setSize, dpr, uniforms: primaryPass.uniforms };
+	return { gl, render, canvas, setSize, dpr, uniforms: primaryPass.uniforms };
 };
