@@ -21,16 +21,19 @@
 	],
 	"scripts": {
 		"build": "unbuild",
+		"dev": "astro dev",
 		"format": "prettier src --check",
 		"format:fix": "prettier src --write",
 		"lint": "eslint src",
 		"lint:fix": "eslint src --fix",
 		"prepack": "pnpm build",
 		"release": "changelogen --release --clean",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit && astro check"
 	},
 	"devDependencies": {
+		"@astrojs/check": "0.9.4",
 		"@types/node": "22.1.0",
+		"astro": "4.16.7",
 		"changelogen": "0.5.5",
 		"eslint": "9.8.0",
 		"eslint-config-unjs": "0.3.2",

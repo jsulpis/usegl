@@ -5,7 +5,7 @@ import Layout from "../layouts/Layout.astro";
 <script>
 	import { loop, onPointerEvents, useWebGLCanvas } from "usegl";
 	import { fragment, vertex } from "../shaders/blob";
-	import { incrementRenderCount } from "../components/RenderCount.astro";
+	import { incrementRenderCount } from "../components/renderCount";
 
 	const canvas = document.querySelector("canvas");
 

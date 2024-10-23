@@ -5,5 +5,6 @@ export default unjs({
 		"unicorn/filename-case": "off",
 		"unicorn/no-null": "off",
 		"@typescript-eslint/consistent-type-imports": "error",
+		"@typescript-eslint/triple-slash-reference": "off",
 	},
 });
