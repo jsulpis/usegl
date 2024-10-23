@@ -17,6 +17,7 @@ import Layout from "../layouts/Layout.astro";
 		blurFragmentShaderSource,
 		combineFragmentShaderSource,
 	} from "../shaders/bloom";
+	import { incrementRenderCount } from "../components/RenderCount.astro";
 
 	const canvas = document.querySelector("canvas");
 
@@ -89,6 +90,8 @@ import Layout from "../layouts/Layout.astro";
 		compositor.setSize(devicePixelSize);
 		compositor.render();
 	});
+
+	particlesPass.onAfterRender(incrementRenderCount);
 </script>
 
 <Layout title="Bloom">
@@ -97,7 +100,6 @@ import Layout from "../layouts/Layout.astro";
 
 <style>
 	canvas {
-		aspect-ratio: 3/2;
-		height: auto;
+		aspect-ratio: 3 / 2;
 	}
 </style>

@@ -1,6 +1,4 @@
 import { defineConfig } from "astro/config";
 
 // https://astro.build/config
-export default defineConfig({
-	site: "https://usegl.pages.dev",
-});
+export default defineConfig({});

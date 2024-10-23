@@ -4,6 +4,7 @@ import Layout from "../layouts/Layout.astro";
 
 <script>
 	import { loop, useWebGLCanvas } from "usegl";
+	import { incrementRenderCount } from "../components/RenderCount.astro";
 
 	// Set up geometry
 	const count = 1000;
@@ -28,7 +29,7 @@ import Layout from "../layouts/Layout.astro";
 		indices.push(i);
 	}
 
-	const { uniforms } = useWebGLCanvas({
+	const { uniforms, onAfterRender } = useWebGLCanvas({
 		canvas: "#glCanvas",
 		fragment: /* glsl */ `
 			varying vec4 vColor;
@@ -82,6 +83,8 @@ import Layout from "../layouts/Layout.astro";
 			direction = -direction;
 		}
 	});
+
+	onAfterRender(incrementRenderCount);
 </script>
 
 <Layout title="Particles">

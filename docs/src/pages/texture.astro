@@ -4,10 +4,11 @@ import Layout from "../layouts/Layout.astro";
 
 <script>
 	import { useWebGLCanvas, loadTexture } from "usegl";
+	import { incrementRenderCount } from "../components/RenderCount.astro";
 
 	const texture = await loadTexture("/images/lion.jpg");
 
-	useWebGLCanvas({
+	const { onAfterRender } = useWebGLCanvas({
 		canvas: "#glCanvas",
 		fragment: /* glsl */ `
 				in vec2 vUv;
@@ -17,7 +18,7 @@ import Layout from "../layouts/Layout.astro";
 
 				#define CONTAIN 1
 				#define COVER 2
-				#define OBJECT_FIT COVER
+				#define OBJECT_FIT CONTAIN
 
 				void main() {
 					vec2 textureResolution = vec2(textureSize(uTexture, 0));
@@ -43,6 +44,8 @@ import Layout from "../layouts/Layout.astro";
 			uTexture: texture,
 		},
 	});
+
+	onAfterRender(incrementRenderCount);
 </script>
 
 <Layout title="Texture">
@@ -52,7 +55,5 @@ import Layout from "../layouts/Layout.astro";
 <style>
 	canvas {
 		height: 300px;
-		width: auto;
-		width: min(80vw, 800px);
 	}
 </style>

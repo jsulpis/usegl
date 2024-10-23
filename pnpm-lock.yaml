@@ -10,7 +10,7 @@ importers:
     dependencies:
       astro:
         specifier: 4.16.5
-        version: 4.16.5(@types/node@22.7.4)(rollup@4.22.5)(typescript@5.6.3)
+        version: 4.16.5(@types/node@22.1.0)(rollup@4.22.5)(typescript@5.6.3)
       typescript:
         specifier: 5.6.3
         version: 5.6.3
@@ -21,6 +21,9 @@ importers:
       '@astrojs/check':
         specifier: 0.9.4
         version: 0.9.4(prettier@3.3.3)(typescript@5.6.3)
+      '@types/node':
+        specifier: 22.1.0
+        version: 22.1.0
 
   lib:
     devDependencies:
@@ -937,9 +940,6 @@ packages:
 
   '@types/node@22.1.0':
     resolution: {integrity: sha512-AOmuRF0R2/5j1knA3c6G3HOk523Ga+l+ZXltX8SF1+5oqcXijjfTd8fY3XRZqSihEu9XhtQnKYLmkFaoxgsJHw==}
-
-  '@types/node@22.7.4':
-    resolution: {integrity: sha512-y+NPi1rFzDs1NdQHHToqeiX2TIS79SWEAw9GYhkkx8bD0ChpfqC+n2j5OXOCpzfojBEBt6DnEnnG9MY0zk1XLg==}
 
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
@@ -3093,9 +3093,6 @@ packages:
   undici-types@6.13.0:
     resolution: {integrity: sha512-xtFJHudx8S2DSoujjMd1WeWvn7KKWFRESZTMeL1RptAYERu29D6jphMjjY+vn96jvN3kVPDNxU/E13VTaXj6jg==}
 
-  undici-types@6.19.8:
-    resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
-
   unified@11.0.5:
     resolution: {integrity: sha512-xKvGhPWw3k84Qjh8bI3ZeJjqnyadK+GEFtazSfZv/rKeTkTjOJho6mFqh2SM96iIcZokxiOpg78GazTSg8+KHA==}
 
@@ -4242,11 +4239,6 @@ snapshots:
     dependencies:
       undici-types: 6.13.0
 
-  '@types/node@22.7.4':
-    dependencies:
-      undici-types: 6.19.8
-    optional: true
-
   '@types/normalize-package-data@2.4.4': {}
 
   '@types/resolve@1.20.2': {}
@@ -4443,7 +4435,7 @@ snapshots:
 
   array-union@2.1.0: {}
 
-  astro@4.16.5(@types/node@22.7.4)(rollup@4.22.5)(typescript@5.6.3):
+  astro@4.16.5(@types/node@22.1.0)(rollup@4.22.5)(typescript@5.6.3):
     dependencies:
       '@astrojs/compiler': 2.10.3
       '@astrojs/internal-helpers': 0.4.1
@@ -4499,8 +4491,8 @@ snapshots:
       tsconfck: 3.1.4(typescript@5.6.3)
       unist-util-visit: 5.0.0
       vfile: 6.0.3
-      vite: 5.4.9(@types/node@22.7.4)
-      vitefu: 1.0.3(vite@5.4.9(@types/node@22.7.4))
+      vite: 5.4.9(@types/node@22.1.0)
+      vitefu: 1.0.3(vite@5.4.9(@types/node@22.1.0))
       which-pm: 3.0.0
       xxhash-wasm: 1.0.2
       yargs-parser: 21.1.1
@@ -6865,9 +6857,6 @@ snapshots:
 
   undici-types@6.13.0: {}
 
-  undici-types@6.19.8:
-    optional: true
-
   unified@11.0.5:
     dependencies:
       '@types/unist': 3.0.3
@@ -6970,18 +6959,18 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.2
 
-  vite@5.4.9(@types/node@22.7.4):
+  vite@5.4.9(@types/node@22.1.0):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.4.47
       rollup: 4.22.5
     optionalDependencies:
-      '@types/node': 22.7.4
+      '@types/node': 22.1.0
       fsevents: 2.3.3
 
-  vitefu@1.0.3(vite@5.4.9(@types/node@22.7.4)):
+  vitefu@1.0.3(vite@5.4.9(@types/node@22.1.0)):
     optionalDependencies:
-      vite: 5.4.9(@types/node@22.7.4)
+      vite: 5.4.9(@types/node@22.1.0)
 
   volar-service-css@0.0.61(@volar/language-service@2.4.6):
     dependencies:

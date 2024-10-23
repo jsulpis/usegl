@@ -1,0 +1,57 @@
+---
+import { readdirSync } from "fs";
+
+const files = readdirSync("src/pages");
+const routes = files.map((file) => file.replace(".astro", "")).filter((route) => route !== "index");
+
+const currentPath = Astro.url.pathname;
+---
+
+<nav>
+	<ul>
+		{
+			routes.map((route) => (
+				<li>
+					<a href={`./${route}`} aria-current={currentPath.includes(route) ? "page" : null}>
+						{route}
+					</a>
+				</li>
+			))
+		}
+	</ul>
+</nav>
+
+<style>
+	nav {
+		height: 100%;
+		border-right: 1px solid rgba(255 255 255 / 0.2);
+	}
+
+	ul {
+		padding: 1em;
+		display: flex;
+		flex-direction: column;
+	}
+
+	li {
+		display: inline-flex;
+	}
+
+	a {
+		padding: 0.5em 1em;
+		text-decoration: none;
+		color: #fff;
+		border-radius: 0.25em;
+		transition: 100ms background-color;
+
+		&:hover,
+		&:focus-visible {
+			background-color: rgba(255 255 255 / 0.1);
+		}
+
+		&[aria-current="page"] {
+			color: orange;
+			background-color: rgba(255 255 255 / 0.15);
+		}
+	}
+</style>

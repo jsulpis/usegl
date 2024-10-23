@@ -5,10 +5,11 @@ import Layout from "../layouts/Layout.astro";
 <script>
 	import { loop, onPointerEvents, useWebGLCanvas } from "usegl";
 	import { fragment, vertex } from "../shaders/blob";
+	import { incrementRenderCount } from "../components/RenderCount.astro";
 
 	const canvas = document.querySelector("canvas");
 
-	const { uniforms } = useWebGLCanvas({
+	const { uniforms, onAfterRender } = useWebGLCanvas({
 		canvas,
 		fragment,
 		vertex,
@@ -57,6 +58,8 @@ import Layout from "../layouts/Layout.astro";
 
 		return canvasGeometry;
 	}
+
+	onAfterRender(incrementRenderCount);
 </script>
 
 <Layout title="Blob">

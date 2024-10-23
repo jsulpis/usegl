@@ -4,10 +4,11 @@ import Layout from "../layouts/Layout.astro";
 
 <script>
 	import { onPointerEvents, useWebGLCanvas } from "usegl";
+	import { incrementRenderCount } from "../components/RenderCount.astro";
 
 	const canvas = document.querySelector("canvas");
 
-	const { uniforms } = useWebGLCanvas({
+	const { uniforms, onAfterRender } = useWebGLCanvas({
 		canvas,
 		fragment: /* glsl */ `
 			varying vec2 vUv;
@@ -35,6 +36,8 @@ import Layout from "../layouts/Layout.astro";
 			];
 		},
 	});
+
+	onAfterRender(incrementRenderCount);
 </script>
 
 <Layout title="Circle">
@@ -44,6 +47,5 @@ import Layout from "../layouts/Layout.astro";
 <style>
 	canvas {
 		aspect-ratio: 3 / 2;
-		height: auto;
 	}
 </style>

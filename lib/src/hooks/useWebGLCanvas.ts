@@ -78,5 +78,15 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
 		});
 	}
 
-	return { gl, render, canvas, setSize, dpr, uniforms: primaryPass.uniforms };
+	return {
+		gl,
+		render,
+		canvas,
+		setSize,
+		dpr,
+		uniforms: primaryPass.uniforms,
+		onUpdated: primaryPass.onUpdated,
+		onBeforeRender: primaryPass.onBeforeRender,
+		onAfterRender: primaryPass.onAfterRender,
+	};
 };

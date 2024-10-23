@@ -11,6 +11,7 @@ import Layout from "../layouts/Layout.astro";
 		useWebGLContext,
 		useCompositor,
 	} from "usegl";
+	import { incrementRenderCount } from "../components/RenderCount.astro";
 
 	const redColorPass = useEffectPass({
 		fragment: /* glsl */ `
@@ -90,6 +91,8 @@ import Layout from "../layouts/Layout.astro";
 	onCanvasResize(canvas, ({ devicePixelSize }) => {
 		setSize(devicePixelSize.width, devicePixelSize.height);
 	});
+
+	renderPass.onAfterRender(incrementRenderCount);
 </script>
 
 <Layout title="Gradient">
