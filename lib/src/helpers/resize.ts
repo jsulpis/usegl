@@ -17,9 +17,14 @@ export function onCanvasResize(
 	let size: ResizeObserverSize;
 	let devicePixelSize: ResizeObserverSize;
 
-	new ResizeObserver((entries) => {
-		devicePixelSize = entries[0].devicePixelContentBoxSize[0];
-		size = entries[0].contentBoxSize[0];
+	const observer = new ResizeObserver((entries) => {
+		const entry = entries.find((entry) => entry.target === canvas)!;
+
+		size = entry.contentBoxSize[0];
+		devicePixelSize = entry.devicePixelContentBoxSize?.[0] || {
+			blockSize: Math.round(size.blockSize * window.devicePixelRatio),
+			inlineSize: Math.round(size.inlineSize * window.devicePixelRatio),
+		};
 
 		// resize after next paint, otherwise there are glitches if a render loop is active
 		setTimeout(() => {
@@ -28,5 +33,7 @@ export function onCanvasResize(
 				devicePixelSize: { width: devicePixelSize.inlineSize, height: devicePixelSize.blockSize },
 			});
 		}, 0);
-	}).observe(canvas);
+	});
+
+	observer.observe(canvas);
 }
