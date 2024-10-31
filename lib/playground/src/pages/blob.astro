@@ -14,6 +14,7 @@ import Layout from "../layouts/Layout.astro";
 		fragment,
 		vertex,
 		uniforms: {
+			uTime: 0,
 			uPointer: [0, 0],
 		},
 	});
@@ -31,14 +32,14 @@ import Layout from "../layouts/Layout.astro";
 		},
 	});
 
-	loop(() => {
-		const currentPointerCoord = { x: uniforms.uPointer[0], y: uniforms.uPointer[1] };
+	// loop(() => {
+	// 	const currentPointerCoord = { x: uniforms.uPointer[0], y: uniforms.uPointer[1] };
 
-		uniforms.uPointer = [
-			currentPointerCoord.x + (targetPointer.x - currentPointerCoord.x) * 0.05,
-			currentPointerCoord.y + (targetPointer.y - currentPointerCoord.y) * 0.05,
-		];
-	});
+	// 	uniforms.uPointer = [
+	// 		currentPointerCoord.x + (targetPointer.x - currentPointerCoord.x) * 0.05,
+	// 		currentPointerCoord.y + (targetPointer.y - currentPointerCoord.y) * 0.05,
+	// 	];
+	// });
 
 	function getCanvasGeometry(canvas: HTMLCanvasElement) {
 		const canvasGeometry = { center: { x: 0, y: 0 }, width: 0, height: 0 };

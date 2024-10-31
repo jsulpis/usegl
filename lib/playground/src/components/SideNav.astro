@@ -1,8 +1,5 @@
 ---
-import { readdirSync } from "fs";
-
-const files = readdirSync("playground/src/pages");
-const routes = files.map((file) => file.replace(".astro", "")).filter((route) => route !== "index");
+import { routes } from "./routes";
 
 const currentPath = Astro.url.pathname;
 ---
@@ -23,14 +20,25 @@ const currentPath = Astro.url.pathname;
 
 <style>
 	nav {
-		height: 100%;
-		border-right: 1px solid rgba(255 255 255 / 0.2);
+		height: auto;
+		overflow: auto;
 	}
 
 	ul {
-		padding: 1em;
 		display: flex;
-		flex-direction: column;
+		padding-inline: 1em;
+		flex-direction: row;
+	}
+
+	@media (width > 600px) {
+		nav {
+			height: 100%;
+			border-right: 1px solid rgba(255 255 255 / 0.2);
+		}
+		ul {
+			flex-direction: column;
+			padding: 1em;
+		}
 	}
 
 	li {

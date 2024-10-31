@@ -28,10 +28,14 @@
 		"lint:fix": "eslint src --fix",
 		"prepack": "pnpm build",
 		"release": "changelogen --release --clean",
-		"typecheck": "tsc --noEmit && astro check"
+		"test": "playwright test",
+		"test:ui": "playwright test --ui",
+		"typecheck": "tsc --noEmit && astro check",
+		"updateScreenshots": "docker build -t usegl . && docker run --rm -v $(pwd)/test-results:/app/test-results -v $(pwd)/tests/__screenshots__:/app/tests/__screenshots__ usegl"
 	},
 	"devDependencies": {
 		"@astrojs/check": "0.9.4",
+		"@playwright/test": "1.48.1",
 		"@types/node": "22.1.0",
 		"astro": "4.16.7",
 		"changelogen": "0.5.5",

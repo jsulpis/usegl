@@ -60,6 +60,7 @@ import Layout from "../layouts/Layout.astro";
 			}
 		`,
 		uniforms: {
+			uTime: 100,
 			uThreshold: 0,
 		},
 		attributes: {
@@ -76,13 +77,13 @@ import Layout from "../layouts/Layout.astro";
 
 	let direction = 1;
 
-	loop(() => {
-		uniforms.uThreshold += (count * direction) / 500;
+	// loop(() => {
+	// 	uniforms.uThreshold += (count * direction) / 500;
 
-		if (uniforms.uThreshold > count || uniforms.uThreshold < 1) {
-			direction = -direction;
-		}
-	});
+	// 	if (uniforms.uThreshold > count || uniforms.uThreshold < 1) {
+	// 		direction = -direction;
+	// 	}
+	// });
 
 	onAfterRender(incrementRenderCount);
 </script>
