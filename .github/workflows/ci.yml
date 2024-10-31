@@ -2,11 +2,13 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
+
+env:
+  PNPM_VERSION: 9
+  NODE_VERSION: lts/*
 
 jobs:
   build:
@@ -14,31 +16,60 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
-      - run: pnpm install
-      - run: pnpm run -r build
+      - run: pnpm --filter="./lib" install
+      - run: pnpm --filter="./lib" build
 
   static:
     name: "static checks"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
       - run: pnpm install
       - run: pnpm run -r typecheck
       - run: pnpm run -r format
       - run: pnpm run -r lint
+
+  tests:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.48.1
+    env:
+      HOME: /root
+    steps:
+      - run: apt-get update && apt-get install git-lfs
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - run: pnpm --filter="./lib" install
+      - run: xvfb-run pnpm --filter="./lib" exec playwright test
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: test-results
+          path: lib/playwright-report/
+          retention-days: 1

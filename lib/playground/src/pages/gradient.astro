@@ -25,7 +25,7 @@ import Layout from "../layouts/Layout.astro";
 			}
 		`,
 		uniforms: {
-			uStrength: 0.5,
+			uStrength: 0.0,
 		},
 	});
 
@@ -83,13 +83,14 @@ import Layout from "../layouts/Layout.astro";
 
 	const compositor = useCompositor(gl, renderPass, [redColorPass]);
 
-	loop(({ time }) => {
-		redColorPass.uniforms.uStrength = Math.sin(time / 500) / 2 + 0.5;
-		compositor.render();
-	});
+	// loop(({ time }) => {
+	// redColorPass.uniforms.uStrength = Math.sin(time / 500) / 2 + 0.5;
+	// 	compositor.render();
+	// });
 
 	onCanvasResize(canvas, ({ devicePixelSize }) => {
 		setSize(devicePixelSize.width, devicePixelSize.height);
+		compositor.render();
 	});
 
 	renderPass.onAfterRender(incrementRenderCount);
