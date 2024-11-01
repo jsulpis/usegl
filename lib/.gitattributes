@@ -38,3 +38,13 @@ tests/__screenshots__/particles/particles-chromium.png filter=lfs diff=lfs merge
 tests/__screenshots__/particles/particles-firefox.png filter=lfs diff=lfs merge=lfs -text
 tests/__screenshots__/particles/particles-iphone.png filter=lfs diff=lfs merge=lfs -text
 tests/__screenshots__/pointer/pointer-chromium.png filter=lfs diff=lfs merge=lfs -text
+tests/__screenshots__/play-pause-controls---global/play-pause-controls---global-android.png filter=lfs diff=lfs merge=lfs -text
+tests/__screenshots__/play-pause-controls---global/play-pause-controls---global-firefox.png filter=lfs diff=lfs merge=lfs -text
+tests/__screenshots__/play-pause-controls---global/play-pause-controls---global-iphone.png filter=lfs diff=lfs merge=lfs -text
+tests/__screenshots__/play-pause-controls---global/play-pause-controls---global-safari.png filter=lfs diff=lfs merge=lfs -text
+tests/__screenshots__/play-pause-controls---local/play-pause-controls---local-chromium.png filter=lfs diff=lfs merge=lfs -text
+tests/__screenshots__/play-pause-controls---local/play-pause-controls---local-firefox.png filter=lfs diff=lfs merge=lfs -text
+tests/__screenshots__/play-pause-controls---local/play-pause-controls---local-iphone.png filter=lfs diff=lfs merge=lfs -text
+tests/__screenshots__/play-pause-controls---local/play-pause-controls---local-safari.png filter=lfs diff=lfs merge=lfs -text
+tests/__screenshots__/play-pause-controls---global/play-pause-controls---global-chromium.png filter=lfs diff=lfs merge=lfs -text
+tests/__screenshots__/play-pause-controls---local/play-pause-controls---local-android.png filter=lfs diff=lfs merge=lfs -text

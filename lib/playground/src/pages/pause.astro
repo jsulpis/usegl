@@ -1,0 +1,158 @@
+---
+import PlayPause from "../components/PlayPause.astro";
+import Layout from "../layouts/Layout.astro";
+---
+
+<script>
+	import { useWebGLCanvas, useLoop, pauseAllLoops, playAllLoops } from "usegl";
+	import { incrementRenderCount } from "../components/renderCount";
+
+	const { onAfterRender, uniforms } = useWebGLCanvas({
+		canvas: "#glCanvas",
+		fragment: /* glsl */ `
+			varying vec2 vUv;
+			uniform float uTime1;
+			uniform float uTime2;
+			uniform float uTime3;
+			uniform vec2 uResolution;
+
+			float sdCircle(vec2 p, float r) {
+				return length(p) - r;
+			}
+
+			void main() {
+				float count = 3.;
+				vec2 uv = vUv;
+				uv.x = fract(uv.x * count);
+				uv.y = (uv.y - .5) * count + .5;
+
+				vec2 center = uResolution / 2.;
+
+				if (vUv.x < 1./count) {
+					center.y += sin(uTime1 * .002) * uResolution.y;
+				} else if (vUv.x < 2./count) {
+					center.y += sin(uTime2 * .002) * uResolution.y;
+				} else if (vUv.x < 3./count) {
+					center.y += sin(uTime3 * .002) * uResolution.y;
+				}
+
+				float dist = distance(uv * uResolution, center);
+				float radius = min(uResolution.x, uResolution.y) / 3.;
+				float circle = 1. - smoothstep(radius * .99, radius * 1.01, dist);
+
+				vec3 col = circle * vec3(1.);
+
+				gl_FragColor = vec4(col, 1.);
+			}
+		`,
+		uniforms: {
+			uTime1: 0,
+			uTime2: 0,
+			uTime3: 0,
+		},
+	});
+
+	const { play: play1, pause: pause1 } = useLoop(
+		({ deltaTime }) => {
+			uniforms.uTime1 += deltaTime;
+		},
+		{ immediate: false }
+	);
+
+	const { play: play2, pause: pause2 } = useLoop(
+		({ time }) => {
+			uniforms.uTime2 = time;
+		},
+		{ immediate: false }
+	);
+
+	const { play: play3, pause: pause3 } = useLoop(
+		({ elapsedTime }) => {
+			uniforms.uTime3 = elapsedTime;
+		},
+		{ immediate: false }
+	);
+
+	bindControl(".controls.local button:nth-of-type(1)", play1, pause1);
+	bindControl(".controls.local button:nth-of-type(2)", play2, pause2);
+	bindControl(".controls.local button:nth-of-type(3)", play3, pause3);
+
+	function playAll() {
+		playAllLoops();
+		document.querySelectorAll(".controls.local button").forEach((button) => {
+			button.ariaChecked = "true";
+		});
+	}
+	function pauseAll() {
+		pauseAllLoops();
+		document.querySelectorAll(".controls.local button").forEach((button) => {
+			button.ariaChecked = "false";
+		});
+	}
+
+	bindControl(".global button", playAll, pauseAll);
+
+	function bindControl(selector, play: () => void, pause: () => void) {
+		document.querySelector(selector).addEventListener("click", (event) => {
+			if ((event.currentTarget as HTMLElement).ariaChecked === "true") {
+				play();
+			} else {
+				pause();
+			}
+		});
+	}
+
+	onAfterRender(incrementRenderCount);
+</script>
+
+<Layout title="Play/Pause">
+	<div class="container">
+		<div class="controls global">
+			Global : <PlayPause />
+		</div>
+		<div class="controls local">
+			<PlayPause />
+			<PlayPause />
+			<PlayPause />
+		</div>
+		<canvas id="glCanvas"></canvas>
+	</div>
+</Layout>
+
+<style is:global>
+	.container {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		font-size: min(1em, 2svmin);
+		gap: 2em;
+	}
+
+	.controls {
+		display: flex;
+		width: min(80%, 700px);
+		max-width: 90svmin;
+		justify-content: space-around;
+		align-items: center;
+	}
+
+	.controls.local button {
+		font-size: 0.8em;
+	}
+
+	.controls.global {
+		justify-content: center;
+		font-size: 1.5em;
+	}
+
+	.controls button {
+		position: static;
+	}
+
+	canvas {
+		aspect-ratio: 3/2;
+	}
+</style>

@@ -1,17 +1,17 @@
-export * from "./core/attribute";
-export * from "./core/buffer";
-export * from "./core/program";
-export * from "./core/renderTarget";
-export * from "./core/shader";
-export * from "./core/texture";
+export { setAttribute } from "./core/attribute";
+export { createAndBindBuffer } from "./core/buffer";
+export { createProgram } from "./core/program";
+export { createRenderTarget, setRenderTarget } from "./core/renderTarget";
+export { createShader } from "./core/shader";
+export { createTexture, loadTexture } from "./core/texture";
 
-export * from "./hooks/useCompositor";
-export * from "./hooks/useEffectPass";
-export * from "./hooks/useQuadRenderPass";
-export * from "./hooks/useRenderPass";
-export * from "./hooks/useWebGLCanvas";
-export * from "./hooks/useWebGLContext";
+export { useCompositor } from "./hooks/useCompositor";
+export { useEffectPass } from "./hooks/useEffectPass";
+export { useQuadRenderPass } from "./hooks/useQuadRenderPass";
+export { useRenderPass } from "./hooks/useRenderPass";
+export { useWebGLCanvas } from "./hooks/useWebGLCanvas";
+export { useWebGLContext } from "./hooks/useWebGLContext";
+export { useLoop, playAllLoops, pauseAllLoops } from "./hooks/useLoop";
 
-export * from "./helpers/loop";
-export * from "./helpers/pointer";
-export * from "./helpers/resize";
+export { onPointerEvents } from "./helpers/pointer";
+export { onCanvasResize } from "./helpers/resize";

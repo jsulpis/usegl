@@ -1,58 +1,37 @@
 ---
+import GlobalPlayPause from "../components/GlobalPlayPause.astro";
 import Layout from "../layouts/Layout.astro";
 ---
 
 <script>
 	import {
-		loop,
 		useEffectPass,
 		useRenderPass,
 		onCanvasResize,
 		useWebGLContext,
 		useCompositor,
+		useWebGLCanvas,
 	} from "usegl";
 	import { incrementRenderCount } from "../components/renderCount";
 
-	const redColorPass = useEffectPass({
-		fragment: /* glsl */ `
-			uniform sampler2D uTexture;
-			uniform float uStrength;
-			varying vec2 vUv;
-
-			void main() {
-				vec3 color = mix(texture(uTexture, vUv).rgb, texture(uTexture, vUv).rrr, uStrength);
-				gl_FragColor = vec4(color, 1.);
-			}
-		`,
-		uniforms: {
-			uStrength: 0.0,
-		},
-	});
-
-	// useWebGLCanvas({
-	// 	canvas: document.querySelector("canvas"),
+	// const redColorPass = useEffectPass({
 	// 	fragment: /* glsl */ `
+	// 		uniform sampler2D uTexture;
+	// 		uniform float uStrength;
 	// 		varying vec2 vUv;
-	// 		uniform float uTime;
 
 	// 		void main() {
-	// 			gl_FragColor = vec4(vUv, sin(uTime) / 2. + .5, 1.);
+	// 			vec3 color = mix(texture(uTexture, vUv).rgb, texture(uTexture, vUv).rrr, uStrength);
+	// 			gl_FragColor = vec4(color, 1.);
 	// 		}
 	// 	`,
 	// 	uniforms: {
-	// 		uTime: 0,
+	// 		uStrength: 0.0,
 	// 	},
-	// 	postEffects: [redColorPass],
 	// });
 
-	// loop(({ time }) => {
-	// 	redColorPass.uniforms.uStrength = Math.sin(time / 500) / 2 + 0.5;
-	// });
-
-	const canvas = document.querySelector("canvas");
-	const { gl, setSize } = useWebGLContext(canvas);
-
-	const renderPass = useRenderPass(gl, {
+	const { onAfterRender } = useWebGLCanvas({
+		canvas: document.querySelector("canvas"),
 		fragment: /* glsl */ `
 			varying vec2 vUv;
 			uniform float uTime;
@@ -61,41 +40,62 @@ import Layout from "../layouts/Layout.astro";
 				gl_FragColor = vec4(vUv, sin(uTime) / 2. + .5, 1.);
 			}
 		`,
-		vertex: /* glsl */ `
-			attribute vec3 aPosition;
-			varying vec2 vUv;
-
-			void main() {
-				vUv = aPosition.xy;
-				gl_Position = vec4(2.0 * aPosition - 1.0, 1.0);
-			}
-		`,
-		uniforms: {
-			uTime: 0,
-		},
-		attributes: {
-			aPosition: {
-				data: [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1],
-				size: 2,
-			},
-		},
+		immediate: false,
+		// postEffects: [redColorPass],
 	});
 
-	const compositor = useCompositor(gl, renderPass, [redColorPass]);
+	// loop(({ time }) => {
+	// 	redColorPass.uniforms.uStrength = Math.sin(time / 500) / 2 + 0.5;
+	// });
+
+	// const canvas = document.querySelector("canvas");
+	// const { gl, setSize } = useWebGLContext(canvas);
+
+	// const renderPass = useRenderPass(gl, {
+	// 	fragment: /* glsl */ `
+	// 		varying vec2 vUv;
+	// 		uniform float uTime;
+
+	// 		void main() {
+	// 			gl_FragColor = vec4(vUv, sin(uTime) / 2. + .5, 1.);
+	// 		}
+	// 	`,
+	// 	vertex: /* glsl */ `
+	// 		attribute vec3 aPosition;
+	// 		varying vec2 vUv;
+
+	// 		void main() {
+	// 			vUv = aPosition.xy;
+	// 			gl_Position = vec4(2.0 * aPosition - 1.0, 1.0);
+	// 		}
+	// 	`,
+	// 	uniforms: {
+	// 		uTime: 0,
+	// 	},
+	// 	attributes: {
+	// 		aPosition: {
+	// 			data: [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1],
+	// 			size: 2,
+	// 		},
+	// 	},
+	// });
+
+	// const compositor = useCompositor(gl, renderPass, [redColorPass]);
 
 	// loop(({ time }) => {
 	// redColorPass.uniforms.uStrength = Math.sin(time / 500) / 2 + 0.5;
 	// 	compositor.render();
 	// });
 
-	onCanvasResize(canvas, ({ devicePixelSize }) => {
-		setSize(devicePixelSize.width, devicePixelSize.height);
-		compositor.render();
-	});
+	// onCanvasResize(canvas, ({ devicePixelSize }) => {
+	// 	setSize(devicePixelSize.width, devicePixelSize.height);
+	// 	compositor.render();
+	// });
 
-	renderPass.onAfterRender(incrementRenderCount);
+	onAfterRender(incrementRenderCount);
 </script>
 
 <Layout title="Gradient">
+	<GlobalPlayPause />
 	<canvas></canvas>
 </Layout>

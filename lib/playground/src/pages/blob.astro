@@ -1,9 +1,10 @@
 ---
+import GlobalPlayPause from "../components/GlobalPlayPause.astro";
 import Layout from "../layouts/Layout.astro";
 ---
 
 <script>
-	import { loop, onPointerEvents, useWebGLCanvas } from "usegl";
+	import { onPointerEvents, useLoop, useWebGLCanvas } from "usegl";
 	import { fragment, vertex } from "../shaders/blob";
 	import { incrementRenderCount } from "../components/renderCount";
 
@@ -14,9 +15,9 @@ import Layout from "../layouts/Layout.astro";
 		fragment,
 		vertex,
 		uniforms: {
-			uTime: 0,
 			uPointer: [0, 0],
 		},
+		immediate: false,
 	});
 
 	const canvasGeometry = getCanvasGeometry(canvas);
@@ -32,14 +33,17 @@ import Layout from "../layouts/Layout.astro";
 		},
 	});
 
-	// loop(() => {
-	// 	const currentPointerCoord = { x: uniforms.uPointer[0], y: uniforms.uPointer[1] };
+	useLoop(
+		() => {
+			const currentPointerCoord = { x: uniforms.uPointer[0], y: uniforms.uPointer[1] };
 
-	// 	uniforms.uPointer = [
-	// 		currentPointerCoord.x + (targetPointer.x - currentPointerCoord.x) * 0.05,
-	// 		currentPointerCoord.y + (targetPointer.y - currentPointerCoord.y) * 0.05,
-	// 	];
-	// });
+			uniforms.uPointer = [
+				currentPointerCoord.x + (targetPointer.x - currentPointerCoord.x) * 0.05,
+				currentPointerCoord.y + (targetPointer.y - currentPointerCoord.y) * 0.05,
+			];
+		},
+		{ immediate: false }
+	);
 
 	function getCanvasGeometry(canvas: HTMLCanvasElement) {
 		const canvasGeometry = { center: { x: 0, y: 0 }, width: 0, height: 0 };
@@ -64,5 +68,6 @@ import Layout from "../layouts/Layout.astro";
 </script>
 
 <Layout title="Blob">
+	<GlobalPlayPause />
 	<canvas></canvas>
 </Layout>

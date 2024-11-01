@@ -1,12 +1,13 @@
 import { onCanvasResize } from "../helpers/resize";
-import { loop } from "../helpers/loop";
 import type { Attribute, DrawMode, PostEffect, Uniforms } from "../types";
 import { useWebGLContext } from "./useWebGLContext";
 import { useQuadRenderPass } from "./useQuadRenderPass";
 import { useCompositor } from "./useCompositor";
 import { findUniformName } from "../internal/findName";
+import type { LoopOptions } from "./useLoop";
+import { useLoop } from "./useLoop";
 
-interface Props<U extends Uniforms> {
+interface Props<U extends Uniforms> extends LoopOptions {
 	canvas: HTMLCanvasElement | OffscreenCanvas | string;
 	fragment: string;
 	vertex?: string;
@@ -25,37 +26,13 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
 		vertex,
 		dpr = window.devicePixelRatio,
 		postEffects = [],
+		immediate,
 	} = props;
 
 	const { gl, canvas, setSize: setCanvasSize } = useWebGLContext(canvasProp);
 
 	const primaryPass = useQuadRenderPass(gl, props);
 	const compositor = useCompositor(gl, primaryPass, postEffects);
-
-	for (const pass of compositor.allPasses) {
-		pass.onUpdated(requestRender);
-	}
-
-	function setSize({ width, height }: { width: number; height: number }) {
-		setCanvasSize(width, height);
-		compositor.setSize({ width, height });
-		requestRender();
-	}
-
-	const timeUniformName = findUniformName(fragment + vertex, "time");
-
-	if (timeUniformName && primaryPass.uniforms[timeUniformName] === undefined) {
-		loop(({ time }) => {
-			(primaryPass.uniforms as Record<string, number>)[timeUniformName] = time / 500;
-		});
-	}
-
-	if (canvas instanceof HTMLCanvasElement) {
-		// Don't listen for resize on an OffscreenCanvas (possibly in a worker)
-		onCanvasResize(canvas, ({ size }) => {
-			setSize({ width: size.width * dpr, height: size.height * dpr });
-		});
-	}
 
 	function render() {
 		compositor.render();
@@ -78,11 +55,48 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
 		});
 	}
 
+	for (const pass of compositor.allPasses) {
+		pass.onUpdated(requestRender);
+	}
+
+	function setSize({ width, height }: { width: number; height: number }) {
+		setCanvasSize(width, height);
+		compositor.setSize({ width, height });
+		requestRender();
+	}
+
+	const timeUniformName = findUniformName(fragment + vertex, "time");
+	let play = () => {};
+	let pause = () => {};
+
+	if (timeUniformName && primaryPass.uniforms[timeUniformName] === undefined) {
+		requestAnimationFrame(() => {
+			// use RAF to avoid triggering an extra render for the initialization of the time uniform
+			(primaryPass.uniforms as Record<string, number>)[timeUniformName] = 0;
+		});
+
+		({ play, pause } = useLoop(
+			({ deltaTime }) => {
+				(primaryPass.uniforms as Record<string, number>)[timeUniformName] += deltaTime / 500;
+			},
+			{ immediate },
+		));
+	}
+
+	if (canvas instanceof HTMLCanvasElement) {
+		// Don't listen for resize on an OffscreenCanvas (possibly in a worker)
+		onCanvasResize(canvas, ({ size }) => {
+			setSize({ width: size.width * dpr, height: size.height * dpr });
+		});
+	}
+
 	return {
 		gl,
 		render,
 		canvas,
 		setSize,
+		play,
+		pause,
 		dpr,
 		uniforms: primaryPass.uniforms,
 		onUpdated: primaryPass.onUpdated,
