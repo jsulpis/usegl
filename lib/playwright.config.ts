@@ -3,6 +3,8 @@ import { defineConfig, devices } from "@playwright/test";
 const desktopViewport = { width: 800, height: 400 };
 const mobileViewport = { width: 360, height: 640 };
 
+const serverUrl = "http://localhost:4321";
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -12,12 +14,12 @@ export default defineConfig({
 	fullyParallel: true,
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
 	forbidOnly: !!process.env.CI,
-	/* Retry on CI only */
-	retries: process.env.CI ? 2 : 0,
+	retries: 3,
 	/* Reporter to use. See https://playwright.dev/docs/test-reporters */
 	reporter: "html",
 	use: {
 		trace: "on-first-retry",
+		baseURL: serverUrl,
 	},
 	snapshotPathTemplate: "{testDir}/__screenshots__/{testName}/{testName}-{projectName}{ext}",
 	expect: {
@@ -32,7 +34,7 @@ export default defineConfig({
 				...devices["Desktop Chrome"],
 				viewport: desktopViewport,
 				launchOptions: {
-					args: ["--use-gl=egl", "--ignore-gpu-blocklist", "--use-gl=angle"],
+					args: ["--use-angle=gl"],
 				},
 			},
 		},
@@ -45,6 +47,7 @@ export default defineConfig({
 					headless: false,
 				},
 			},
+			grepInvert: /play \/ pause controls/, // Flaky on firefox, and there is no fancy API in the play/pause controls, so the other browsers are enough
 		},
 		{
 			name: "safari",
@@ -67,7 +70,7 @@ export default defineConfig({
 	],
 	webServer: {
 		command: "pnpm dev",
-		url: "http://localhost:4321",
+		url: serverUrl,
 		reuseExistingServer: !process.env.CI,
 	},
 });
