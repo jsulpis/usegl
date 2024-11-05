@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const desktopViewport = { width: 800, height: 400 };
+const desktopViewport = { width: 700, height: 400 };
 const mobileViewport = { width: 360, height: 640 };
 
 const serverUrl = "http://localhost:4321";
@@ -14,7 +14,7 @@ export default defineConfig({
 	fullyParallel: true,
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
 	forbidOnly: !!process.env.CI,
-	retries: 3,
+	retries: process.env.CI ? 3 : 0,
 	/* Reporter to use. See https://playwright.dev/docs/test-reporters */
 	reporter: "html",
 	use: {

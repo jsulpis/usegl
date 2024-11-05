@@ -1,11 +1,11 @@
 ---
-import GlobalPlayPause from "../components/GlobalPlayPause.astro";
-import Layout from "../layouts/Layout.astro";
+import GlobalPlayPause from "../../components/GlobalPlayPause.astro";
+import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
 	import { useLoop, useWebGLCanvas } from "usegl";
-	import { incrementRenderCount } from "../components/renderCount";
+	import { incrementRenderCount } from "../../components/renderCount";
 
 	// Set up geometry
 	const count = 1000;

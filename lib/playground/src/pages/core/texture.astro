@@ -1,10 +1,10 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
 	import { useWebGLCanvas, loadTexture } from "usegl";
-	import { incrementRenderCount } from "../components/renderCount";
+	import { incrementRenderCount } from "../../components/renderCount";
 
 	const texture = await loadTexture("/images/lion.jpg");
 

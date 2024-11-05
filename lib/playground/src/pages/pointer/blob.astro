@@ -1,12 +1,12 @@
 ---
-import GlobalPlayPause from "../components/GlobalPlayPause.astro";
-import Layout from "../layouts/Layout.astro";
+import GlobalPlayPause from "../../components/GlobalPlayPause.astro";
+import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
 	import { onPointerEvents, useLoop, useWebGLCanvas } from "usegl";
-	import { fragment, vertex } from "../shaders/blob";
-	import { incrementRenderCount } from "../components/renderCount";
+	import { fragment, vertex } from "../../shaders/blob";
+	import { incrementRenderCount } from "../../components/renderCount";
 
 	const canvas = document.querySelector("canvas");
 

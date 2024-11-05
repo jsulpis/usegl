@@ -1,7 +1,14 @@
 import { readdirSync } from "node:fs";
 
-const files = readdirSync("playground/src/pages");
+export const sections = readdirSync("playground/src/pages", { withFileTypes: true })
+	.filter((file) => file.isDirectory())
+	.map((folder) => folder.name);
 
-export const routes = files
-	.map((file) => file.replace(".astro", ""))
-	.filter((route) => route !== "index");
+export const routes = sections.flatMap((section) => {
+	const files = readdirSync(`playground/src/pages/${section}`);
+
+	return files.map((file) => {
+		const route = file.replace(".astro", "");
+		return { section, route };
+	});
+});

@@ -1,5 +1,5 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
@@ -16,8 +16,8 @@ import Layout from "../layouts/Layout.astro";
 		mipmapFragmentShaderSource,
 		blurFragmentShaderSource,
 		combineFragmentShaderSource,
-	} from "../shaders/bloom";
-	import { incrementRenderCount } from "../components/renderCount";
+	} from "../../shaders/bloom";
+	import { incrementRenderCount } from "../../components/renderCount";
 
 	const canvas = document.querySelector("canvas");
 
