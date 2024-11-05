@@ -17,7 +17,7 @@ import RenderCount from "../components/RenderCount.astro";
 	</head>
 
 	<body>
-		<SideNav />
+		<SideNav class="navbar" />
 		<main>
 			<slot />
 			<RenderCount />
@@ -41,9 +41,13 @@ import RenderCount from "../components/RenderCount.astro";
 		color-scheme: dark;
 	}
 
-	@media (width < 600px) {
+	/* Hide the navbar on small viewports to avoid interferences with the screenshot tests */
+	@media (width < 800px) {
+		.navbar {
+			display: none;
+		}
 		body {
-			grid-template: auto 1fr / 1fr;
+			grid-template: 1fr / 1fr;
 		}
 	}
 

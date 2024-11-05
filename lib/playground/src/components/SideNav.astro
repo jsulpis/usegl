@@ -1,18 +1,32 @@
 ---
-import { routes } from "./routes";
+import { sections, routes } from "./routes";
 
 const currentPath = Astro.url.pathname;
+
+const { class: className } = Astro.props;
 ---
 
-<nav>
+<nav class={className}>
 	<ul>
 		{
-			routes.map((route) => (
-				<li>
-					<a href={`./${route}`} aria-current={currentPath.includes(route) ? "page" : null}>
-						{route}
-					</a>
-				</li>
+			sections.map((section) => (
+				<div class="section">
+					<span class="title">{section}</span>
+					<ul>
+						{routes
+							.filter((route) => route.section === section)
+							.map(({ section, route }) => (
+								<li>
+									<a
+										href={`/${section}/${route}`}
+										aria-current={currentPath.endsWith(route) ? "page" : null}
+									>
+										{route}
+									</a>
+								</li>
+							))}
+					</ul>
+				</div>
 			))
 		}
 	</ul>
@@ -20,25 +34,26 @@ const currentPath = Astro.url.pathname;
 
 <style>
 	nav {
-		height: auto;
 		overflow: auto;
+		height: 100%;
+		border-right: 1px solid rgba(255 255 255 / 0.2);
 	}
 
 	ul {
 		display: flex;
-		padding-inline: 1em;
-		flex-direction: row;
+		flex-direction: column;
+		padding: 0;
 	}
 
-	@media (width > 600px) {
-		nav {
-			height: 100%;
-			border-right: 1px solid rgba(255 255 255 / 0.2);
-		}
-		ul {
-			flex-direction: column;
-			padding: 1em;
-		}
+	.section {
+		padding: 1em;
+	}
+
+	.title {
+		display: block;
+		opacity: 0.8;
+		font-size: 0.9em;
+		margin-bottom: 0.5em;
 	}
 
 	li {

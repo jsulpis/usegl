@@ -1,11 +1,11 @@
 ---
-import PlayPause from "../components/PlayPause.astro";
-import Layout from "../layouts/Layout.astro";
+import PlayPause from "../../components/PlayPause.astro";
+import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
 	import { useWebGLCanvas, useLoop, pauseAllLoops, playAllLoops } from "usegl";
-	import { incrementRenderCount } from "../components/renderCount";
+	import { incrementRenderCount } from "../../components/renderCount";
 
 	const { onAfterRender, uniforms } = useWebGLCanvas({
 		canvas: "#glCanvas",

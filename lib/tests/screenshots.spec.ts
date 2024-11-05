@@ -4,18 +4,18 @@ import { routes } from "../playground/src/components/routes";
 
 const ignoreRoutes = new Set(["pause"]);
 
-const routesToTest = routes.filter((route) => !ignoreRoutes.has(route));
+const routesToTest = routes.filter(({ route }) => !ignoreRoutes.has(route));
 
-for (const route of routesToTest) {
+for (const { section, route } of routesToTest) {
 	test(route, async ({ page, baseURL }) => {
-		await page.goto(`${baseURL}/${route}`);
+		await page.goto(`${baseURL}/${section}/${route}`);
 
 		await expect(page.locator("main")).toHaveScreenshot();
 	});
 }
 
 test("pointer move", async ({ page, viewport, baseURL }) => {
-	await page.goto(`${baseURL}/pointer`);
+	await page.goto(`${baseURL}/pointer/pointer`);
 
 	await expect(page.getByText("Renders: 1")).toBeVisible();
 
@@ -28,7 +28,7 @@ test("pointer move", async ({ page, viewport, baseURL }) => {
 });
 
 test("play / pause controls - local", async ({ page, baseURL }) => {
-	await page.goto(`${baseURL}/pause`);
+	await page.goto(`${baseURL}/core/pause`);
 
 	await expect(page.getByText("Renders: 1")).toBeVisible();
 
@@ -59,7 +59,7 @@ test("play / pause controls - local", async ({ page, baseURL }) => {
 });
 
 test("play / pause controls - global", async ({ page, baseURL }) => {
-	await page.goto(`${baseURL}/pause`);
+	await page.goto(`${baseURL}/core/pause`);
 
 	await expect(page.getByText("Renders: 1")).toBeVisible();
 
