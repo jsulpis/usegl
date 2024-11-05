@@ -1,0 +1,98 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<script>
+	import { useEffectPass, useWebGLCanvas, loadTexture } from "usegl";
+	import { incrementRenderCount } from "../components/renderCount";
+
+	const vignetteEffect = useEffectPass({
+		fragment: /* glsl */ `
+			uniform sampler2D uTexture;
+			varying vec2 vUv;
+
+			#define SIZE .7      // (0.0 - 1.0)
+			#define ROUNDNESS .3 // (0.0 = rectangle, 1.0 = round)
+			#define STRENGTH .7  // (0.0 - 1.0)
+
+			float vignette() {
+				vec2 centered = vUv * 2.0 - 1.0;
+
+				float circDist = length(centered);
+				float rectDist = max(abs(centered.x), abs(centered.y));
+				float dist = mix(rectDist, circDist, ROUNDNESS);
+
+				return 1. - smoothstep(SIZE, SIZE * 1.5, dist) * STRENGTH;
+			}
+
+			void main() {
+				vec3 color = texture(uTexture, vUv).rgb * vignette();
+				gl_FragColor = vec4(color, 1.);
+			}
+		`,
+	});
+
+	const sepiaEffect = useEffectPass({
+		fragment: /* glsl */ `
+			uniform sampler2D uTexture;
+			varying vec2 vUv;
+
+			#define STRENGTH .75
+
+			vec3 sepia(vec3 color) {
+				const vec3 sepiaColor = vec3(1.2, 1.0, 0.7);
+				float grayScale = dot(color, vec3(0.299, 0.587, 0.114));
+				return grayScale * sepiaColor;
+			}
+
+			void main() {
+				vec3 color = texture(uTexture, vUv).rgb;
+				color = mix(color, sepia(color), STRENGTH);
+				gl_FragColor = vec4(color, 1.);
+			}
+		`,
+	});
+
+	const { onAfterRender } = useWebGLCanvas({
+		canvas: "#glCanvas",
+		fragment: /* glsl */ `
+				in vec2 vUv;
+				uniform sampler2D uTexture;
+				uniform vec2 uResolution;
+				out vec4 fragColor;
+
+				void main() {
+					vec2 textureResolution = vec2(textureSize(uTexture, 0));
+					float canvasRatio = uResolution.x / uResolution.y;
+					float textureRatio = textureResolution.x / textureResolution.y;
+
+					vec2 uv = vUv - 0.5;
+					uv.x *= canvasRatio / textureRatio;
+					uv += 0.5;
+
+					vec3 color = texture(uTexture, uv).rgb;
+					color *= step(0., uv.x) * (1. - step(1., uv.x));
+					color *= step(0., uv.y) * (1. - step(1., uv.y));
+
+					fragColor = vec4(color, 1.);
+				}
+				`,
+		uniforms: {
+			uTexture: await loadTexture("/images/lion.jpg"),
+		},
+		postEffects: [sepiaEffect, vignetteEffect],
+	});
+
+	onAfterRender(incrementRenderCount);
+</script>
+
+<Layout title="Post-processing">
+	<canvas id="glCanvas"></canvas>
+</Layout>
+
+<style>
+	canvas {
+		/* height: min(500px, 60svmin); */
+		aspect-ratio: 3/2;
+	}
+</style>
