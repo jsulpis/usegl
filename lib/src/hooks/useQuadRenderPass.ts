@@ -1,6 +1,5 @@
 import type { Uniforms } from "../types";
 import { useRenderPass, type RenderPassOptions } from "./useRenderPass";
-import { quadVertexPositions, quadVertexShaderSource } from "../helpers/quad";
 import { findAttributeName, findVaryingName } from "../internal/findName";
 
 export type QuadPassOptions<U extends Uniforms = Record<string, never>> = Omit<
@@ -40,3 +39,16 @@ export function useQuadRenderPass<U extends Uniforms>(
 		vertex: vertexShader,
 	});
 }
+
+const quadVertexShaderSource = /*glsl*/ `#version 300 es
+
+in vec2 aPosition;
+out vec2 vUv;
+
+void main() {
+   gl_Position = vec4(aPosition, 0.0, 1.0);
+   vUv = (aPosition + 1.0) / 2.0;
+}
+`;
+
+const quadVertexPositions = [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1];
