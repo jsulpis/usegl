@@ -4,7 +4,7 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-	import { onPointerEvents, useLoop, useWebGLCanvas } from "usegl";
+	import { onPointerEvents, useLoop, useWebGLCanvas, useBoundingRect } from "usegl";
 	import { fragment, vertex } from "../../shaders/blob";
 	import { incrementRenderCount } from "../../components/renderCount";
 
@@ -20,13 +20,13 @@ import Layout from "../../layouts/Layout.astro";
 		immediate: false,
 	});
 
-	const canvasGeometry = getCanvasGeometry(canvas);
+	const { center, rect } = useBoundingRect(canvas);
 	const targetPointer = { x: 0, y: 0 };
 
 	onPointerEvents(canvas, {
 		move: ({ x, y }) => {
-			targetPointer.x = (x - canvasGeometry.center.x) / (canvasGeometry.width / 2);
-			targetPointer.y = (y - canvasGeometry.center.y) / (canvasGeometry.height / 2);
+			targetPointer.x = (x - center.x) / (rect.width / 2);
+			targetPointer.y = (center.y - y) / (rect.height / 2);
 		},
 		leave: () => {
 			targetPointer.x = targetPointer.y = 0;
@@ -44,25 +44,6 @@ import Layout from "../../layouts/Layout.astro";
 		},
 		{ immediate: false }
 	);
-
-	function getCanvasGeometry(canvas: HTMLCanvasElement) {
-		const canvasGeometry = { center: { x: 0, y: 0 }, width: 0, height: 0 };
-
-		function updateGeometry() {
-			const { top, right, bottom, left } = canvas.getBoundingClientRect();
-			canvasGeometry.center = {
-				x: (left + right) / 2,
-				y: (top + bottom) / 2,
-			};
-			canvasGeometry.width = right - left;
-			canvasGeometry.height = top - bottom;
-		}
-
-		updateGeometry();
-		window.addEventListener("resize", updateGeometry);
-
-		return canvasGeometry;
-	}
 
 	onAfterRender(incrementRenderCount);
 </script>

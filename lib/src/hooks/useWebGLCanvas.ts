@@ -4,10 +4,10 @@ import { useWebGLContext } from "./useWebGLContext";
 import { useQuadRenderPass } from "./useQuadRenderPass";
 import { useCompositor } from "./useCompositor";
 import { findUniformName } from "../internal/findName";
-import type { LoopOptions } from "./useLoop";
+import type { UseLoopOptions } from "./useLoop";
 import { useLoop } from "./useLoop";
 
-interface Props<U extends Uniforms> extends LoopOptions {
+interface Props<U extends Uniforms> extends UseLoopOptions {
 	canvas: HTMLCanvasElement | OffscreenCanvas | string;
 	fragment: string;
 	vertex?: string;
