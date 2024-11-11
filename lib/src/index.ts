@@ -12,6 +12,6 @@ export { useRenderPass } from "./hooks/useRenderPass";
 export { useWebGLCanvas } from "./hooks/useWebGLCanvas";
 export { useWebGLContext } from "./hooks/useWebGLContext";
 export { useLoop, playAllLoops, pauseAllLoops } from "./hooks/useLoop";
+export { useResizeObserver } from "./hooks/useResizeObserver";
 
 export { onPointerEvents } from "./helpers/pointer";
-export { onCanvasResize } from "./helpers/resize";

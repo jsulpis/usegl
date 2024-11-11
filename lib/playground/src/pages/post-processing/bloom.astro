@@ -5,10 +5,10 @@ import Layout from "../../layouts/Layout.astro";
 <script>
 	import {
 		useEffectPass,
-		onCanvasResize,
 		useWebGLContext,
 		useCompositor,
 		useRenderPass,
+		useResizeObserver,
 	} from "usegl";
 	import {
 		fragmentShaderSource,
@@ -84,7 +84,7 @@ import Layout from "../../layouts/Layout.astro";
 		combinePass,
 	]);
 
-	onCanvasResize(canvas, ({ devicePixelSize }) => {
+	useResizeObserver(canvas, ({ devicePixelSize }) => {
 		resizeCanvas(devicePixelSize.width, devicePixelSize.height);
 
 		compositor.setSize(devicePixelSize);
