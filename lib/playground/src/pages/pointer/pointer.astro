@@ -3,7 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-	import { onPointerEvents, useWebGLCanvas } from "usegl";
+	import { useBoundingRect, onPointerEvents, useWebGLCanvas } from "usegl";
 	import { incrementRenderCount } from "../../components/renderCount";
 
 	const canvas = document.querySelector("canvas");
@@ -27,9 +27,11 @@ import Layout from "../../layouts/Layout.astro";
 		},
 	});
 
+	const { rect } = useBoundingRect(canvas);
+
 	onPointerEvents(canvas, {
 		move: ({ clientX, clientY }) => {
-			const { left, bottom, width, height } = canvas.getBoundingClientRect();
+			const { left, bottom, width, height } = rect;
 			uniforms.uPointerPosition = [
 				(clientX - (left + width / 2)) / Math.min(width, height),
 				(bottom - height / 2 - clientY) / Math.min(width, height),

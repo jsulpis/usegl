@@ -17,7 +17,7 @@ interface LoopData {
 	elapsedTime: number;
 }
 
-export interface LoopOptions {
+export interface UseLoopOptions {
 	/**
 	 * If true, the loop will start immediately.
 	 *
@@ -40,7 +40,10 @@ const allLoops: Array<LoopObj> = [];
  * @param options Options for the loop.
  * @returns  An object with `play` and `pause` methods to control the animation loop.
  */
-export function useLoop(callback: ({ time, deltaTime }: LoopData) => void, options?: LoopOptions) {
+export function useLoop(
+	callback: ({ time, deltaTime }: LoopData) => void,
+	options?: UseLoopOptions,
+) {
 	let animationFrameHandle: number;
 	let pauseTime: number | null;
 	let loopStartTime: number;
