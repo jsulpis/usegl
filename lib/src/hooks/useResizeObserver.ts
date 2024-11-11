@@ -1,24 +1,28 @@
 /**
- * Listen for resize of the canvas itself instead of the whole window
+ * Listen for changes to the size of an element.
  */
-export function onCanvasResize(
-	canvas: HTMLCanvasElement,
+export function useResizeObserver(
+	target: HTMLElement,
 	callback: (args: {
 		/**
-		 * canvas size in CSS pixels
+		 * size of the observed element in CSS pixels
 		 */
 		size: { width: number; height: number };
 		/**
-		 * canvas size in device pixels
+		 * size of the observed element in device pixels
 		 */
 		devicePixelSize: { width: number; height: number };
+		/**
+		 * untouched, native observer entries
+		 */
+		entries: ResizeObserverEntry[];
 	}) => void,
 ) {
 	let size: ResizeObserverSize;
 	let devicePixelSize: ResizeObserverSize;
 
 	const observer = new ResizeObserver((entries) => {
-		const entry = entries.find((entry) => entry.target === canvas)!;
+		const entry = entries.find((entry) => entry.target === target)!;
 
 		size = entry.contentBoxSize[0];
 		devicePixelSize = entry.devicePixelContentBoxSize?.[0] || {
@@ -26,14 +30,26 @@ export function onCanvasResize(
 			inlineSize: Math.round(size.inlineSize * window.devicePixelRatio),
 		};
 
-		// resize after next paint, otherwise there are glitches if a render loop is active
+		// call the callback after the next paint, otherwise there are glitches when resizing a canvas
+		// with an active render loop
 		setTimeout(() => {
 			callback({
 				size: { width: size.inlineSize, height: size.blockSize },
 				devicePixelSize: { width: devicePixelSize.inlineSize, height: devicePixelSize.blockSize },
+				entries,
 			});
 		}, 0);
 	});
 
-	observer.observe(canvas);
+	observer.observe(target);
+
+	return {
+		disconnect: observer.disconnect,
+		observe: () => {
+			observer.observe(target);
+		},
+		unobserve: () => {
+			observer.unobserve(target);
+		},
+	};
 }

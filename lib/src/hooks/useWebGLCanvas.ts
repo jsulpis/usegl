@@ -1,4 +1,4 @@
-import { onCanvasResize } from "../helpers/resize";
+import { useResizeObserver } from "./useResizeObserver";
 import type { Attribute, DrawMode, PostEffect, Uniforms } from "../types";
 import { useWebGLContext } from "./useWebGLContext";
 import { useQuadRenderPass } from "./useQuadRenderPass";
@@ -83,12 +83,12 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
 		));
 	}
 
-	if (canvas instanceof HTMLCanvasElement) {
-		// Don't listen for resize on an OffscreenCanvas (possibly in a worker)
-		onCanvasResize(canvas, ({ size }) => {
-			setSize({ width: size.width * dpr, height: size.height * dpr });
-		});
-	}
+	const resizeObserver =
+		canvas instanceof HTMLCanvasElement
+			? useResizeObserver(canvas, ({ size }) => {
+					setSize({ width: size.width * dpr, height: size.height * dpr });
+				})
+			: null; // Don't listen for resize on an OffscreenCanvas (possibly in a worker)
 
 	return {
 		gl,
@@ -102,5 +102,6 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
 		onUpdated: primaryPass.onUpdated,
 		onBeforeRender: primaryPass.onBeforeRender,
 		onAfterRender: primaryPass.onAfterRender,
+		resizeObserver,
 	};
 };
