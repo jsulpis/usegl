@@ -22,6 +22,9 @@ test("pointer move", async ({ page, viewport, baseURL }) => {
 	await page.mouse.move((viewport?.width || 0) * 0.5, (viewport?.height || 0) * 0.45);
 
 	await expect(page.getByText("Renders: 2")).toBeVisible();
+
+	await page.mouse.down();
+
 	await page.waitForTimeout(100);
 
 	await expect(page.locator("main")).toHaveScreenshot();

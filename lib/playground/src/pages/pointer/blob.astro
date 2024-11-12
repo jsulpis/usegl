@@ -4,7 +4,7 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-	import { onPointerEvents, useLoop, useWebGLCanvas, useBoundingRect } from "usegl";
+	import { usePointerEvents, useLoop, useWebGLCanvas } from "usegl";
 	import { fragment, vertex } from "../../shaders/blob";
 	import { incrementRenderCount } from "../../components/renderCount";
 
@@ -20,13 +20,12 @@ import Layout from "../../layouts/Layout.astro";
 		immediate: false,
 	});
 
-	const { center, rect } = useBoundingRect(canvas);
 	const targetPointer = { x: 0, y: 0 };
 
-	onPointerEvents(canvas, {
-		move: ({ x, y }) => {
-			targetPointer.x = (x - center.x) / (rect.width / 2);
-			targetPointer.y = (center.y - y) / (rect.height / 2);
+	usePointerEvents(canvas, {
+		move: ({ pointer, canvasRect, canvasCenter }) => {
+			targetPointer.x = (pointer.x - canvasCenter.x) / (canvasRect.width / 2);
+			targetPointer.y = (canvasCenter.y - pointer.y) / (canvasRect.height / 2);
 		},
 		leave: () => {
 			targetPointer.x = targetPointer.y = 0;

@@ -15,6 +15,17 @@ export interface UseBoundingRectOptions {
 	windowScroll?: boolean;
 }
 
+export interface BoundingRect {
+	width: number;
+	height: number;
+	top: number;
+	right: number;
+	bottom: number;
+	left: number;
+	x: number;
+	y: number;
+}
+
 /**
  * Dynamically get the bounding rectangle of an HTML element
  */
@@ -24,7 +35,7 @@ export function useBoundingRect(target: HTMLElement, options: UseBoundingRectOpt
 		windowScroll = typeof window !== "undefined",
 	} = options;
 
-	const rect = {
+	const rect: BoundingRect = {
 		width: 0,
 		height: 0,
 		top: 0,
