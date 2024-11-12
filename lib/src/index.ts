@@ -14,5 +14,4 @@ export { useWebGLContext } from "./hooks/useWebGLContext";
 export { useLoop, playAllLoops, pauseAllLoops } from "./hooks/useLoop";
 export { useResizeObserver } from "./hooks/useResizeObserver";
 export { useBoundingRect } from "./hooks/useBoundingRect";
-
-export { onPointerEvents } from "./helpers/pointer";
+export { usePointerEvents } from "./hooks/usePointerEvents";
