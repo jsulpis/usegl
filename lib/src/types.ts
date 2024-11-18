@@ -1,20 +1,17 @@
-import type { TextureData } from "./core/texture";
+import type { TextureOptions } from "./core/texture";
 
 export type VectorUniform =
 	| [number, number]
 	| [number, number, number]
 	| [number, number, number, number];
-export type TextureUniform =
-	| { data: TextureData; src?: never; width: number; height: number }
-	| { data?: never; src: TexImageSource; width?: never; height?: never }
-	| WebGLTexture;
+export type TextureUniform = TextureOptions | WebGLTexture;
 export type UniformValue = number | VectorUniform | TextureUniform;
 export type Uniforms = Record<string, UniformValue | (() => UniformValue)>;
 
 type TypedArray = ArrayBufferView & { length: number };
 
 export interface Attribute {
-	size: number;
+	size: 1 | 2 | 3 | 4;
 	data: TypedArray | number[];
 	type?: GLenum;
 	normalize?: boolean;

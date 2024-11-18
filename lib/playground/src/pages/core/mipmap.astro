@@ -1,0 +1,119 @@
+---
+import GlobalPlayPause from "../../components/GlobalPlayPause.astro";
+import Layout from "../../layouts/Layout.astro";
+---
+
+<script>
+	import { useWebGLCanvas, loadTexture } from "usegl";
+	import { incrementRenderCount } from "../../components/renderCount";
+
+	const earthNight = await loadTexture("/images/2k_earth_night.jpeg");
+	const earthColor = await loadTexture("/images/2k_earth_color.jpeg");
+
+	const { onAfterRender } = useWebGLCanvas({
+		canvas: "#glCanvas",
+		fragment: /* glsl */ `
+				uniform vec2 u_resolution;
+				uniform sampler2D uNight;
+				uniform sampler2D uColor;
+				uniform float uTime;
+
+				#define PI acos(-1.0)
+
+				out vec4 fragColor;
+
+				mat3 rotateY(float angle) {
+					float s = sin(angle);
+					float c = cos(angle);
+					return mat3(
+						c, 0.0, -s,
+						0.0, 1.0, 0.0,
+						s, 0.0, c
+					);
+				}
+
+				struct RayHit {
+					bool hit;
+					float t;
+					vec3 position;
+					vec3 normal;
+				};
+
+				vec3 getRayDirection(vec2 uv) {
+					vec2 p = (2.0 * uv - 1.0);
+					p.x *= u_resolution.x/u_resolution.y;
+					return normalize(vec3(p, 1.0));
+				}
+
+				RayHit sphereIntersect(vec3 ro, vec3 rd, vec3 center, float radius) {
+					RayHit result;
+					vec3 oc = ro - center;
+					float b = dot(rd, oc);
+					float c = dot(oc, oc) - radius * radius;
+					float h = b * b - c;
+
+					if (h < 0.0) {
+						result.hit = false;
+						return result;
+					}
+
+					result.hit = true;
+					result.t = -b - sqrt(h);
+					result.position = ro + result.t * rd;
+					result.normal = normalize(result.position - center);
+					return result;
+				}
+
+				vec2 sphericalMapping(vec3 normal) {
+					float phi = atan(normal.z, normal.x);
+					float theta = acos(normal.y);
+
+					return vec2(
+							0.5 + phi / (2.0 * PI),
+							1.0 - theta / PI
+					);
+				}
+
+				vec3 calculateFinalColor(vec2 texCoord, vec3 normal) {
+					vec3 lightDir = normalize(vec3(1.0,1.0, .0));
+					vec4 texColor = .5 * texture(uColor, texCoord) + pow(texture(uNight, texCoord).r, 1.5);
+					float diffuse = max(dot(normal, lightDir), 0.0);
+					return texColor.rgb * (0.5 + 2.*diffuse);
+				}
+
+				void main() {
+					vec2 uv = gl_FragCoord.xy/u_resolution.xy;
+					vec3 ro = vec3(0.0, 0.0, -2.0);
+					vec3 rd = getRayDirection(uv);
+
+					vec3 center = vec3(0.0, 0.0, 0.0);
+					float radius = 1.3;
+
+					RayHit hit = sphereIntersect(ro, rd, center, radius);
+
+					if (!hit.hit) {
+							fragColor = vec4(0.0, 0.0, 0.0, 1.0);
+							return;
+					}
+
+					vec2 texCoord = sphericalMapping(rotateY(uTime / 10.) * hit.normal);
+
+					vec3 finalColor = calculateFinalColor(texCoord, hit.normal);
+
+					fragColor = vec4(finalColor, 1.0);
+				}
+				`,
+		uniforms: {
+			uColor: earthColor,
+			uNight: earthNight,
+		},
+		immediate: false,
+	});
+
+	onAfterRender(incrementRenderCount);
+</script>
+
+<Layout title="Texture">
+	<GlobalPlayPause />
+	<canvas id="glCanvas"></canvas>
+</Layout>

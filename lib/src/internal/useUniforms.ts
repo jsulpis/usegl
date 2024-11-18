@@ -82,9 +82,9 @@ export function useUniforms<U extends Uniforms>(uniforms: U) {
 			}
 		}
 
-		if (value.src) {
+		if (value.src || value.data) {
 			if (!textureUnits.has(name)) {
-				const texture = createTexture(_gl, { src: value.src });
+				const texture = createTexture(_gl, value);
 				textureUnits.set(name, { index: textureUnitIndex++, texture });
 			}
 			const { index, texture } = textureUnits.get(name)!;
