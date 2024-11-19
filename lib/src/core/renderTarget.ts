@@ -14,6 +14,7 @@ export function createRenderTarget(
 		data: null,
 		width: _width,
 		height: _height,
+		generateMipmaps: false,
 	});
 
 	gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
@@ -24,7 +25,7 @@ export function createRenderTarget(
 		_width = width;
 		_height = height;
 
-		const newTexture = createTexture(gl, { data: null, width, height });
+		const newTexture = createTexture(gl, { data: null, width, height, generateMipmaps: false });
 
 		gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
 		gl.bindTexture(gl.TEXTURE_2D, newTexture);

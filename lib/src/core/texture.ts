@@ -75,9 +75,8 @@ const wrapMap: Record<WrappingMode, number> = {
 export function createTexture(gl: WebGL2RenderingContext, options: TextureOptions) {
 	const {
 		data = null,
-		src,
 		level = 0,
-		flipY = src !== undefined,
+		flipY = true,
 		internalFormat = WebGL2RenderingContext.RGBA,
 		format = WebGL2RenderingContext.RGBA,
 		type = WebGL2RenderingContext.UNSIGNED_BYTE,
@@ -113,17 +112,17 @@ export function createTexture(gl: WebGL2RenderingContext, options: TextureOption
 
 	if (generateMipmaps) {
 		gl.generateMipmap(gl.TEXTURE_2D);
-	}
 
-	// anisotropic filtering
-	const ext = gl.getExtension("EXT_texture_filter_anisotropic");
-	if (ext && anisotropy > 1) {
-		const maxAnisotropy = gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
-		gl.texParameterf(
-			gl.TEXTURE_2D,
-			ext.TEXTURE_MAX_ANISOTROPY_EXT,
-			Math.min(maxAnisotropy, anisotropy),
-		);
+		// anisotropic filtering
+		const ext = gl.getExtension("EXT_texture_filter_anisotropic");
+		if (ext && anisotropy > 1) {
+			const maxAnisotropy = gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+			gl.texParameterf(
+				gl.TEXTURE_2D,
+				ext.TEXTURE_MAX_ANISOTROPY_EXT,
+				Math.min(maxAnisotropy, anisotropy),
+			);
+		}
 	}
 
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, minFilterMap[minFilter]);
