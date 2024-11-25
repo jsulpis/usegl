@@ -1,0 +1,156 @@
+---
+interface Props {
+  exampleTitle: string;
+  files?: SandpackFiles;
+  template?: string;
+}
+
+const { files = {}, exampleTitle, template } = Astro.props as Props;
+
+import { Sandpack, type SandpackFiles } from "@codesandbox/sandpack-react";
+
+const html = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>${exampleTitle} | UseGL Example</title>
+  </head>
+  <body>
+    ${template || '<canvas id="glCanvas"></canvas>'}
+    <script src="/index.ts"></script>
+  </body>
+</html>
+`;
+
+const css = `body {
+  margin: 0;
+}
+
+canvas {
+  width: 100svw;
+  height: 100svh;
+  display: block;
+}`;
+---
+
+<div id="gl-example">
+  <Sandpack
+    theme={"dark"}
+    template="vanilla-ts"
+    options={{
+      initMode: "immediate",
+      editorWidthPercentage: 40,
+    }}
+    files={{
+      ...files,
+      "/styles.css": {
+        code: css,
+      },
+      "/index.html": {
+        code: html,
+      },
+      "/package.json": {
+        hidden: true,
+        code: JSON.stringify({
+          name: "usegl-example",
+          main: "/index.ts",
+          dependencies: {
+            usegl: "*",
+          },
+          devDependencies: {
+            typescript: "^4.0.0",
+          },
+        }),
+      },
+      /* avoid an IDE error in CodeSandbox */
+      "/types.d.ts": {
+        hidden: true,
+        code: `declare module "*?raw" {
+  const src: string;
+  export default src;
+}`,
+      },
+    }}
+    client:only
+  />
+</div>
+
+<style lang="scss" is:global>
+  #gl-example {
+    .sp-tab-container:has(button:focus) {
+      outline: none;
+    }
+    .sp-tab-container:has(button:focus-visible) {
+      outline: var(--sp-colors-accent) auto 1px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+    }
+
+    .sp-wrapper {
+      --wrapper-width: calc(100svw - var(--sl-sidebar-width));
+      --wrapper-height: calc(100svh - var(--sl-nav-height));
+
+      --editor-width: var(--wrapper-width);
+      --editor-height: 40svh;
+
+      --preview-width: var(--wrapper-width);
+      --preview-height: calc(var(--wrapper-height) - var(--editor-height));
+
+      animation: fadeIn 0.2s 0.1s ease-out both !important;
+      width: var(--wrapper-width) !important;
+      height: var(--wrapper-height) !important;
+
+      @media (min-width: 80rem) or (orientation: landscape) {
+        --editor-width: 40svw;
+        --editor-height: var(--wrapper-height);
+
+        --preview-width: calc(var(--wrapper-width) - var(--editor-width));
+        --preview-height: var(--wrapper-height);
+      }
+
+      @media (max-width: 50rem) {
+        --sl-sidebar-width: 0px;
+      }
+
+      * {
+        margin: 0 !important; // cancel Starlight style
+      }
+    }
+
+    .sp-layout {
+      height: 100%;
+      border: 0 !important;
+      gap: 0;
+    }
+
+    .sp-editor {
+      flex: initial !important;
+      width: var(--editor-width) !important;
+      height: var(--editor-height) !important;
+      min-width: 0; // needed on landscape phone
+    }
+
+    .sp-preview {
+      flex: initial !important;
+      width: var(--preview-width) !important;
+      height: var(--preview-height) !important;
+      min-width: 0; // needed on landscape phone
+    }
+
+    a[title="Open in CodeSandbox"] {
+      width: var(--sp-space-7);
+      height: var(--sp-space-7);
+      padding-inline: 0 !important;
+      justify-content: center;
+
+      span {
+        display: none;
+      }
+    }
+  }
+</style>
