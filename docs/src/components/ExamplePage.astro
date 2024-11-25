@@ -1,0 +1,79 @@
+---
+import StarlightPage from "@astrojs/starlight/components/StarlightPage.astro";
+
+const examplesFiles = import.meta.glob("../pages/examples/**/index.mdx", {
+  eager: true,
+  import: "frontmatter",
+});
+
+const examplesMetas = Object.entries(examplesFiles).map(([path, frontmatter]) => ({
+  section: upperFirst(path.match(/\/examples\/([^/]*)/)?.[1] || "Other"),
+  title: (frontmatter as { title: string }).title,
+  link: path.replace(/.*pages(\/examples.*)\/index\.mdx/, "$1"),
+}));
+
+function upperFirst(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+const activeExample = examplesMetas.find((meta) => Astro.url.pathname.includes(meta.link));
+
+const examplesSections = Array.from(new Set(examplesMetas.map((meta) => meta.section)));
+
+const sidebar = [
+  {
+    label: "leadingNavLinks",
+    items: [
+      { label: "Guides", link: "/introduction/quick-start" },
+      { label: "Examples", link: "/examples/gradient" },
+    ],
+  },
+  ...examplesSections.map((section) => ({
+    label: section,
+    items: examplesMetas
+      .filter((meta) => meta.section === section)
+      .map((meta) => ({
+        label: meta.title,
+        link: meta.link,
+      })),
+  })),
+];
+---
+
+<StarlightPage
+  frontmatter={{
+    title: activeExample?.title || "Example",
+    prev: false,
+    next: false,
+    tableOfContents: false,
+  }}
+  sidebar={sidebar}
+>
+  <slot />
+</StarlightPage>
+
+<style is:global>
+  :root {
+    --sl-sidebar-width: 12.5rem;
+  }
+
+  footer {
+    display: none !important;
+  }
+
+  .content-panel {
+    border: none !important;
+
+    &:has(h1) {
+      opacity: 0;
+      position: absolute;
+    }
+  }
+
+  main,
+  .sl-container,
+  .content-panel {
+    padding: 0;
+    margin: 0;
+  }
+</style>

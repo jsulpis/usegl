@@ -1,0 +1,17 @@
+@media (width > 50rem) {
+  :root {
+    --sl-nav-gap: 2rem;
+  }
+}
+
+div:has(> site-search) {
+  justify-content: end;
+}
+
+.site-title + ul {
+  gap: calc(var(--sl-nav-gap) / 2);
+
+  a[aria-current="page"] {
+    font-weight: bold;
+  }
+}
