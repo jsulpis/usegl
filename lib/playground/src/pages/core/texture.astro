@@ -3,14 +3,14 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-	import { useWebGLCanvas, loadTexture } from "usegl";
-	import { incrementRenderCount } from "../../components/renderCount";
+  import { useWebGLCanvas, loadTexture } from "usegl";
+  import { incrementRenderCount } from "../../components/renderCount";
 
-	const texture = await loadTexture("/images/lion.jpg");
+  const texture = await loadTexture("https://picsum.photos/id/669/600/400");
 
-	const { onAfterRender } = useWebGLCanvas({
-		canvas: "#glCanvas",
-		fragment: /* glsl */ `
+  const { onAfterRender } = useWebGLCanvas({
+    canvas: "#glCanvas",
+    fragment: /* glsl */ `
 				in vec2 vUv;
 				uniform sampler2D uTexture;
 				uniform vec2 uResolution;
@@ -40,20 +40,20 @@ import Layout from "../../layouts/Layout.astro";
 					fragColor = vec4(color, 1.);
 				}
 				`,
-		uniforms: {
-			uTexture: texture,
-		},
-	});
+    uniforms: {
+      uTexture: texture,
+    },
+  });
 
-	onAfterRender(incrementRenderCount);
+  onAfterRender(incrementRenderCount);
 </script>
 
 <Layout title="Texture">
-	<canvas id="glCanvas"></canvas>
+  <canvas id="glCanvas"></canvas>
 </Layout>
 
 <style>
-	canvas {
-		height: 300px;
-	}
+  canvas {
+    height: 300px;
+  }
 </style>
