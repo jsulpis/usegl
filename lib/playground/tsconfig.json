@@ -1,9 +1,9 @@
 {
-	"extends": "astro/tsconfigs/base",
-	"include": ["../src", "src"],
-	"compilerOptions": {
-		"paths": {
-			"usegl": ["../src/index.ts"]
-		}
-	}
+  "extends": "astro/tsconfigs/base",
+  "include": ["../src", "src"],
+  "compilerOptions": {
+    "paths": {
+      "usegl": ["../src/index.ts"]
+    }
+  }
 }
