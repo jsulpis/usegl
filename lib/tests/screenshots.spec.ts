@@ -6,11 +6,15 @@ const ignoreRoutes = new Set(["pause", "dataTexture"]);
 
 const routesToTest = routes.filter(({ route }) => !ignoreRoutes.has(route));
 
+const expectedRendersByDemo = {
+  scissor: 2,
+};
+
 for (const { section, route } of routesToTest) {
   test(route, async ({ page, baseURL }) => {
     await page.goto(`${baseURL}/${section}/${route}`);
 
-    await expect(page.getByText("Renders: 1")).toBeVisible();
+    await expect(page.getByText(`Renders: ${expectedRendersByDemo[route] || 1}`)).toBeVisible();
     await expect(page.locator("main")).toHaveScreenshot();
   });
 }

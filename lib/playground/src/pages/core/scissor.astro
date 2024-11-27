@@ -1,0 +1,52 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<script>
+  import { useWebGLCanvas } from "usegl";
+  import { incrementRenderCount } from "../../components/renderCount";
+
+  const canvas = document.querySelector("canvas");
+
+  const leftShader = useWebGLCanvas({
+    canvas,
+    fragment: /* glsl */ `
+			void main() {
+				gl_FragColor = vec4(1, 0, 0, 1);
+			}
+		`,
+    renderMode: "manual",
+  });
+
+  const rightShader = useWebGLCanvas({
+    canvas,
+    fragment: /* glsl */ `
+			void main() {
+				gl_FragColor = vec4(0, 1, 0, 1);
+			}
+		`,
+    renderMode: "manual",
+  });
+
+  leftShader.onAfterRender(incrementRenderCount);
+  rightShader.onAfterRender(incrementRenderCount);
+
+  const { gl } = leftShader;
+  gl.enable(gl.SCISSOR_TEST);
+
+  gl.scissor(0, 0, gl.drawingBufferWidth / 2, gl.drawingBufferHeight);
+  leftShader.render();
+
+  gl.scissor(gl.drawingBufferWidth / 2, 0, gl.drawingBufferWidth / 2, gl.drawingBufferHeight);
+  rightShader.render();
+</script>
+
+<Layout title="Scissor">
+  <canvas></canvas>
+</Layout>
+
+<style>
+  canvas {
+    aspect-ratio: 2;
+  }
+</style>
