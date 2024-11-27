@@ -1,54 +1,54 @@
 {
-	"name": "usegl",
-	"version": "0.2.0",
-	"description": "Lightweight hooks library for WebGL",
-	"repository": "jsulpis/usegl",
-	"license": "MIT",
-	"author": "Julien SULPIS",
-	"sideEffects": false,
-	"type": "module",
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.mjs"
-		}
-	},
-	"main": "./dist/index.mjs",
-	"module": "./dist/index.mjs",
-	"types": "./dist/index.d.ts",
-	"files": [
-		"dist"
-	],
-	"scripts": {
-		"build": "unbuild",
-		"dev": "astro dev",
-		"format": "prettier src --check",
-		"format:fix": "prettier src --write",
-		"lint": "eslint src",
-		"lint:fix": "eslint src --fix",
-		"prepack": "pnpm build",
-		"release": "changelogen --release --clean",
-		"test": "playwright test",
-		"test:local": "docker build -t usegl . && docker run --rm -v $(pwd)/test-results:/app/test-results usegl /bin/sh -c 'xvfb-run pnpm run test'",
-		"test:ui": "playwright test --ui",
-		"test:update": "docker build -t usegl . && docker run --rm -v $(pwd)/test-results:/app/test-results -v $(pwd)/tests/__screenshots__:/app/tests/__screenshots__ usegl",
-		"typecheck": "tsc --noEmit && astro check"
-	},
-	"devDependencies": {
-		"@astrojs/check": "0.9.4",
-		"@playwright/test": "1.48.1",
-		"@types/node": "22.1.0",
-		"astro": "4.16.7",
-		"changelogen": "0.5.5",
-		"eslint": "9.8.0",
-		"eslint-config-unjs": "0.3.2",
-		"prettier": "3.3.3",
-		"typescript": "5.5.4",
-		"unbuild": "3.0.0-rc.7"
-	},
-	"changelog": {
-		"excludeAuthors": [
-			""
-		]
-	}
+  "name": "usegl",
+  "version": "0.2.0",
+  "description": "Lightweight hooks library for WebGL",
+  "repository": "jsulpis/usegl",
+  "license": "MIT",
+  "author": "Julien SULPIS",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "unbuild",
+    "dev": "astro dev",
+    "format": "prettier src --check",
+    "format:fix": "prettier src --write",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "prepack": "pnpm build",
+    "release": "changelogen --release --clean",
+    "test": "playwright test",
+    "test:local": "docker build -t usegl . && docker run --rm -v $(pwd)/test-results:/app/test-results usegl /bin/sh -c 'xvfb-run pnpm run test'",
+    "test:ui": "playwright test --ui",
+    "test:update": "docker build -t usegl . && docker run --rm -v $(pwd)/test-results:/app/test-results -v $(pwd)/tests/__screenshots__:/app/tests/__screenshots__ usegl",
+    "typecheck": "tsc --noEmit && astro check"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.4",
+    "@playwright/test": "1.48.1",
+    "@types/node": "22.1.0",
+    "astro": "4.16.7",
+    "changelogen": "0.5.5",
+    "eslint": "9.8.0",
+    "eslint-config-unjs": "0.3.2",
+    "prettier": "3.3.3",
+    "typescript": "5.5.4",
+    "unbuild": "3.0.0-rc.7"
+  },
+  "changelog": {
+    "excludeAuthors": [
+      ""
+    ]
+  }
 }

@@ -15,21 +15,21 @@ A proper documentation will come soon !
 
 <PackageManagers pkg="usegl" frame="false" pkgManagers={["pnpm", "npm", "yarn", "bun"]} />
 
-
 ## Usage
 
 <Code lang="js" code={`
 import { useWebGLCanvas } from "usegl";
 
 useWebGLCanvas({
-		canvas: document.querySelector("canvas"),
-		fragment: /* glsl */ \`
-			varying vec2 vUv;
-			uniform float uTime;
+canvas: document.querySelector("canvas"),
+fragment: /_ glsl _/ \`
+varying vec2 vUv;
+uniform float uTime;
 
-			void main() {
-				gl_FragColor = vec4(vUv, sin(uTime) / 2. + .5, 1.);
-			}
-		\`
+    		void main() {
+    			gl_FragColor = vec4(vUv, sin(uTime) / 2. + .5, 1.);
+    		}
+    	\`
+
 });
-`}  />
+`} />

@@ -1,6 +1,5 @@
 # Changelog
 
-
 ## v0.2.0
 
 [compare changes](https://github.com/jsulpis/usegl/compare/v0.1.0...v0.2.0)
@@ -11,7 +10,7 @@
 - Allow to provide the canvas as a CSS selector ([a7f8d0f](https://github.com/jsulpis/usegl/commit/a7f8d0f))
 - Add useLoop hook with play/pause controls ([f3e2cf3](https://github.com/jsulpis/usegl/commit/f3e2cf3))
 - Add useBoundingRect hook ([8d1851e](https://github.com/jsulpis/usegl/commit/8d1851e))
-- ⚠️  Change onPointerEvents to usePointerEvents and add more events ([ddeabd9](https://github.com/jsulpis/usegl/commit/ddeabd9))
+- ⚠️ Change onPointerEvents to usePointerEvents and add more events ([ddeabd9](https://github.com/jsulpis/usegl/commit/ddeabd9))
 
 ### 🩹 Fixes
 
@@ -20,7 +19,7 @@
 
 ### 💅 Refactors
 
-- ⚠️  Change `onCanvasResize` to `useResizeObserver` and provide controls on the observer ([31e38ff](https://github.com/jsulpis/usegl/commit/31e38ff))
+- ⚠️ Change `onCanvasResize` to `useResizeObserver` and provide controls on the observer ([31e38ff](https://github.com/jsulpis/usegl/commit/31e38ff))
 
 ### 🏡 Chore
 
@@ -39,11 +38,10 @@
 
 #### ⚠️ Breaking Changes
 
-- ⚠️  Change onPointerEvents to usePointerEvents and add more events ([ddeabd9](https://github.com/jsulpis/usegl/commit/ddeabd9))
-- ⚠️  Change `onCanvasResize` to `useResizeObserver` and provide controls on the observer ([31e38ff](https://github.com/jsulpis/usegl/commit/31e38ff))
+- ⚠️ Change onPointerEvents to usePointerEvents and add more events ([ddeabd9](https://github.com/jsulpis/usegl/commit/ddeabd9))
+- ⚠️ Change `onCanvasResize` to `useResizeObserver` and provide controls on the observer ([31e38ff](https://github.com/jsulpis/usegl/commit/31e38ff))
 
 ## v0.1.0
-
 
 ### 🚀 Enhancements
 
@@ -79,4 +77,3 @@
 - Separate packages for docs and lib ([1857c1c](https://github.com/jsulpis/usegl/commit/1857c1c))
 - Add license ([e0801ca](https://github.com/jsulpis/usegl/commit/e0801ca))
 - Setup unjs package template ([0dc0d0c](https://github.com/jsulpis/usegl/commit/0dc0d0c))
-
