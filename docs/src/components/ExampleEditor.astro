@@ -23,7 +23,9 @@ const html = `<!doctype html>
 </html>
 `;
 
-const css = `body {
+if (files["/styles.css"] == undefined && files["styles.css"] == undefined) {
+  files["/styles.css"] = {
+    code: `body {
   margin: 0;
 }
 
@@ -31,7 +33,9 @@ canvas {
   width: 100svw;
   height: 100svh;
   display: block;
-}`;
+}`,
+  };
+}
 ---
 
 <div id="gl-example">
@@ -44,9 +48,6 @@ canvas {
     }}
     files={{
       ...files,
-      "/styles.css": {
-        code: css,
-      },
       "/index.html": {
         code: html,
       },

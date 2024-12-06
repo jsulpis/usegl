@@ -8,10 +8,10 @@ export type TextureUniform = TextureParams | WebGLTexture;
 export type UniformValue = number | VectorUniform | TextureUniform;
 export type Uniforms = Record<string, UniformValue | (() => UniformValue)>;
 
-type TypedArray = ArrayBufferView & { length: number };
+export type TypedArray = ArrayBufferView & { length: number };
 
 export interface Attribute {
-  size: 1 | 2 | 3 | 4;
+  size: number;
   data: TypedArray | number[];
   type?: GLenum;
   normalize?: boolean;
