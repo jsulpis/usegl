@@ -1,8 +1,14 @@
 import { useWebGLCanvas } from "usegl";
-import fragment from "./fragment.glsl?raw";
 import "./styles.css";
 
 useWebGLCanvas({
   canvas: "#glCanvas",
-  fragment,
+  fragment: /* glsl */ `
+    varying vec2 vUv;
+    uniform float uTime;
+
+    void main() {
+      gl_FragColor = vec4(vUv, sin(uTime) / 2. + .5, 1.);
+    }
+  `,
 });

@@ -143,11 +143,19 @@ canvas {
       min-width: 0; // needed on landscape phone
     }
 
-    a[title="Open in CodeSandbox"] {
+    [title="Open in CodeSandbox"] {
       width: var(--sp-space-7);
       height: var(--sp-space-7);
-      padding-inline: 0 !important;
       justify-content: center;
+
+      &:is(a) {
+        padding-inline: 0 !important;
+      }
+
+      &:is(button) {
+        padding: var(--sp-space-1);
+        gap: 0;
+      }
 
       span {
         display: none;
