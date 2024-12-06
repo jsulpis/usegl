@@ -5,13 +5,11 @@ title: "Full screen gradient"
 import ExamplePage from "../../../../components/ExamplePage.astro";
 import ExampleEditor from "../../../../components/ExampleEditor.astro";
 import ts from "./_main.ts?raw";
-import fragment from "./_fragment.glsl?raw";
 
 <ExamplePage>
   <ExampleEditor
     exampleTitle={frontmatter.title}
     files={{
-      "fragment.glsl": { code: fragment, active: true },
       "index.ts": { code: ts },
     }}
   />
