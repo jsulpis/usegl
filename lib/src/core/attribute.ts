@@ -1,5 +1,5 @@
 import type { Attribute } from "../types";
-import { createAndBindBuffer, isSharedBufferSource } from "./buffer";
+import { createAndBindBuffer, getBufferData } from "./buffer";
 
 export function setAttribute(
   gl: WebGL2RenderingContext,
@@ -19,6 +19,7 @@ export function setAttribute(
   }
 
   if (location === -1) {
+    console.warn(`No location found for attribute "${name}".`);
     return { location, vertexCount: 0 };
   }
 
@@ -39,17 +40,13 @@ export function setAttribute(
     ? bufferData.byteLength / attribute.stride
     : bufferData.length / attribute.size;
 
-  return { location, vertexCount };
-}
+  if (!Number.isInteger(vertexCount)) {
+    console.warn(
+      `The computed vertex count of the "${name}" attribute is not an integer: ${vertexCount}. There might be an issue with the provided ${attribute.stride === undefined ? "size" : "stride"}.`,
+    );
+  }
 
-function getBufferData(data: Attribute["data"], isIndex: boolean) {
-  if (isSharedBufferSource(data)) {
-    return data;
-  }
-  if (isIndex) {
-    return data.length < 65_536 ? new Uint16Array(data) : new Uint32Array(data);
-  }
-  return new Float32Array(data);
+  return { location, vertexCount };
 }
 
 function getGLType(gl: WebGL2RenderingContext, data: ArrayBufferView) {

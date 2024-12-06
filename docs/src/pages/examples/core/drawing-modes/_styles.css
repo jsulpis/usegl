@@ -1,0 +1,15 @@
+body {
+  margin: 0;
+  background: black;
+  height: 100svh;
+  display: grid;
+  place-items: center;
+}
+
+canvas {
+  width: 90svmin;
+  height: 90svmin;
+  display: block;
+  border-radius: 8px;
+  border: 1px solid #555;
+}
