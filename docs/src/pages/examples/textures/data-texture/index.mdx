@@ -1,0 +1,16 @@
+---
+title: "Data Texture"
+---
+
+import ExamplePage from "../../../../components/ExamplePage.astro";
+import ExampleEditor from "../../../../components/ExampleEditor.astro";
+import ts from "./_main.ts?raw";
+
+<ExamplePage>
+  <ExampleEditor
+    exampleTitle={frontmatter.title}
+    files={{
+      "index.ts": { code: ts },
+    }}
+  />
+</ExamplePage>
