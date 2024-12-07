@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.3.0
+
+[compare changes](https://github.com/jsulpis/usegl/compare/v0.2.0...v0.3.0)
+
+### 🚀 Enhancements
+
+- Add mipmaps and anisotropic filtering ([4b875d0](https://github.com/jsulpis/usegl/commit/4b875d0))
+- Allow crossorigin textures ([170cd40](https://github.com/jsulpis/usegl/commit/170cd40))
+- Add manual render mode in useWebGLCanvas ([92183d4](https://github.com/jsulpis/usegl/commit/92183d4))
+
+### 📖 Documentation
+
+- Create documentation with Astro and Starlight ([ec7524d](https://github.com/jsulpis/usegl/commit/ec7524d))
+- Setup interactive examples ([7e084a0](https://github.com/jsulpis/usegl/commit/7e084a0))
+
 ## v0.2.0
 
 [compare changes](https://github.com/jsulpis/usegl/compare/v0.1.0...v0.2.0)
