@@ -3,7 +3,7 @@ import { defineConfig, devices } from "@playwright/test";
 const desktopViewport = { width: 700, height: 400 };
 const mobileViewport = { width: 360, height: 640 };
 
-const serverUrl = "http://localhost:4321";
+const serverUrl = "http://localhost:3000";
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -47,11 +47,12 @@ export default defineConfig({
           headless: false,
         },
       },
-      grepInvert: /play \/ pause controls/, // Flaky on firefox, and there is no fancy API in the play/pause controls, so the other browsers are enough
+      grepInvert: /play \/ pause controls/, // Flaky on firefox, and there is no fancy API in the play/pause controls, so the other browsers should be enough
     },
     {
       name: "safari",
       use: { ...devices["Desktop Safari"], viewport: desktopViewport },
+      grepInvert: /video/, // the video does not work in the docker image used for the CI, maybe due to a codec issue
     },
     {
       name: "android",
@@ -66,11 +67,13 @@ export default defineConfig({
     {
       name: "iphone",
       use: { ...devices["iPhone 12"], viewport: mobileViewport },
+      grepInvert: /video/, // the video does not work in the docker image used for the CI, maybe due to a codec issue
     },
   ],
   webServer: {
     command: "pnpm dev",
     url: serverUrl,
     reuseExistingServer: !process.env.CI,
+    timeout: 20 * 1000,
   },
 });

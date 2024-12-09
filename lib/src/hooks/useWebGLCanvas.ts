@@ -87,15 +87,16 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
 
   let resizeObserver: ReturnType<typeof useResizeObserver> | null = null;
 
-  // Don't listen for resize on an OffscreenCanvas (possibly in a worker)
-  // or if the renderMode is manual, because the call to gl.viewport() will break the canvas
-  if (canvas instanceof HTMLCanvasElement && renderMode === "auto") {
-    resizeObserver = useResizeObserver(canvas, ({ size }) => {
-      setSize({ width: size.width * dpr, height: size.height * dpr });
-    });
-  }
-  if (renderMode === "manual") {
-    setSize({ width: canvas.width * dpr, height: canvas.height * dpr });
+  // resize only if HTMLCanvasElement, because we can't know the size of an OffscreenCanvas
+  if (canvas instanceof HTMLCanvasElement) {
+    // don't automatically resize if the renderMode is manual, because the call to gl.viewport() will break the canvas
+    if (renderMode === "auto") {
+      resizeObserver = useResizeObserver(canvas, ({ size }) => {
+        setSize({ width: size.width * dpr, height: size.height * dpr });
+      });
+    } else {
+      setSize({ width: canvas.clientWidth * dpr, height: canvas.clientHeight * dpr });
+    }
   }
 
   return {

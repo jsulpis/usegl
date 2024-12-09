@@ -1,10 +1,10 @@
-import type { TextureOptions } from "./core/texture";
+import type { TextureParams } from "./core/texture";
 
 export type VectorUniform =
   | [number, number]
   | [number, number, number]
   | [number, number, number, number];
-export type TextureUniform = TextureOptions | WebGLTexture;
+export type TextureUniform = TextureParams | WebGLTexture;
 export type UniformValue = number | VectorUniform | TextureUniform;
 export type Uniforms = Record<string, UniformValue | (() => UniformValue)>;
 
