@@ -1,4 +1,4 @@
-import { createTexture } from "../core/texture";
+import { fillTexture } from "../core/texture";
 import type { Uniforms, UniformValue, UpdatedCallback } from "../types";
 import { useLifeCycleCallback } from "./useLifeCycleCallback";
 
@@ -84,12 +84,12 @@ export function useUniforms<U extends Uniforms>(uniforms: U) {
 
     if (value.src || value.data) {
       if (!textureUnits.has(name)) {
-        const texture = createTexture(_gl, value);
+        const texture = _gl.createTexture();
         textureUnits.set(name, { index: textureUnitIndex++, texture });
       }
       const { index, texture } = textureUnits.get(name)!;
       _gl.activeTexture(_gl.TEXTURE0 + index);
-      _gl.bindTexture(_gl.TEXTURE_2D, texture!);
+      fillTexture(_gl, texture!, value);
 
       return _gl.uniform1i(uniformLocation, index);
     }

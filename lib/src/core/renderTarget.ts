@@ -1,5 +1,5 @@
 import type { RenderTarget } from "../types";
-import { createTexture } from "./texture";
+import { fillTexture } from "./texture";
 
 export function createRenderTarget(
   gl: WebGL2RenderingContext,
@@ -10,7 +10,8 @@ export function createRenderTarget(
 
   const framebuffer = gl.createFramebuffer();
 
-  let _texture = createTexture(gl, {
+  let _texture = gl.createTexture()!;
+  fillTexture(gl, _texture, {
     data: null,
     width: _width,
     height: _height,
@@ -25,10 +26,15 @@ export function createRenderTarget(
     _width = width;
     _height = height;
 
-    const newTexture = createTexture(gl, { data: null, width, height, generateMipmaps: false });
+    const newTexture = gl.createTexture()!;
+    fillTexture(gl, newTexture, {
+      data: null,
+      width,
+      height,
+      generateMipmaps: false,
+    });
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-    gl.bindTexture(gl.TEXTURE_2D, newTexture);
     gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 0, 0, width, height);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, newTexture, 0);
 

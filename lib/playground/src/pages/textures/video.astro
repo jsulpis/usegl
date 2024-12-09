@@ -1,0 +1,73 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<script>
+  import { useWebGLCanvas, loadVideoTexture, useLoop } from "usegl";
+  import { incrementRenderCount } from "../../components/renderCount";
+
+  const texture = await loadVideoTexture(
+    "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm",
+    {
+      startTime: 3,
+    }
+  );
+
+  const { onAfterRender, render } = useWebGLCanvas({
+    canvas: "#glCanvas",
+    fragment: /* glsl */ `
+      in vec2 vUv;
+      uniform sampler2D uTexture;
+      uniform vec2 uResolution;
+      out vec4 fragColor;
+
+      void main() {
+        vec2 textureResolution = vec2(textureSize(uTexture, 0));
+        float canvasRatio = uResolution.x / uResolution.y;
+        float textureRatio = textureResolution.x / textureResolution.y;
+
+        vec2 uv = vUv - 0.5;
+        if (canvasRatio > textureRatio) {
+          uv.x *= canvasRatio / textureRatio;
+        } else {
+          uv.y *= textureRatio / canvasRatio;
+        }
+        uv += 0.5;
+
+        vec3 color = texture(uTexture, uv).rgb;
+        color *= step(0., uv.x) * (1. - step(1., uv.x));
+        color *= step(0., uv.y) * (1. - step(1., uv.y));
+
+        fragColor = vec4(color, 1.);
+      }
+    `,
+    uniforms: {
+      uTexture: texture,
+    },
+    renderMode: "manual",
+  });
+
+  onAfterRender(incrementRenderCount);
+
+  const video = texture.src as HTMLVideoElement;
+
+  render();
+
+  // check that the frames are updated when the video is playing
+  video.currentTime = 5;
+  video.addEventListener("seeked", render, { once: true });
+
+  // useLoop(() => {
+  //   render();
+  // });
+</script>
+
+<Layout title="Texture">
+  <canvas id="glCanvas"></canvas>
+</Layout>
+
+<style>
+  canvas {
+    aspect-ratio: 4 / 3;
+  }
+</style>

@@ -3,7 +3,7 @@ export { createAndBindBuffer } from "./core/buffer";
 export { createProgram } from "./core/program";
 export { createRenderTarget, setRenderTarget } from "./core/renderTarget";
 export { createShader } from "./core/shader";
-export { createTexture, loadTexture } from "./core/texture";
+export { fillTexture, loadTexture, loadVideoTexture } from "./core/texture";
 
 export { useCompositor } from "./hooks/useCompositor";
 export { useEffectPass } from "./hooks/useEffectPass";

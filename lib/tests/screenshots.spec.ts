@@ -8,6 +8,7 @@ const routesToTest = routes.filter(({ route }) => !ignoreRoutes.has(route));
 
 const expectedRendersByDemo = {
   scissor: 2,
+  video: 2,
 };
 
 for (const { section, route } of routesToTest) {

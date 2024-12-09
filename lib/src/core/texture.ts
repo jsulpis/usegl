@@ -1,6 +1,6 @@
 export type TextureData = ArrayBufferView | null;
 
-export type TextureOptions = {
+export type TextureParams = {
   /**
    * @default "linear-mipmap-linear" if generateMipmaps is true, "linear" otherwise
    */
@@ -72,7 +72,11 @@ const wrapMap: Record<WrappingMode, number> = {
   "mirrored-repeat": WebGL2RenderingContext.MIRRORED_REPEAT,
 };
 
-export function createTexture(gl: WebGL2RenderingContext, options: TextureOptions) {
+export function fillTexture(
+  gl: WebGL2RenderingContext,
+  texture: WebGLTexture,
+  params: TextureParams,
+) {
   const {
     data = null,
     level = 0,
@@ -86,28 +90,25 @@ export function createTexture(gl: WebGL2RenderingContext, options: TextureOption
     magFilter = "linear",
     wrapS = "clamp-to-edge",
     wrapT = "clamp-to-edge",
-  } = options || {};
+  } = params || {};
 
-  const boundTexture = gl.getParameter(gl.TEXTURE_BINDING_2D);
-
-  const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY);
 
-  if (options.src === undefined) {
+  if (params.src === undefined) {
     gl.texImage2D(
       gl.TEXTURE_2D,
       level,
       internalFormat,
-      options.width,
-      options.height,
+      params.width,
+      params.height,
       0,
       format,
       type,
       data,
     );
   } else {
-    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, format, type, options.src);
+    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, format, type, params.src);
   }
 
   if (generateMipmaps) {
@@ -129,14 +130,10 @@ export function createTexture(gl: WebGL2RenderingContext, options: TextureOption
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, magFilterMap[magFilter]);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrapMap[wrapS]);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrapMap[wrapT]);
-
-  gl.bindTexture(gl.TEXTURE_2D, boundTexture);
-
-  return texture;
 }
 
-export function loadTexture(src: string, options?: Omit<TextureOptions, "src" | "data">) {
-  return new Promise<TextureOptions>((resolve, reject) => {
+export function loadTexture(src: string, options?: Omit<TextureParams, "src" | "data">) {
+  return new Promise<TextureParams>((resolve, reject) => {
     const img = document.createElement("img");
 
     if (src.startsWith("http") && new URL(src).origin !== window.location.origin) {
@@ -156,5 +153,59 @@ export function loadTexture(src: string, options?: Omit<TextureOptions, "src" | 
     img.addEventListener("error", onerror, { once: true });
 
     img.src = src;
+  });
+}
+
+interface LoadVideoOptions extends Omit<TextureParams, "src" | "data"> {
+  /**
+   * Timecode in seconds from which to start the video.
+   */
+  startTime?: number;
+}
+
+export function loadVideoTexture(src: string, options?: LoadVideoOptions) {
+  return new Promise<TextureParams>((resolve, reject) => {
+    const video = document.createElement("video");
+
+    video.loop = true;
+    video.muted = true;
+    video.autoplay = true;
+    video.playsInline = true;
+
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
+    video.setAttribute("muted", "");
+    video.setAttribute("loop", "");
+    video.setAttribute("autoplay", "");
+    // document.body.append(video);
+
+    if (src.startsWith("http") && new URL(src).origin !== window.location.origin) {
+      video.crossOrigin = "anonymous";
+    }
+
+    const onReady = () => {
+      const startVideo = () => {
+        video.play();
+        resolve({ src: video, ...options });
+      };
+      if (options?.startTime && options?.startTime > 0) {
+        video.currentTime = options.startTime;
+        video.addEventListener("seeked", startVideo, { once: true });
+      } else {
+        startVideo();
+      }
+      video.removeEventListener("error", onerror);
+    };
+
+    const onerror = () => {
+      reject(`Failed to load texture: ${src}`);
+      video.removeEventListener("canplay", onReady);
+    };
+
+    video.addEventListener("canplay", onReady, { once: true });
+    video.addEventListener("error", onerror, { once: true });
+
+    video.src = src;
+    video.load();
   });
 }
