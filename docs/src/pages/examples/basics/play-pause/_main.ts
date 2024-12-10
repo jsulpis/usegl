@@ -12,7 +12,7 @@ const { play, pause, canvas } = useWebGLCanvas({
         cos(uTime * .8) * .25 + .5,
         sin(uTime * .8) * .25 + .5
       );
-      float circle = 1. - smoothstep(.098, .102, length(uv - circleCenter));
+      float circle = 1. - smoothstep(.099, .101, length(uv - circleCenter));
       vec3 color = vec3(circle);
 
       gl_FragColor = vec4(color, 1.);
