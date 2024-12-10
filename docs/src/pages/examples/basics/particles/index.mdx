@@ -3,16 +3,15 @@ title: "Particles"
 ---
 
 import ExamplePage from "../../../../components/ExamplePage.astro";
-import ExampleEditor from "../../../../components/ExampleEditor.astro";
+import ExampleEditor from "../../../../components/ExampleEditor/ExampleEditor.astro";
 import ts from "./_main.ts?raw";
-import styles from "./_styles.css?raw";
 
 <ExamplePage>
   <ExampleEditor
     exampleTitle={frontmatter.title}
+    canvasSize="square"
     files={{
-      "index.ts": { code: ts, active: true },
-      "styles.css": { code: styles },
+      "index.ts": { code: ts },
     }}
   />
 </ExamplePage>

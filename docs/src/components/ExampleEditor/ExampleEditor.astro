@@ -3,11 +3,14 @@ interface Props {
   exampleTitle: string;
   files?: SandpackFiles;
   template?: string;
+  canvasSize?: "full" | "square";
 }
 
-const { files = {}, exampleTitle, template } = Astro.props as Props;
+const { files = {}, exampleTitle, template, canvasSize } = Astro.props as Props;
 
 import { Sandpack, type SandpackFiles } from "@codesandbox/sandpack-react";
+import styleCanvasFull from "./canvas-full.css?raw";
+import styleCanvasSquare from "./canvas-square.css?raw";
 
 const html = `<!doctype html>
 <html lang="en">
@@ -25,15 +28,7 @@ const html = `<!doctype html>
 
 if (files["/styles.css"] == undefined && files["styles.css"] == undefined) {
   files["/styles.css"] = {
-    code: `body {
-  margin: 0;
-}
-
-canvas {
-  width: 100svw;
-  height: 100svh;
-  display: block;
-}`,
+    code: canvasSize === "square" ? styleCanvasSquare : styleCanvasFull,
   };
 }
 ---
