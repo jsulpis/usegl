@@ -12,6 +12,10 @@ export function setAttribute(
 
   if (name === "index") {
     createAndBindBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, bufferData);
+
+    if (location === -1) {
+      return { location, vertexCount: bufferData.length };
+    }
   }
 
   if (location === -1) {
