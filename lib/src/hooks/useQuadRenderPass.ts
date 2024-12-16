@@ -51,4 +51,9 @@ void main() {
 }
 `;
 
-const quadVertexPositions = [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1];
+/**
+ * 1 big triangle filling the canvas offers better performance than 2 triangles :
+ * @see https://github.com/pmndrs/postprocessing?tab=readme-ov-file#performance
+ * @see https://michaldrobot.com/2014/04/01/gcn-execution-patterns-in-full-screen-passes/
+ */
+const quadVertexPositions = [-1, -1, 3, -1, -1, 3];
