@@ -2,7 +2,7 @@ import { useWebGLCanvas } from "usegl";
 import { Pane } from "tweakpane";
 import "./styles.css";
 
-const { uniforms } = useWebGLCanvas({
+const { uniforms, onAfterRender } = useWebGLCanvas({
   canvas: "#glCanvas",
   fragment: /* glsl */ `
     varying vec2 vUv;
@@ -51,7 +51,7 @@ const pane = new Pane({ title: "Uniforms" });
 
 // updating the uniforms object will trigger a re-render
 pane.addBinding(uniforms, "uSize", { min: 0.01, max: 0.3 });
-pane.addBinding(uniforms, "uRadius", { min: 0.01, max: 0.2 });
+pane.addBinding(uniforms, "uRadius", { min: 0, max: 0.2 });
 pane.addBinding(uniforms, "uRotation", { min: 0, max: 2 * Math.PI });
 
 pane
@@ -63,3 +63,8 @@ pane
     // uniforms.uPosition is typed : [number, number]
     uniforms.uPosition = [e.value.x / 2 + 0.5, -e.value.y / 2 + 0.5];
   });
+
+const renderCount = document.querySelector("#renderCount");
+onAfterRender(() => {
+  renderCount.textContent = `${Number(renderCount.textContent) + 1}`;
+});

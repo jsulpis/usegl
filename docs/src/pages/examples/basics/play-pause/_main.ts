@@ -1,7 +1,7 @@
 import { useWebGLCanvas } from "usegl";
 import "./styles.css";
 
-const { play, pause, canvas } = useWebGLCanvas({
+const { play, pause, canvas, onAfterRender } = useWebGLCanvas({
   canvas: "#glCanvas",
   fragment: /* glsl */ `
     varying vec2 uv;
@@ -21,6 +21,11 @@ const { play, pause, canvas } = useWebGLCanvas({
 });
 
 pause();
+
+const renderCount = document.querySelector("#renderCount");
+onAfterRender(() => {
+  renderCount.textContent = `${Number(renderCount.textContent) + 1}`;
+});
 
 canvas.addEventListener("pointerenter", play);
 canvas.addEventListener("pointerleave", pause);

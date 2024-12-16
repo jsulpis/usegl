@@ -3,7 +3,7 @@ import "./styles.css";
 
 const canvas = document.querySelector("canvas")!;
 
-const { uniforms } = useWebGLCanvas({
+const { uniforms, onAfterRender } = useWebGLCanvas({
   canvas,
   fragment: /* glsl */ `
     varying vec2 vUv;
@@ -38,4 +38,9 @@ usePointerEvents(canvas, {
   up: () => {
     uniforms.uCircleColor = [1, 1, 1];
   },
+});
+
+const renderCount = document.querySelector("#renderCount");
+onAfterRender(() => {
+  renderCount.textContent = `${Number(renderCount.textContent) + 1}`;
 });
