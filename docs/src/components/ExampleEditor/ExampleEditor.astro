@@ -4,9 +4,10 @@ interface Props {
   files?: SandpackFiles;
   template?: string;
   canvasSize?: "full" | "square";
+  dependencies?: Record<string, string>;
 }
 
-const { files = {}, exampleTitle, template, canvasSize } = Astro.props as Props;
+const { files = {}, exampleTitle, template, canvasSize, dependencies } = Astro.props as Props;
 
 import { Sandpack, type SandpackFiles } from "@codesandbox/sandpack-react";
 import styleCanvasFull from "./canvas-full.css?raw";
@@ -53,6 +54,7 @@ if (files["/styles.css"] == undefined && files["styles.css"] == undefined) {
           main: "/index.ts",
           dependencies: {
             usegl: "*",
+            ...dependencies,
           },
           devDependencies: {
             typescript: "^4.0.0",

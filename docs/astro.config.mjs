@@ -28,7 +28,7 @@ export default defineConfig({
           label: "leadingNavLinks",
           items: [
             { label: "Guides", link: "/introduction/quick-start" },
-            { label: "Examples", link: "/examples/basics/gradient" },
+            { label: "Examples", link: "/examples/basics/full-screen" },
           ],
         },
         {
