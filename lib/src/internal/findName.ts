@@ -2,7 +2,7 @@ function findName(source: string | undefined, keyword: string, word: string) {
   return source
     ?.split("\n")
     .find((line) => new RegExp(`^${keyword}.*${word};`, "i").test(line.trim()))
-    ?.match(/(\w+);$/)?.[1];
+    ?.match(/(\w+);/)?.[1];
 }
 
 export function findUniformName(source: string | undefined, word: string) {
