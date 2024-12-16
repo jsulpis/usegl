@@ -1,0 +1,74 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<script>
+  import {
+    useLoop,
+    useWebGLCanvas,
+    createRenderTarget,
+    useWebGLContext,
+    useQuadRenderPass,
+    useRenderPass,
+  } from "usegl";
+
+  // Set up geometry
+  const count = 1000;
+  const positions = Array.from({ length: count }).flatMap((_) => [
+    Math.random(),
+    Math.random(),
+    Math.random(),
+  ]);
+
+  const canvas = document.querySelector<HTMLCanvasElement>("#glCanvas");
+  const { gl } = useWebGLContext(canvas);
+
+  const renderBuffer = createRenderTarget(gl);
+  const ping = useRenderPass(gl, {
+    target: renderBuffer,
+    fragment: /* glsl */ `
+			void main(){
+        gl_FragColor = vec4(1.);
+			}
+		`,
+    vertex: /* glsl */ `
+			attribute vec3 aPosition;
+
+			void main(){
+				gl_Position = vec4(aPosition, 1.0);
+				gl_PointSize = (2. - gl_Position.z) / .5 + 4.;
+			}
+		`,
+    uniforms: {
+      uThreshold: 0,
+    },
+    attributes: {
+      aPosition: {
+        data: positions,
+        size: 3,
+      },
+    },
+  });
+
+  const pong = useQuadRenderPass(gl, {
+    fragment: /* glsl */ `
+      uniform sampler2D uTexture;
+			varying vec2 vUv;
+
+			void main(){
+        gl_FragColor = vec4(texture(uTexture, vUv).rgb, 1.);
+			}
+		`,
+    uniforms: {
+      uTexture: () => ping.target.texture
+    }
+  });
+
+
+ping.render();
+pong.render();
+</script>
+
+<Layout title="Particles">
+  <canvas id="glCanvas"></canvas>
+</Layout>

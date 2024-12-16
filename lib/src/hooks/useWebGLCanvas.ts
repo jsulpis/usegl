@@ -1,20 +1,15 @@
 import { useResizeObserver } from "./useResizeObserver";
-import type { Attribute, DrawMode, PostEffect, Uniforms } from "../types";
+import type { PostEffect, Uniforms } from "../types";
 import { useWebGLContext } from "./useWebGLContext";
-import { useQuadRenderPass } from "./useQuadRenderPass";
+import { QuadPassOptions, useQuadRenderPass } from "./useQuadRenderPass";
 import { useCompositor } from "./useCompositor";
 import { findUniformName } from "../internal/findName";
 import type { UseLoopOptions } from "./useLoop";
 import { useLoop } from "./useLoop";
 
-interface Props<U extends Uniforms> extends UseLoopOptions {
+interface Props<U extends Uniforms> extends UseLoopOptions, QuadPassOptions<U> {
   canvas: HTMLCanvasElement | OffscreenCanvas | string;
-  fragment: string;
-  vertex?: string;
-  uniforms?: U;
-  attributes?: Record<string, Attribute>;
   webglOptions?: WebGLContextAttributes;
-  drawMode?: DrawMode;
   dpr?: number;
   postEffects?: PostEffect[];
   renderMode?: "manual" | "auto";
