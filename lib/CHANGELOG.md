@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.4.0
+
+[compare changes](https://github.com/jsulpis/usegl/compare/v0.3.0...v0.4.0)
+
+### 🚀 Enhancements
+
+- Add support for video textures ([b2b9e74](https://github.com/jsulpis/usegl/commit/b2b9e74))
+- Add a colorSpace option to facilitate the usage of display-p3 ([7193197](https://github.com/jsulpis/usegl/commit/7193197))
+
+### 🔥 Performance
+
+- Use 1 triangle instead of 2 for full screen quads ([84d4556](https://github.com/jsulpis/usegl/commit/84d4556))
+
+### 🩹 Fixes
+
+- Indexed rendering broken when there is no index attribute in the shaders ([15fd1eb](https://github.com/jsulpis/usegl/commit/15fd1eb))
+- Uniforms and attributes detection broken when there is a comment at the end of the line ([1369fa8](https://github.com/jsulpis/usegl/commit/1369fa8))
+
 ## v0.3.0
 
 [compare changes](https://github.com/jsulpis/usegl/compare/v0.2.0...v0.3.0)
