@@ -1,6 +1,10 @@
+export type WebGLContextOptions = WebGLContextAttributes & {
+  colorSpace?: PredefinedColorSpace;
+};
+
 export function useWebGLContext(
   canvas: HTMLCanvasElement | OffscreenCanvas | string,
-  options?: WebGLContextAttributes,
+  options?: WebGLContextOptions,
 ) {
   const canvasElement =
     typeof canvas === "string" ? document.querySelector<HTMLCanvasElement>(canvas) : canvas;
@@ -12,6 +16,10 @@ export function useWebGLContext(
   const gl = canvasElement.getContext("webgl2", options) as WebGL2RenderingContext;
   if (!gl) {
     throw new Error("No WebGL2 context available.");
+  }
+
+  if ("drawingBufferColorSpace" in gl && options?.colorSpace != undefined) {
+    gl.drawingBufferColorSpace = options.colorSpace;
   }
 
   function setSize(width: number, height: number) {

@@ -1,23 +1,20 @@
 import { useResizeObserver } from "./useResizeObserver";
-import type { Attribute, DrawMode, PostEffect, Uniforms } from "../types";
+import type { PostEffect, Uniforms } from "../types";
 import { useWebGLContext } from "./useWebGLContext";
+import type { QuadPassOptions } from "./useQuadRenderPass";
 import { useQuadRenderPass } from "./useQuadRenderPass";
 import { useCompositor } from "./useCompositor";
 import { findUniformName } from "../internal/findName";
 import type { UseLoopOptions } from "./useLoop";
 import { useLoop } from "./useLoop";
 
-interface Props<U extends Uniforms> extends UseLoopOptions {
+interface Props<U extends Uniforms> extends UseLoopOptions, QuadPassOptions<U> {
   canvas: HTMLCanvasElement | OffscreenCanvas | string;
-  fragment: string;
-  vertex?: string;
-  uniforms?: U;
-  attributes?: Record<string, Attribute>;
   webglOptions?: WebGLContextAttributes;
-  drawMode?: DrawMode;
   dpr?: number;
   postEffects?: PostEffect[];
   renderMode?: "manual" | "auto";
+  colorSpace?: PredefinedColorSpace;
 }
 
 export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
@@ -29,9 +26,15 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
     postEffects = [],
     immediate,
     renderMode = "auto",
+    colorSpace,
+    webglOptions,
   } = props;
 
-  const { gl, canvas, setSize: setCanvasSize } = useWebGLContext(canvasProp);
+  const {
+    gl,
+    canvas,
+    setSize: setCanvasSize,
+  } = useWebGLContext(canvasProp, { ...webglOptions, colorSpace });
 
   const primaryPass = useQuadRenderPass(gl, props);
   const compositor = useCompositor(gl, primaryPass, postEffects);
