@@ -1,0 +1,13 @@
+body {
+  margin: 0;
+  height: 100svh;
+  display: grid;
+  place-items: center;
+  background: black;
+}
+
+canvas {
+  max-width: 100svw;
+  max-height: 100svh;
+  display: block;
+}
