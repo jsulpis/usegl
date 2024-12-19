@@ -1,7 +1,6 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
-import starlightUtils from "@lorenzo_lewis/starlight-utils";
 import react from "@astrojs/react";
 import mdx from "@astrojs/mdx";
 
@@ -9,34 +8,24 @@ import mdx from "@astrojs/mdx";
 export default defineConfig({
   integrations: [
     starlight({
-      plugins: [
-        starlightUtils({
-          navLinks: {
-            leading: { useSidebarLabelled: "leadingNavLinks" },
-          },
-        }),
-      ],
+      components: {
+        Search: "./src/components/CustomHeader.astro",
+      },
+      plugins: [],
       title: "useGL",
       social: {
         github: "https://github.com/jsulpis/usegl",
         blueSky: "https://bsky.app/profile/jsulpis.dev",
         "x.com": "https://x.com/jsulpis",
       },
-      pagination: false,
+      pagination: true,
+      customCss: ["./src/styles/custom.scss"],
       sidebar: [
         {
-          label: "leadingNavLinks",
-          items: [
-            { label: "Guides", link: "/introduction/quick-start" },
-            { label: "Examples", link: "/examples/basics/full-screen" },
-          ],
-        },
-        {
           label: "Introduction",
-          autogenerate: { directory: "introduction" },
+          autogenerate: { directory: "docs/introduction" },
         },
       ],
-      customCss: ["./src/styles/custom.scss"],
     }),
     react(),
     mdx(),

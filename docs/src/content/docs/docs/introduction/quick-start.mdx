@@ -1,0 +1,34 @@
+---
+title: Quick start
+description: A guide to get started with useGL.
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+import { PackageManagers } from "starlight-package-managers";
+import { Code } from "@astrojs/starlight/components";
+
+The documentation is a work in progress, and the API of useGL is still subject to changes. For now, you can browse the [examples](/examples/basics/full-screen) to get an idea of how the library works.
+
+A proper documentation will come soon !
+
+## Installation
+
+<PackageManagers pkg="usegl" frame="false" pkgManagers={["pnpm", "npm", "yarn", "bun"]} />
+
+## Usage
+
+<Code lang="rust" code={`
+import { useWebGLCanvas } from "usegl";
+
+useWebGLCanvas({
+    canvas: "#glCanvas",
+    fragment: /* glsl */ \`
+      varying vec2 vUv; // automatically provided
+      uniform float uTime; // automatically provided and updated
+
+      void main() {
+        gl_FragColor = vec4(vUv, sin(uTime) / 2. + .5, 1.);
+      }
+    \`,
+});
+`} />

@@ -23,9 +23,9 @@ importers:
       '@codesandbox/sandpack-react':
         specifier: 2.19.9
         version: 2.19.9(@lezer/common@1.2.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@lorenzo_lewis/starlight-utils':
-        specifier: 0.2.0
-        version: 0.2.0(@astrojs/starlight@0.29.2(astro@4.16.10(@types/node@22.1.0)(rollup@4.22.5)(sass@1.81.0)(typescript@5.6.3)))(astro@4.16.10(@types/node@22.1.0)(rollup@4.22.5)(sass@1.81.0)(typescript@5.6.3))
+      '@tweakpane/core':
+        specifier: 2.0.5
+        version: 2.0.5
       '@types/react':
         specifier: 18.3.12
         version: 18.3.12
@@ -41,22 +41,24 @@ importers:
       react-dom:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
+      sass:
+        specifier: 1.81.0
+        version: 1.81.0
       sharp:
         specifier: 0.32.5
         version: 0.32.5
       starlight-package-managers:
         specifier: 0.8.0
         version: 0.8.0(@astrojs/starlight@0.29.2(astro@4.16.10(@types/node@22.1.0)(rollup@4.22.5)(sass@1.81.0)(typescript@5.6.3)))(astro@4.16.10(@types/node@22.1.0)(rollup@4.22.5)(sass@1.81.0)(typescript@5.6.3))
+      tweakpane:
+        specifier: 4.0.5
+        version: 4.0.5
       typescript:
         specifier: 5.6.3
         version: 5.6.3
       usegl:
         specifier: workspace:*
         version: link:../lib
-    devDependencies:
-      sass:
-        specifier: 1.81.0
-        version: 1.81.0
 
   lib:
     devDependencies:
@@ -972,12 +974,6 @@ packages:
   '@lezer/lr@1.4.2':
     resolution: {integrity: sha512-pu0K1jCIdnQ12aWNaAVU5bzi7Bd1w54J3ECgANPmYLtQKP0HBj2cE/5coBD66MT10xbtIuUr7tg0Shbsvk0mDA==}
 
-  '@lorenzo_lewis/starlight-utils@0.2.0':
-    resolution: {integrity: sha512-RAOhqhA5axe9+MXb6r/QwY6mulbTU1hCmtu2lImU3OyFqyV6ClPhAxqqEY7wMHHEHds8UaXGVPUPMST2FZcyZQ==}
-    peerDependencies:
-      '@astrojs/starlight': '>=0.28.0'
-      astro: '>=4.14.0'
-
   '@mdx-js/mdx@3.1.0':
     resolution: {integrity: sha512-/QxEhPAvGwbQmy1Px8F899L5Uc2KZ6JtXwlCgJmjSTBedwOZkByYcBG4GceIGPXRDsmfxhHazuS+hlOShRLeDw==}
 
@@ -1305,6 +1301,9 @@ packages:
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
     engines: {node: '>=10.13.0'}
 
+  '@tweakpane/core@2.0.5':
+    resolution: {integrity: sha512-punBgD5rKCF5vcNo6BsSOXiDR/NSs9VM7SG65QSLJIxfRaGgj54ree9zQW6bO3pNFf3AogiGgaNODUVQRk9YqQ==}
+
   '@types/acorn@4.0.6':
     resolution: {integrity: sha512-veQTnWP+1D/xbxVrPC3zHnCZRjSrKfhbMUlEA43iMZLu7EsnTtkJklIuwrCPbOi8YkvDQAiW05VQQFvvz9oieQ==}
 
@@ -1549,10 +1548,6 @@ packages:
     resolution: {integrity: sha512-HGyxoOTYUyCM6stUe6EJgnd4EoewAI7zMdfqO+kGjnlZmBDz/cR5pf8r/cR4Wq60sL/p0IkcjUEEPwS3GFrIyw==}
     engines: {node: '>=8'}
 
-  ast-types@0.16.1:
-    resolution: {integrity: sha512-6t10qk83GOG8p0vKmaCr8eiilZwO171AvbROMtvvNiwrTly62t+7XkA8RdIIVbpMhCASAsxgAzdRSwh6nw/5Dg==}
-    engines: {node: '>=4'}
-
   astring@1.9.0:
     resolution: {integrity: sha512-LElXdjswlqjWrPpJFg1Fx4wpkOCxj1TDHlSV4PlaRxHGWko024xICaa97ZkMfs6DRKlCguiAI+rbXv5GWwXIkg==}
     hasBin: true
@@ -1561,11 +1556,6 @@ packages:
     resolution: {integrity: sha512-Tvdc7RV0G92BbtyEOsfJtXU35w41CkM94fOAzxbQP67Wj5jArfserJ321FO4XA7WG9QMV0GIBmQq77NBIRDzpQ==}
     peerDependencies:
       astro: ^4.0.0-beta || ^5.0.0-beta || ^3.3.0
-
-  astro-integration-kit@0.16.1:
-    resolution: {integrity: sha512-N/iam0PAFrRT9azYZqscP1HowQhC77Dwlp912P0/72k+kwUVgO3m73F26XXukHYoZBsrHgrUrfsWBxuCH3kEUg==}
-    peerDependencies:
-      astro: ^4.12.0
 
   astro@4.16.10:
     resolution: {integrity: sha512-a+nB4bZE50NXHLzVXUHtx/lYct2Aa8kbqZnWNrWqkU97RuhBuWJ5H5/LQbKRnBWGvqChKfJBiMWJe53TY9ieYQ==}
@@ -3588,10 +3578,6 @@ packages:
     resolution: {integrity: sha512-yDMz9g+VaZkqBYS/ozoBJwaBhTbZo3UNYQHNRw1D3UFQB8oHB4uS/tAODO+ZLjGWmUbKnIlOWO+aaIiAxrUWHA==}
     engines: {node: '>= 14.16.0'}
 
-  recast@0.23.9:
-    resolution: {integrity: sha512-Hx/BGIbwj+Des3+xy5uAtAbdCyqK9y9wbBcDFDYanLS9JnMqf7OeF87HQwUimE87OEc72mr6tkKUKMBBL+hF9Q==}
-    engines: {node: '>= 4'}
-
   recma-build-jsx@1.0.0:
     resolution: {integrity: sha512-8GtdyqaBcDfva+GUKDr3nev3VpKAhup1+RvkMvUxURHpW7QyIvk9F5wz7Vzo06CEMSilw6uArgRqhpiUcWp8ew==}
 
@@ -3819,10 +3805,6 @@ packages:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
 
-  source-map@0.6.1:
-    resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
-    engines: {node: '>=0.10.0'}
-
   source-map@0.7.4:
     resolution: {integrity: sha512-l3BikUxvPOcn5E74dZiq5BGsTb5yEwhaTSzccU6t4sDOH8NWJCstKO5QT2CvtFoK6F0saL7p9xHAqHOlCPJygA==}
     engines: {node: '>= 8'}
@@ -3980,9 +3962,6 @@ packages:
   text-table@0.2.0:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
 
-  tiny-invariant@1.3.3:
-    resolution: {integrity: sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==}
-
   tinyexec@0.3.1:
     resolution: {integrity: sha512-WiCJLEECkO18gwqIp6+hJg0//p23HXp4S+gGtAKu3mI2F2/sXC4FvHvXvB0zJVVaTPhx1/tOwdbRsa1sOBIKqQ==}
 
@@ -4025,6 +4004,9 @@ packages:
 
   tunnel-agent@0.6.0:
     resolution: {integrity: sha512-McnNiV1l8RYeY8tBgEpuodCC1mLUdbSN+CYBL7kJsJNInOP8UjDDEwdk6Mw60vdLLrr5NHKZhMAOSrR2NZuQ+w==}
+
+  tweakpane@4.0.5:
+    resolution: {integrity: sha512-rxEXdSI+ArlG1RyO6FghC4ZUX8JkEfz8F3v1JuteXSV0pEtHJzyo07fcDG+NsJfN5L39kSbCYbB9cBGHyuI/tQ==}
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -5490,12 +5472,6 @@ snapshots:
     dependencies:
       '@lezer/common': 1.2.3
 
-  '@lorenzo_lewis/starlight-utils@0.2.0(@astrojs/starlight@0.29.2(astro@4.16.10(@types/node@22.1.0)(rollup@4.22.5)(sass@1.81.0)(typescript@5.6.3)))(astro@4.16.10(@types/node@22.1.0)(rollup@4.22.5)(sass@1.81.0)(typescript@5.6.3))':
-    dependencies:
-      '@astrojs/starlight': 0.29.2(astro@4.16.10(@types/node@22.1.0)(rollup@4.22.5)(sass@1.81.0)(typescript@5.6.3))
-      astro: 4.16.10(@types/node@22.1.0)(rollup@4.22.5)(sass@1.81.0)(typescript@5.6.3)
-      astro-integration-kit: 0.16.1(astro@4.16.10(@types/node@22.1.0)(rollup@4.22.5)(sass@1.81.0)(typescript@5.6.3))
-
   '@mdx-js/mdx@3.1.0(acorn@8.14.0)':
     dependencies:
       '@types/estree': 1.0.6
@@ -5794,6 +5770,8 @@ snapshots:
   '@stitches/core@1.2.8': {}
 
   '@trysound/sax@0.2.0': {}
+
+  '@tweakpane/core@2.0.5': {}
 
   '@types/acorn@4.0.6':
     dependencies:
@@ -6101,22 +6079,12 @@ snapshots:
 
   array-union@2.1.0: {}
 
-  ast-types@0.16.1:
-    dependencies:
-      tslib: 2.7.0
-
   astring@1.9.0: {}
 
   astro-expressive-code@0.38.3(astro@4.16.10(@types/node@22.1.0)(rollup@4.22.5)(sass@1.81.0)(typescript@5.6.3)):
     dependencies:
       astro: 4.16.10(@types/node@22.1.0)(rollup@4.22.5)(sass@1.81.0)(typescript@5.6.3)
       rehype-expressive-code: 0.38.3
-
-  astro-integration-kit@0.16.1(astro@4.16.10(@types/node@22.1.0)(rollup@4.22.5)(sass@1.81.0)(typescript@5.6.3)):
-    dependencies:
-      astro: 4.16.10(@types/node@22.1.0)(rollup@4.22.5)(sass@1.81.0)(typescript@5.6.3)
-      pathe: 1.1.2
-      recast: 0.23.9
 
   astro@4.16.10(@types/node@22.1.0)(rollup@4.22.5)(sass@1.81.0)(typescript@5.6.3):
     dependencies:
@@ -8796,14 +8764,6 @@ snapshots:
 
   readdirp@4.0.2: {}
 
-  recast@0.23.9:
-    dependencies:
-      ast-types: 0.16.1
-      esprima: 4.0.1
-      source-map: 0.6.1
-      tiny-invariant: 1.3.3
-      tslib: 2.7.0
-
   recma-build-jsx@1.0.0:
     dependencies:
       '@types/estree': 1.0.6
@@ -9159,8 +9119,6 @@ snapshots:
 
   source-map-js@1.2.1: {}
 
-  source-map@0.6.1: {}
-
   source-map@0.7.4: {}
 
   space-separated-tokens@2.0.2: {}
@@ -9338,8 +9296,6 @@ snapshots:
 
   text-table@0.2.0: {}
 
-  tiny-invariant@1.3.3: {}
-
   tinyexec@0.3.1: {}
 
   titleize@3.0.0: {}
@@ -9366,11 +9322,14 @@ snapshots:
     optionalDependencies:
       typescript: 5.6.3
 
-  tslib@2.7.0: {}
+  tslib@2.7.0:
+    optional: true
 
   tunnel-agent@0.6.0:
     dependencies:
       safe-buffer: 5.2.1
+
+  tweakpane@4.0.5: {}
 
   type-check@0.4.0:
     dependencies:
