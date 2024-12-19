@@ -1,0 +1,51 @@
+---
+import type { Props } from "@astrojs/starlight/props";
+import Search from "@astrojs/starlight/components/Search.astro";
+---
+
+<div class="nav-container">
+  <nav>
+    <ul>
+      <li>
+        <a
+          aria-current={Astro.url.pathname.startsWith("/docs") ? "page" : null}
+          href="/docs/introduction/quick-start">Docs</a
+        >
+      </li>
+      <li>
+        <a
+          aria-current={Astro.url.pathname.startsWith("/examples") ? "page" : null}
+          href="/examples/basics/full-screen">Examples</a
+        >
+      </li>
+    </ul>
+  </nav>
+  <Search {...Astro.props} />
+</div>
+
+<style>
+  .nav-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  a {
+    color: var(--sl-color-white);
+    text-decoration: none;
+
+    &[aria-current="page"] {
+      font-weight: bold;
+      color: var(--sl-color-text-accent);
+    }
+  }
+
+  ul {
+    padding: 0;
+    list-style-type: none;
+    display: flex;
+    gap: 1em;
+  }
+</style>

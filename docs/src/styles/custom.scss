@@ -4,14 +4,33 @@
   }
 }
 
-div:has(> site-search) {
-  justify-content: end;
+.page > header > .header {
+  grid-template-columns: auto 1fr auto;
 }
 
-.site-title + ul {
-  gap: calc(var(--sl-nav-gap) / 2);
+.hero {
+  padding-bottom: 0;
 
-  a[aria-current="page"] {
-    font-weight: bold;
+  + div ul {
+    transform: translateY(-2rem);
+    list-style-type: none;
+    font-size: 1.2em;
+    padding: 0;
+
+    li {
+      padding-left: 1.5em;
+      position: relative;
+    }
+
+    li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.45em;
+      width: 1em;
+      height: 1em;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='hsl(120, 73%, 38%)' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m5 13l4 4L19 7'/%3E%3C/svg%3E");
+      background-size: contain;
+    }
   }
 }

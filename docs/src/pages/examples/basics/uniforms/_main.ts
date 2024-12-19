@@ -28,13 +28,8 @@ const { uniforms, onAfterRender } = useWebGLCanvas({
       vec4 radius = vec4(min(uRadius, uSize));
       float squareDist = sdRoundedBox(p, vec2(uSize), radius);
       float squareMask = 1. - smoothstep(-.001, .001, squareDist);
-
       float gradient = length(p + uSize) / (2. * uSize * sqrt(2.));
-      vec3 color = mix(
-        vec3(0.1, 0.2, 0.4), // dark blue
-        vec3(0.41, 0.84, 0.98), // light blue
-        gradient
-      ) * squareMask;
+      vec3 color = mix(vec3(0.1, 0.2, 0.4), vec3(0.1, 0.7, 1.), gradient) * squareMask;
 
       gl_FragColor = vec4(color, 1.0);
     }

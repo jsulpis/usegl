@@ -16,18 +16,17 @@
     "@astrojs/react": "3.6.2",
     "@astrojs/starlight": "0.29.2",
     "@codesandbox/sandpack-react": "2.19.9",
-    "@lorenzo_lewis/starlight-utils": "0.2.0",
+    "@tweakpane/core": "2.0.5",
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",
     "astro": "4.16.10",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "sass": "1.81.0",
     "sharp": "0.32.5",
     "starlight-package-managers": "0.8.0",
+    "tweakpane": "4.0.5",
     "typescript": "5.6.3",
     "usegl": "workspace:*"
-  },
-  "devDependencies": {
-    "sass": "1.81.0"
   }
 }

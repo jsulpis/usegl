@@ -4,22 +4,22 @@ import "./styles.css";
 const { onAfterRender } = useWebGLCanvas({
   canvas: "#glCanvas",
   fragment: /* glsl */ `
-    varying vec2 uv;
-    uniform vec2 resolution;
+    varying vec2 uv; // automatically provided
+    uniform vec2 resolution; // automatically provided and updated
+    #define RADIUS .2
 
     void main() {
       vec2 center = resolution / 2.;
       float dist = distance(uv * resolution, center);
-      float radius = .2;
-      float radiusPx = min(resolution.x, resolution.y) * radius;
-      float circle = 1. - smoothstep(radiusPx * .99, radiusPx * 1.01, dist);
-      vec3 color = vec3(0., (uv - .5 + radius) * 2.) * circle;
+      float radiusPx = min(resolution.x, resolution.y) * RADIUS;
+      float circleMask = 1. - smoothstep(radiusPx * .99, radiusPx * 1.01, dist);
+      vec3 color = vec3((uv - .5 + RADIUS) * 2., 1.) * circleMask;
       gl_FragColor = vec4(color, 1.);
     }
   `,
 });
 
-const renderCount = document.querySelector('#renderCount')
+const renderCount = document.querySelector("#renderCount");
 onAfterRender(() => {
   renderCount.textContent = `${Number(renderCount.textContent) + 1}`;
 });

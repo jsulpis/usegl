@@ -21,13 +21,6 @@ const activeExample = examplesMetas.find((meta) => Astro.url.pathname.includes(m
 const examplesSections = Array.from(new Set(examplesMetas.map((meta) => meta.section)));
 
 const sidebar = [
-  {
-    label: "leadingNavLinks",
-    items: [
-      { label: "Guides", link: "/introduction/quick-start" },
-      { label: "Examples", link: "/examples/gradient" },
-    ],
-  },
   ...examplesSections.map((section) => ({
     label: section,
     items: examplesMetas
@@ -73,7 +66,7 @@ const sidebar = [
   main,
   .sl-container,
   .content-panel {
-    padding: 0;
-    margin: 0;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 </style>
