@@ -6,5 +6,6 @@ export default unjs({
     "unicorn/no-null": "off",
     "@typescript-eslint/consistent-type-imports": "error",
     "@typescript-eslint/triple-slash-reference": "off",
+    "unicorn/prefer-top-level-await": "off",
   },
 });

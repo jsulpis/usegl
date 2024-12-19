@@ -4,6 +4,10 @@
   }
 }
 
+footer {
+  display: none !important;
+}
+
 .page > header > .header {
   grid-template-columns: auto 1fr auto;
 }
