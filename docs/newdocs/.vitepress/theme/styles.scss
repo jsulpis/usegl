@@ -1,0 +1,115 @@
+.example-page {
+  --vp-padding: 24px;
+  --wrapper-width: calc(100svw - var(--vp-sidebar-width) - 2 * var(--vp-padding));
+  --wrapper-height: calc(
+    100svh - var(--vp-nav-height) - var(--vp-subnav-height, 0px) - 2 * var(--vp-padding)
+  );
+
+  // full width page
+  --vp-layout-max-width: 100%;
+  .content-container,
+  .container {
+    max-width: 100% !important;
+  }
+
+  @media (width < 960px) {
+    --vp-sidebar-width: 0px;
+    --vp-subnav-height: 48px;
+  }
+
+  @media (width >= 768px) {
+    --vp-padding: 32px;
+  }
+
+  @media (orientation: landscape) {
+    --editor-height: var(--wrapper-height);
+    --preview-height: var(--wrapper-height);
+
+    .sp-layout > .sp-stack {
+      min-width: 0 !important;
+      height: 100%;
+    }
+
+    .sp-layout > .sp-resize-handler {
+      display: initial !important;
+      transition: background 150ms;
+
+      &:hover {
+        background: linear-gradient(
+          to right,
+          transparent 30%,
+          var(--vp-c-brand-1) 30%,
+          var(--vp-c-brand-1) 70%,
+          transparent 70%
+        );
+      }
+    }
+  }
+
+  @media (orientation: portrait) {
+    --editor-height: 40svh;
+    --preview-height: calc(var(--wrapper-height) - var(--editor-height));
+
+    .sp-stack {
+      flex: initial !important;
+      height: auto !important;
+      width: 100% !important;
+    }
+
+    .sp-editor {
+      flex: initial !important;
+      width: var(--wrapper-width) !important;
+      min-width: 0 !important;
+    }
+
+    .sp-preview {
+      flex: initial !important;
+      width: var(--wrapper-width) !important;
+      min-width: 0 !important;
+    }
+  }
+
+  .VPDoc > .container > .content {
+    padding: 0;
+  }
+
+  .VPDoc {
+    padding-block: var(--vp-padding) 0;
+  }
+
+  .sp-wrapper {
+    width: var(--wrapper-width) !important;
+    height: var(--wrapper-height) !important;
+  }
+
+  .sp-layout {
+    height: 100%;
+  }
+
+  .sp-editor {
+    height: var(--editor-height) !important;
+  }
+
+  .sp-preview {
+    height: var(--preview-height) !important;
+  }
+
+  [title="Open in CodeSandbox"] {
+    width: var(--sp-space-7);
+    height: var(--sp-space-7);
+    justify-content: center;
+
+    &:is(a) {
+      padding-inline: 0 !important;
+    }
+
+    &:is(button) {
+      padding: var(--sp-space-1);
+      gap: 0;
+    }
+
+    span {
+      display: none;
+    }
+  }
+}
