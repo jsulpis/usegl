@@ -12,7 +12,7 @@ hero:
       link: /guide/introduction/quick-start
     - theme: alt
       text: Examples
-      link: /examples/basics/full-screen
+      link: /examples/basics/full-screen/
 
 features:
   - title: Lightweight

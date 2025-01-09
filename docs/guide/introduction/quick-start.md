@@ -1,6 +1,6 @@
 # Quick start
 
-The documentation is a work in progress, and the API of useGL is still subject to changes. For now, you can browse the [examples](/examples/basics/full-screen) to get an idea of how the library works.
+The documentation is a work in progress, and the API of useGL is still subject to changes. For now, you can browse the [examples](/examples/basics/full-screen/) to get an idea of how the library works.
 
 A proper documentation will come soon !
 
