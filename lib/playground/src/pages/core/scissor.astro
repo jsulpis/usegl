@@ -6,7 +6,7 @@ import Layout from "../../layouts/Layout.astro";
   import { useQuadRenderPass, useWebGLCanvas } from "usegl";
   import { incrementRenderCount } from "../../components/renderCount";
 
-  const canvas = document.querySelector("canvas");
+  const canvas = document.querySelector("canvas")!;
 
   const leftShader = useWebGLCanvas({
     canvas,

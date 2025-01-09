@@ -3,14 +3,14 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-	import { usePointerEvents, useWebGLCanvas } from "usegl";
-	import { incrementRenderCount } from "../../components/renderCount";
+  import { usePointerEvents, useWebGLCanvas } from "usegl";
+  import { incrementRenderCount } from "../../components/renderCount";
 
-	const canvas = document.querySelector("canvas");
+  const canvas = document.querySelector("canvas")!;
 
-	const { uniforms, onAfterRender } = useWebGLCanvas({
-		canvas,
-		fragment: /* glsl */ `
+  const { uniforms, onAfterRender } = useWebGLCanvas({
+    canvas,
+    fragment: /* glsl */ `
 			varying vec2 vUv;
 			uniform vec2 uPointerPosition;
 			uniform vec2 uResolution;
@@ -24,36 +24,36 @@ import Layout from "../../layouts/Layout.astro";
 				gl_FragColor = vec4(circle, 1.);
 			}
 		`,
-		uniforms: {
-			uPointerPosition: [0, 0],
-			uCircleColor: [1, 1, 1],
-		},
-	});
+    uniforms: {
+      uPointerPosition: [0, 0],
+      uCircleColor: [1, 1, 1],
+    },
+  });
 
-	usePointerEvents(canvas, {
-		move: ({ pointer, canvasCenter, canvasRect }) => {
-			uniforms.uPointerPosition = [
-				(pointer.x - canvasCenter.x) / Math.min(canvasRect.width, canvasRect.height),
-				(canvasCenter.y - pointer.y) / Math.min(canvasRect.width, canvasRect.height),
-			];
-		},
-		down: () => {
-			uniforms.uCircleColor = [1, 0, 0];
-		},
-		up: () => {
-			uniforms.uCircleColor = [1, 1, 1];
-		},
-	});
+  usePointerEvents(canvas, {
+    move: ({ pointer, canvasCenter, canvasRect }) => {
+      uniforms.uPointerPosition = [
+        (pointer.x - canvasCenter.x) / Math.min(canvasRect.width, canvasRect.height),
+        (canvasCenter.y - pointer.y) / Math.min(canvasRect.width, canvasRect.height),
+      ];
+    },
+    down: () => {
+      uniforms.uCircleColor = [1, 0, 0];
+    },
+    up: () => {
+      uniforms.uCircleColor = [1, 1, 1];
+    },
+  });
 
-	onAfterRender(incrementRenderCount);
+  onAfterRender(incrementRenderCount);
 </script>
 
 <Layout title="Circle">
-	<canvas></canvas>
+  <canvas></canvas>
 </Layout>
 
 <style>
-	canvas {
-		aspect-ratio: 3 / 2;
-	}
+  canvas {
+    aspect-ratio: 3 / 2;
+  }
 </style>
