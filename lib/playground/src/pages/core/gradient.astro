@@ -4,12 +4,12 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-	import { useWebGLCanvas } from "usegl";
-	import { incrementRenderCount } from "../../components/renderCount";
+  import { useWebGLCanvas } from "usegl";
+  import { incrementRenderCount } from "../../components/renderCount";
 
-	const { onAfterRender } = useWebGLCanvas({
-		canvas: document.querySelector("canvas"),
-		fragment: /* glsl */ `
+  const { onAfterRender } = useWebGLCanvas({
+    canvas: document.querySelector("canvas")!,
+    fragment: /* glsl */ `
 			varying vec2 vUv;
 			uniform float uTime;
 
@@ -17,13 +17,13 @@ import Layout from "../../layouts/Layout.astro";
 				gl_FragColor = vec4(vUv, sin(uTime) / 2. + .5, 1.);
 			}
 		`,
-		immediate: false,
-	});
+    immediate: false,
+  });
 
-	onAfterRender(incrementRenderCount);
+  onAfterRender(incrementRenderCount);
 </script>
 
 <Layout title="Gradient">
-	<GlobalPlayPause />
-	<canvas></canvas>
+  <GlobalPlayPause />
+  <canvas></canvas>
 </Layout>

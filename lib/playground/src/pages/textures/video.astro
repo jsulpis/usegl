@@ -3,7 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { useWebGLCanvas, loadVideoTexture, useLoop } from "usegl";
+  import { useWebGLCanvas, loadVideoTexture } from "usegl";
   import { incrementRenderCount } from "../../components/renderCount";
 
   const texture = await loadVideoTexture(

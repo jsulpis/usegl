@@ -3,23 +3,23 @@ import PlayPause from "./PlayPause.astro";
 ---
 
 <script>
-	import { pauseAllLoops, playAllLoops } from "usegl";
+  import { pauseAllLoops, playAllLoops } from "usegl";
 
-	document.querySelector("[title=Play]").addEventListener("click", (event) => {
-		if ((event.currentTarget as HTMLElement).ariaChecked === "true") {
-			playAllLoops();
-		} else {
-			pauseAllLoops();
-		}
-	});
+  document.querySelector("[title=Play]")!.addEventListener("click", (event) => {
+    if ((event.currentTarget as HTMLElement).ariaChecked === "true") {
+      playAllLoops();
+    } else {
+      pauseAllLoops();
+    }
+  });
 </script>
 
 <PlayPause />
 
 <style is:global>
-	button {
-		position: absolute;
-		bottom: 0.9rem;
-		left: 0.9rem;
-	}
+  button {
+    position: absolute;
+    bottom: 0.9rem;
+    left: 0.9rem;
+  }
 </style>

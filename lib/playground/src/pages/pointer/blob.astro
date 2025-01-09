@@ -4,50 +4,50 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-	import { usePointerEvents, useLoop, useWebGLCanvas } from "usegl";
-	import { fragment, vertex } from "../../shaders/blob";
-	import { incrementRenderCount } from "../../components/renderCount";
+  import { usePointerEvents, useLoop, useWebGLCanvas } from "usegl";
+  import { fragment, vertex } from "../../shaders/blob";
+  import { incrementRenderCount } from "../../components/renderCount";
 
-	const canvas = document.querySelector("canvas");
+  const canvas = document.querySelector("canvas")!;
 
-	const { uniforms, onAfterRender } = useWebGLCanvas({
-		canvas,
-		fragment,
-		vertex,
-		uniforms: {
-			uPointer: [0, 0],
-		},
-		immediate: false,
-	});
+  const { uniforms, onAfterRender } = useWebGLCanvas({
+    canvas,
+    fragment,
+    vertex,
+    uniforms: {
+      uPointer: [0, 0],
+    },
+    immediate: false,
+  });
 
-	const targetPointer = { x: 0, y: 0 };
+  const targetPointer = { x: 0, y: 0 };
 
-	usePointerEvents(canvas, {
-		move: ({ pointer, canvasRect, canvasCenter }) => {
-			targetPointer.x = (pointer.x - canvasCenter.x) / (canvasRect.width / 2);
-			targetPointer.y = (canvasCenter.y - pointer.y) / (canvasRect.height / 2);
-		},
-		leave: () => {
-			targetPointer.x = targetPointer.y = 0;
-		},
-	});
+  usePointerEvents(canvas, {
+    move: ({ pointer, canvasRect, canvasCenter }) => {
+      targetPointer.x = (pointer.x - canvasCenter.x) / (canvasRect.width / 2);
+      targetPointer.y = (canvasCenter.y - pointer.y) / (canvasRect.height / 2);
+    },
+    leave: () => {
+      targetPointer.x = targetPointer.y = 0;
+    },
+  });
 
-	useLoop(
-		() => {
-			const currentPointerCoord = { x: uniforms.uPointer[0], y: uniforms.uPointer[1] };
+  useLoop(
+    () => {
+      const currentPointerCoord = { x: uniforms.uPointer[0], y: uniforms.uPointer[1] };
 
-			uniforms.uPointer = [
-				currentPointerCoord.x + (targetPointer.x - currentPointerCoord.x) * 0.05,
-				currentPointerCoord.y + (targetPointer.y - currentPointerCoord.y) * 0.05,
-			];
-		},
-		{ immediate: false }
-	);
+      uniforms.uPointer = [
+        currentPointerCoord.x + (targetPointer.x - currentPointerCoord.x) * 0.05,
+        currentPointerCoord.y + (targetPointer.y - currentPointerCoord.y) * 0.05,
+      ];
+    },
+    { immediate: false }
+  );
 
-	onAfterRender(incrementRenderCount);
+  onAfterRender(incrementRenderCount);
 </script>
 
 <Layout title="Blob">
-	<GlobalPlayPause />
-	<canvas></canvas>
+  <GlobalPlayPause />
+  <canvas></canvas>
 </Layout>

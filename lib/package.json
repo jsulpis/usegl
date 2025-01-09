@@ -32,7 +32,7 @@
     "test:local": "docker build -t usegl . && docker run --rm -v $(pwd)/test-results:/app/test-results usegl /bin/sh -c 'xvfb-run pnpm run test'",
     "test:ui": "playwright test --ui",
     "test:update": "docker build -t usegl . && docker run --rm -v $(pwd)/test-results:/app/test-results -v $(pwd)/tests/__screenshots__:/app/tests/__screenshots__ usegl",
-    "typecheck": "tsc --noEmit && astro check"
+    "typecheck": "tsc --noEmit && astro check --tsconfig playground/tsconfig.json"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.4",
