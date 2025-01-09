@@ -32,16 +32,18 @@
 
     .sp-layout > .sp-resize-handler {
       display: initial !important;
-      transition: background 150ms;
+      opacity: 0;
+      background: linear-gradient(
+        to right,
+        transparent 30%,
+        var(--vp-c-brand-1) 30%,
+        var(--vp-c-brand-1) 70%,
+        transparent 70%
+      );
 
       &:hover {
-        background: linear-gradient(
-          to right,
-          transparent 30%,
-          var(--vp-c-brand-1) 30%,
-          var(--vp-c-brand-1) 70%,
-          transparent 70%
-        );
+        opacity: 1;
+        transition: opacity 150ms 50ms;
       }
     }
   }
@@ -92,6 +94,12 @@
 
   .sp-preview {
     height: var(--preview-height) !important;
+  }
+
+  html.dark & {
+    .cm-scroller {
+      color-scheme: dark;
+    }
   }
 
   [title="Open in CodeSandbox"] {

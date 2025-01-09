@@ -35,6 +35,9 @@ importers:
       astro:
         specifier: 4.16.10
         version: 4.16.10(@types/node@22.1.0)(rollup@4.22.5)(sass@1.81.0)(typescript@5.6.3)
+      gray-matter:
+        specifier: 4.0.3
+        version: 4.0.3
       markdown-it-container:
         specifier: 4.0.0
         version: 4.0.0
@@ -64,13 +67,16 @@ importers:
         version: link:../lib
       vitepress:
         specifier: 1.5.0
-        version: 1.5.0(@algolia/client-search@5.19.0)(@types/node@22.1.0)(@types/react@18.3.12)(postcss@8.4.47)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.81.0)(search-insights@2.17.3)(typescript@5.6.3)
+        version: 1.5.0(@algolia/client-search@5.19.0)(@types/node@22.1.0)(@types/react@18.3.12)(postcss@8.4.49)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.81.0)(search-insights@2.17.3)(typescript@5.6.3)
       vitepress-plugin-group-icons:
         specifier: 1.3.3
         version: 1.3.3
       vitepress-plugin-sandpack:
         specifier: 1.1.4
-        version: 1.1.4(@lezer/common@1.2.3)(vite@5.4.11(@types/node@22.1.0)(sass@1.81.0))(vitepress@1.5.0(@algolia/client-search@5.19.0)(@types/node@22.1.0)(@types/react@18.3.12)(postcss@8.4.47)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.81.0)(search-insights@2.17.3)(typescript@5.6.3))(vue@3.5.13(typescript@5.6.3))
+        version: 1.1.4(@lezer/common@1.2.3)(vite@5.4.11(@types/node@22.1.0)(sass@1.81.0))(vitepress@1.5.0(@algolia/client-search@5.19.0)(@types/node@22.1.0)(@types/react@18.3.12)(postcss@8.4.49)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.81.0)(search-insights@2.17.3)(typescript@5.6.3))(vue@3.5.13(typescript@5.6.3))
+      vue:
+        specifier: 3.5.13
+        version: 3.5.13(typescript@5.6.3)
 
   lib:
     devDependencies:
@@ -2515,6 +2521,10 @@ packages:
 
   fast-glob@3.3.2:
     resolution: {integrity: sha512-oX2ruAFQwf/Orj8m737Y5adxDQO0LAB7/S5MnxCdTNDd4p6BsyIVsv9JQsATbTSq8KHRpLwIHbVlUNatxd+1Ow==}
+    engines: {node: '>=8.6.0'}
+
+  fast-glob@3.3.3:
+    resolution: {integrity: sha512-7MptL8U0cqcFdzIzwOTHoilX9x5BrNqye7Z/LuC7kCMRio1EMSyqRK3BEAUD7sXRq4iT4AzTVuZdhgQ2TCvYLg==}
     engines: {node: '>=8.6.0'}
 
   fast-json-stable-stringify@2.1.0:
@@ -5014,7 +5024,7 @@ snapshots:
       '@volar/language-core': 2.4.6
       '@volar/language-server': 2.4.6
       '@volar/language-service': 2.4.6
-      fast-glob: 3.3.2
+      fast-glob: 3.3.3
       muggle-string: 0.4.1
       volar-service-css: 0.0.61(@volar/language-service@2.4.6)
       volar-service-emmet: 0.0.61(@volar/language-service@2.4.6)
@@ -5039,7 +5049,7 @@ snapshots:
       '@volar/language-core': 2.4.6
       '@volar/language-server': 2.4.6
       '@volar/language-service': 2.4.6
-      fast-glob: 3.3.2
+      fast-glob: 3.3.3
       muggle-string: 0.4.1
       volar-service-css: 0.0.61(@volar/language-service@2.4.6)
       volar-service-emmet: 0.0.61(@volar/language-service@2.4.6)
@@ -5479,7 +5489,7 @@ snapshots:
   '@babel/template@7.25.0':
     dependencies:
       '@babel/code-frame': 7.24.7
-      '@babel/parser': 7.25.6
+      '@babel/parser': 7.26.2
       '@babel/types': 7.25.6
 
   '@babel/template@7.25.7':
@@ -5498,7 +5508,7 @@ snapshots:
     dependencies:
       '@babel/code-frame': 7.24.7
       '@babel/generator': 7.25.6
-      '@babel/parser': 7.25.6
+      '@babel/parser': 7.26.2
       '@babel/template': 7.25.0
       '@babel/types': 7.25.6
       debug: 4.3.7
@@ -5898,8 +5908,8 @@ snapshots:
       hast-util-to-html: 9.0.3
       hast-util-to-text: 4.0.2
       hastscript: 9.0.0
-      postcss: 8.4.47
-      postcss-nested: 6.2.0(postcss@8.4.47)
+      postcss: 8.4.49
+      postcss-nested: 6.2.0(postcss@8.4.49)
       unist-util-visit: 5.0.0
       unist-util-visit-parents: 6.0.1
 
@@ -6901,7 +6911,7 @@ snapshots:
       es-module-lexer: 1.5.4
       esbuild: 0.21.5
       estree-walker: 3.0.3
-      fast-glob: 3.3.2
+      fast-glob: 3.3.3
       flattie: 1.1.1
       github-slugger: 2.0.0
       gray-matter: 4.0.3
@@ -7853,6 +7863,14 @@ snapshots:
   fast-fifo@1.3.2: {}
 
   fast-glob@3.3.2:
+    dependencies:
+      '@nodelib/fs.stat': 2.0.5
+      '@nodelib/fs.walk': 1.2.8
+      glob-parent: 5.1.2
+      merge2: 1.4.1
+      micromatch: 4.0.8
+
+  fast-glob@3.3.3:
     dependencies:
       '@nodelib/fs.stat': 2.0.5
       '@nodelib/fs.walk': 1.2.8
@@ -9431,6 +9449,11 @@ snapshots:
       postcss: 8.4.47
       postcss-selector-parser: 6.1.2
 
+  postcss-nested@6.2.0(postcss@8.4.49):
+    dependencies:
+      postcss: 8.4.49
+      postcss-selector-parser: 6.1.2
+
   postcss-normalize-charset@7.0.0(postcss@8.4.47):
     dependencies:
       postcss: 8.4.47
@@ -10170,7 +10193,7 @@ snapshots:
       css-tree: 2.3.1
       css-what: 6.1.0
       csso: 5.0.5
-      picocolors: 1.1.0
+      picocolors: 1.1.1
 
   tabbable@6.2.0: {}
 
@@ -10401,7 +10424,7 @@ snapshots:
     dependencies:
       browserslist: 4.24.0
       escalade: 3.2.0
-      picocolors: 1.1.0
+      picocolors: 1.1.1
 
   uri-js@4.4.1:
     dependencies:
@@ -10465,19 +10488,19 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  vitepress-plugin-sandpack@1.1.4(@lezer/common@1.2.3)(vite@5.4.11(@types/node@22.1.0)(sass@1.81.0))(vitepress@1.5.0(@algolia/client-search@5.19.0)(@types/node@22.1.0)(@types/react@18.3.12)(postcss@8.4.47)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.81.0)(search-insights@2.17.3)(typescript@5.6.3))(vue@3.5.13(typescript@5.6.3)):
+  vitepress-plugin-sandpack@1.1.4(@lezer/common@1.2.3)(vite@5.4.11(@types/node@22.1.0)(sass@1.81.0))(vitepress@1.5.0(@algolia/client-search@5.19.0)(@types/node@22.1.0)(@types/react@18.3.12)(postcss@8.4.49)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.81.0)(search-insights@2.17.3)(typescript@5.6.3))(vue@3.5.13(typescript@5.6.3)):
     dependencies:
       '@codesandbox/sandpack-themes': 2.0.21
       markdown-it-container: 3.0.0
       sandpack-vue3: 3.1.12(@lezer/common@1.2.3)(vue@3.5.13(typescript@5.6.3))
     optionalDependencies:
       vite: 5.4.11(@types/node@22.1.0)(sass@1.81.0)
-      vitepress: 1.5.0(@algolia/client-search@5.19.0)(@types/node@22.1.0)(@types/react@18.3.12)(postcss@8.4.47)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.81.0)(search-insights@2.17.3)(typescript@5.6.3)
+      vitepress: 1.5.0(@algolia/client-search@5.19.0)(@types/node@22.1.0)(@types/react@18.3.12)(postcss@8.4.49)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.81.0)(search-insights@2.17.3)(typescript@5.6.3)
       vue: 3.5.13(typescript@5.6.3)
     transitivePeerDependencies:
       - '@lezer/common'
 
-  vitepress@1.5.0(@algolia/client-search@5.19.0)(@types/node@22.1.0)(@types/react@18.3.12)(postcss@8.4.47)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.81.0)(search-insights@2.17.3)(typescript@5.6.3):
+  vitepress@1.5.0(@algolia/client-search@5.19.0)(@types/node@22.1.0)(@types/react@18.3.12)(postcss@8.4.49)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.81.0)(search-insights@2.17.3)(typescript@5.6.3):
     dependencies:
       '@docsearch/css': 3.8.2
       '@docsearch/js': 3.8.2(@algolia/client-search@5.19.0)(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(search-insights@2.17.3)
@@ -10498,7 +10521,7 @@ snapshots:
       vite: 5.4.11(@types/node@22.1.0)(sass@1.81.0)
       vue: 3.5.13(typescript@5.6.3)
     optionalDependencies:
-      postcss: 8.4.47
+      postcss: 8.4.49
     transitivePeerDependencies:
       - '@algolia/client-search'
       - '@types/node'

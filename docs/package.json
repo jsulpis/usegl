@@ -23,6 +23,7 @@
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",
     "astro": "4.16.10",
+    "gray-matter": "4.0.3",
     "markdown-it-container": "4.0.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
@@ -34,6 +35,7 @@
     "usegl": "workspace:*",
     "vitepress": "1.5.0",
     "vitepress-plugin-group-icons": "1.3.3",
-    "vitepress-plugin-sandpack": "1.1.4"
+    "vitepress-plugin-sandpack": "1.1.4",
+    "vue": "3.5.13"
   }
 }

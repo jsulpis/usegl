@@ -3,13 +3,14 @@ import { groupIconMdPlugin, groupIconVitePlugin } from "vitepress-plugin-group-i
 import container from "markdown-it-container";
 import { renderSandbox } from "vitepress-plugin-sandpack";
 import { createRequire } from "node:module";
+import { examplesSidebar } from "./sidebars";
 const require = createRequire(import.meta.url);
 const pkg = require("../../node_modules/usegl/package.json");
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "useGL",
-  description: "Lightweight WebGL library for working with shaders",
+  description: "Lightweight, reactive WebGL library for working with shaders",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
@@ -42,16 +43,7 @@ export default defineConfig({
           items: [{ text: "Quick start ", link: "quick-start" }],
         },
       ],
-      "/examples/": [
-        {
-          text: "Basics",
-          base: "/examples/basics/",
-          items: [
-            { text: "Full screen", link: "full-screen" },
-            { text: "Indices", link: "indices" },
-          ],
-        },
-      ],
+      "/examples/": examplesSidebar,
     },
 
     socialLinks: [
@@ -69,16 +61,36 @@ export default defineConfig({
       copyright: "Copyright © 2024-present Julien Sulpis",
     },
   },
+
   markdown: {
     config(md) {
       md.use(groupIconMdPlugin);
-      md.use(container, "sandbox", {
+      md.use(container, "example-editor", {
         render(tokens, idx) {
-          return renderSandbox(tokens, idx, "sandbox");
+          return renderSandbox(tokens, idx, "example-editor");
         },
       });
     },
   },
+
+  transformPageData(pageData) {
+    if (pageData.relativePath.startsWith("examples/")) {
+      return {
+        ...pageData,
+        title: `${pageData.frontmatter.title} example`,
+        frontmatter: {
+          prev: false,
+          next: false,
+          aside: false,
+          layout: "doc",
+          pageClass: "example-page",
+          ...pageData.frontmatter,
+        },
+      };
+    }
+    return pageData;
+  },
+
   vite: {
     plugins: [groupIconVitePlugin()],
     css: {
