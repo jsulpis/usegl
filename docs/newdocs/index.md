@@ -17,7 +17,7 @@ hero:
 features:
   - title: Lightweight
     icon: ⚡️
-    details: ~5kB minzipped. As low as 3kB for the simplest setup.
+    details: ~5kB minzipped for the full library. Down to ~3kB for the simplest setup.
   - title: Reactive
     icon: ↺
     details: Automatically re-renders when uniforms are updated, or the canvas is resized
@@ -26,5 +26,5 @@ features:
     details: "Autocompletion and type-safety for everything, including uniforms"
   - title: Developer friendly
     icon: 🤝
-    details: Time and resolution uniforms automatically provided and updated
+    details: Modern hooks style syntax, time and resolution uniforms automatically provided and updated
 ---

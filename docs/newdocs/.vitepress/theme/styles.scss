@@ -96,6 +96,17 @@
     height: var(--preview-height) !important;
   }
 
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+  }
+
+  .sp-code-editor {
+    // hide a glitch where the file from the vanilla-ts template is displayed before the actual code
+    animation: fadeIn 100ms;
+  }
+
   html.dark & {
     .cm-scroller {
       color-scheme: dark;
