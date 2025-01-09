@@ -5,7 +5,7 @@ import { renderSandbox } from "vitepress-plugin-sandpack";
 import { createRequire } from "node:module";
 import { examplesSidebar } from "./sidebars";
 const require = createRequire(import.meta.url);
-const pkg = require("../../node_modules/usegl/package.json");
+const pkg = require("../node_modules/usegl/package.json");
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -21,7 +21,7 @@ export default defineConfig({
       },
       {
         text: "Examples",
-        link: "/examples/basics/full-screen",
+        link: "/examples/basics/full-screen/",
         activeMatch: "/examples/",
       },
       {
@@ -90,6 +90,8 @@ export default defineConfig({
     }
     return pageData;
   },
+
+  outDir: "dist",
 
   vite: {
     plugins: [groupIconVitePlugin()],

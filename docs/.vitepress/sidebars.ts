@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 
-const examplesDir = "newdocs/examples";
+const examplesDir = "examples";
 
 const sections = fs
   .readdirSync(examplesDir)
