@@ -3,103 +3,97 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-	import {
-		useEffectPass,
-		useWebGLContext,
-		useCompositor,
-		useRenderPass,
-		useResizeObserver,
-	} from "usegl";
-	import {
-		fragmentShaderSource,
-		vertexShaderSource,
-		mipmapFragmentShaderSource,
-		blurFragmentShaderSource,
-		combineFragmentShaderSource,
-	} from "../../shaders/bloom";
-	import { incrementRenderCount } from "../../components/renderCount";
+  import { useEffectPass, useWebGLCanvas } from "usegl";
+  import { fragment, vertex, mipmapsShader, blurShader, combineShader } from "../../shaders/bloom";
+  import { incrementRenderCount } from "../../components/renderCount";
 
-	const canvas = document.querySelector("canvas");
+  const mipmapsPass = useEffectPass({
+    fragment: mipmapsShader,
+  });
 
-	const { gl, setSize: resizeCanvas } = useWebGLContext(canvas);
+  const horizontalBlurPass = useEffectPass({
+    fragment: blurShader,
+    uniforms: {
+      u_direction: [1, 0],
+    },
+  });
 
-	const positions: number[] = [];
-	const particleCount = 100;
+  const verticalBlurPass = useEffectPass({
+    fragment: blurShader,
+    uniforms: {
+      u_direction: [0, 1],
+    },
+  });
 
-	const squareSize = Math.sqrt(particleCount) / 2;
-	for (let i = 0; i < squareSize; i++) {
-		for (let j = 0; j < squareSize; j++) {
-			positions.push(i / squareSize);
-			positions.push(j / squareSize);
-			positions.push(-i / squareSize);
-			positions.push(-j / squareSize);
-			positions.push(i / squareSize);
-			positions.push(-j / squareSize);
-			positions.push(-i / squareSize);
-			positions.push(j / squareSize);
-		}
-	}
+  const combinePass = useEffectPass({
+    fragment: combineShader,
+    uniforms: {
+      u_image: ({ inputPass }) => inputPass.target!.texture,
+      u_bloomTexture: () => verticalBlurPass.target!.texture,
+    },
+  });
 
-	const particlesPass = useRenderPass(gl, {
-		fragment: fragmentShaderSource,
-		vertex: vertexShaderSource,
-		attributes: {
-			a_position: {
-				data: positions,
-				size: 2,
-			},
-		},
-	});
+  const bloomEffect = [mipmapsPass, horizontalBlurPass, verticalBlurPass, combinePass];
 
-	const mipmapsPass = useEffectPass({
-		fragment: mipmapFragmentShaderSource,
-	});
+  const vignetteEffect = useEffectPass({
+    fragment: /* glsl */ `
+			uniform sampler2D uTexture;
+			varying vec2 vUv;
 
-	const horizontalBlurPass = useEffectPass({
-		fragment: blurFragmentShaderSource,
-		uniforms: {
-			u_direction: [1, 0],
-		},
-	});
+			#define SIZE .6      // (0.0 - 1.0)
+			#define ROUNDNESS .7 // (0.0 = rectangle, 1.0 = round)
+			#define STRENGTH .6  // (0.0 - 1.0)
 
-	const verticalBlurPass = useEffectPass({
-		fragment: blurFragmentShaderSource,
-		uniforms: {
-			u_direction: [0, 1],
-		},
-	});
+			float vignette() {
+				vec2 centered = vUv * 2.0 - 1.0;
+				float circDist = length(centered);
+				float rectDist = max(abs(centered.x), abs(centered.y));
+				float dist = mix(rectDist, circDist, ROUNDNESS);
+				return 1. - smoothstep(SIZE, SIZE * 2., dist) * STRENGTH;
+			}
 
-	const combinePass = useEffectPass({
-		fragment: combineFragmentShaderSource,
-		uniforms: {
-			u_image: () => particlesPass.target.texture,
-			u_bloomTexture: () => verticalBlurPass.target.texture,
-		},
-	});
+			void main() {
+				vec4 color = texture(uTexture, vUv);
+        color.rgb *= vignette();
+				gl_FragColor = color;
+			}
+		`,
+  });
 
-	const compositor = useCompositor(gl, particlesPass, [
-		mipmapsPass,
-		horizontalBlurPass,
-		verticalBlurPass,
-		combinePass,
-	]);
+  const { gl, onAfterRender } = useWebGLCanvas({
+    canvas: "#glCanvas",
+    fragment: fragment,
+    vertex: vertex,
+    attributes: {
+      a_position: {
+        data: [
+          [0.1, 0.5],
+          [-0.3, 0],
+          [0.2, -0.1],
+        ].flat(),
+        size: 2,
+      },
+      a_size: {
+        data: [100, 300, 200],
+        size: 1,
+      },
+    },
+    postEffects: [vignetteEffect, bloomEffect],
+  });
 
-	useResizeObserver(canvas, ({ devicePixelSize }) => {
-		resizeCanvas(devicePixelSize.width, devicePixelSize.height);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+  gl.clearColor(0, 0.07, 0.15, 1);
 
-		compositor.setSize(devicePixelSize);
-		compositor.render();
-	});
-
-	particlesPass.onAfterRender(incrementRenderCount);
+  onAfterRender(incrementRenderCount);
 </script>
 
 <Layout title="Bloom">
-	<canvas></canvas>
+  <canvas id="glCanvas"></canvas>
 </Layout>
 
 <style>
-	canvas {
-		aspect-ratio: 3 / 2;
-	}
+  canvas {
+    aspect-ratio: 3 / 2;
+  }
 </style>
