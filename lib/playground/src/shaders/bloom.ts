@@ -1,25 +1,26 @@
-export const vertexShaderSource = /*glsl*/ `
-in vec2 a_position;
-out vec2 vUv;
-uniform vec2 u_resolution;
+export const vertex = /*glsl*/ `
+  in vec2 a_position;
+  in float a_size;
+  out vec2 vUv;
+  uniform vec2 u_resolution;
 
-void main() {
-	 vUv = (a_position + 1.0) / 2.0;
-	 gl_Position = vec4(a_position, 0.0, 1.0);
-	 gl_PointSize = u_resolution.x / pow(30.0, .8 + length(vUv - 0.5));
-}
+  void main() {
+    vUv = (a_position + 1.0) / 2.0;
+    gl_Position = vec4(a_position, 0.0, 1.0);
+    gl_PointSize = a_size;
+  }
 `;
 
-export const fragmentShaderSource = /*glsl*/ `
-out vec4 outColor;
-in vec2 vUv;
+export const fragment = /*glsl*/ `
+  in vec2 vUv;
 
-void main() {
-	 outColor = vec4(vUv.x, vUv.y, 1.0, 1.0);
-}
+  void main() {
+    vec2 uv = gl_PointCoord.xy;
+    gl_FragColor.rgba = mix(vec4(0.), vec4(vUv*1.2, 1., 1.), smoothstep(0.51, 0.49, length(uv - 0.5))) ;
+  }
 `;
 
-export const mipmapFragmentShaderSource = /*glsl*/ `
+export const mipmapsShader = /*glsl*/ `
 uniform sampler2D u_image;
 uniform vec2 u_resolution;
 
@@ -69,15 +70,14 @@ vec3 mipmapLevel(float octave) {
 
  void main() {
 	 vec3 color = mipmapLevel(1.0);
-	 color += mipmapLevel(2.0);
 	 color += mipmapLevel(3.0);
-	 color += mipmapLevel(4.0);
+	 color += mipmapLevel(5.0);
 
 	 outColor = vec4(color, 1.0);
  }
 `;
 
-export const blurFragmentShaderSource = /*glsl*/ `
+export const blurShader = /*glsl*/ `
 uniform sampler2D u_image;
 uniform vec2 u_resolution;
 uniform vec2 u_direction;
@@ -129,7 +129,7 @@ void main() {
 }
 `;
 
-export const combineFragmentShaderSource = /* glsl */ `
+export const combineShader = /* glsl */ `
 uniform sampler2D u_image;
 uniform sampler2D u_bloomTexture;
 uniform vec2 u_resolution;
@@ -174,20 +174,22 @@ vec3 GetBloom(vec2 coord) {
 vec3 bloom = vec3(0.0);
 
 //Reconstruct bloom from multiple blurred images
-bloom += Grab(coord, 1.0, vec2(CalcOffset(0.0))) * .8;
-//  bloom += Grab(coord, 2.0, vec2(CalcOffset(1.0))) * .4;
-bloom += Grab(coord, 3.0, vec2(CalcOffset(2.0))) * .5;
-bloom += Grab(coord, 4.0, vec2(CalcOffset(3.0))) * 1.2;
+bloom += Grab(coord, 1.0, vec2(CalcOffset(0.0))) * .2;
+bloom += Grab(coord, 3.0, vec2(CalcOffset(2.0))) * .2;
+bloom += Grab(coord, 5.0, vec2(CalcOffset(4.0))) * .6;
 
 return bloom;
 }
 
 void main() {
-	 vec4 baseColor = texture(u_image, vUv);
-	 vec4 bloomColor = vec4(GetBloom(vUv), 1);
+  vec4 baseColor = texture(u_image, vUv);
+  vec4 bloomColor = vec4(GetBloom(vUv), 1);
 
-	 outColor = baseColor;
+  outColor = baseColor;
 
-	 outColor = baseColor + bloomColor;
+  float baseColorGreyscale = dot(baseColor.rgb, vec3(0.299, 0.587, 0.114));
+
+
+  outColor = mix(baseColor, bloomColor, bloomColor.a - baseColorGreyscale * baseColor.a);
 }
 `;

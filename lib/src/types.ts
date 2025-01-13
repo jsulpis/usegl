@@ -6,7 +6,18 @@ export type VectorUniform =
   | [number, number, number, number];
 export type TextureUniform = TextureParams | WebGLTexture;
 export type UniformValue = number | VectorUniform | TextureUniform;
-export type Uniforms = Record<string, UniformValue | (() => UniformValue)>;
+export type Uniforms = Record<string, UniformValue>;
+export type EffectUniforms = Record<
+  string,
+  | UniformValue
+  | ((passes: {
+      /**
+       * - in an effect with only one pass, the inputPass is the pass rendered before this effect
+       * - in an effect with multiple passes, the inputPass is the pass rendered before the first pass of the effect
+       */
+      inputPass: RenderPass;
+    }) => UniformValue)
+>;
 
 export type TypedArray = ArrayBufferView & { length: number };
 
@@ -43,6 +54,7 @@ export interface RenderPass<U extends Uniforms = Record<string, never>> extends 
 export type CompositeEffect = RenderPass<any>[];
 
 export type PostEffect = RenderPass<any>;
+export type CompositePostEffect = PostEffect[];
 
 export type DrawMode =
   | "POINTS"

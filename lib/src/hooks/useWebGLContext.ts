@@ -2,11 +2,11 @@ export type WebGLContextOptions = WebGLContextAttributes & {
   colorSpace?: PredefinedColorSpace;
 };
 
-export function useWebGLContext(
-  canvas: HTMLCanvasElement | OffscreenCanvas | string,
+export function useWebGLContext<T extends HTMLCanvasElement | OffscreenCanvas | string>(
+  canvas: T,
   options?: WebGLContextOptions,
 ) {
-  const canvasElement =
+  const canvasElement: HTMLCanvasElement | OffscreenCanvas | null =
     typeof canvas === "string" ? document.querySelector<HTMLCanvasElement>(canvas) : canvas;
 
   if (canvasElement == null) {
@@ -28,5 +28,9 @@ export function useWebGLContext(
     gl.viewport(0, 0, width, height);
   }
 
-  return { canvas: canvasElement, gl, setSize };
+  return {
+    canvas: canvasElement as T extends OffscreenCanvas ? OffscreenCanvas : HTMLCanvasElement,
+    gl,
+    setSize,
+  };
 }

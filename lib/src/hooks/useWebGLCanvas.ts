@@ -1,5 +1,5 @@
 import { useResizeObserver } from "./useResizeObserver";
-import type { PostEffect, Uniforms } from "../types";
+import type { CompositePostEffect, PostEffect, Uniforms } from "../types";
 import { useWebGLContext } from "./useWebGLContext";
 import type { QuadPassOptions } from "./useQuadRenderPass";
 import { useQuadRenderPass } from "./useQuadRenderPass";
@@ -12,7 +12,7 @@ interface Props<U extends Uniforms> extends UseLoopOptions, QuadPassOptions<U> {
   canvas: HTMLCanvasElement | OffscreenCanvas | string;
   webglOptions?: WebGLContextAttributes;
   dpr?: number;
-  postEffects?: PostEffect[];
+  postEffects?: Array<PostEffect | CompositePostEffect>;
   renderMode?: "manual" | "auto";
   colorSpace?: PredefinedColorSpace;
 }
@@ -36,8 +36,8 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
     setSize: setCanvasSize,
   } = useWebGLContext(canvasProp, { ...webglOptions, colorSpace });
 
-  const primaryPass = useQuadRenderPass(gl, props);
-  const compositor = useCompositor(gl, primaryPass, postEffects);
+  const renderPass = useQuadRenderPass(gl, props);
+  const compositor = useCompositor(gl, renderPass, postEffects);
 
   function render() {
     compositor.render();
@@ -74,15 +74,15 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
   let play = () => {};
   let pause = () => {};
 
-  if (timeUniformName && primaryPass.uniforms[timeUniformName] === undefined) {
+  if (timeUniformName && renderPass.uniforms[timeUniformName] === undefined) {
     requestAnimationFrame(() => {
       // use RAF to avoid triggering an extra render for the initialization of the time uniform
-      (primaryPass.uniforms as Record<string, number>)[timeUniformName] = 0;
+      (renderPass.uniforms as Record<string, number>)[timeUniformName] = 0;
     });
 
     ({ play, pause } = useLoop(
       ({ deltaTime }) => {
-        (primaryPass.uniforms as Record<string, number>)[timeUniformName] += deltaTime / 500;
+        (renderPass.uniforms as Record<string, number>)[timeUniformName] += deltaTime / 500;
       },
       { immediate },
     ));
@@ -110,10 +110,10 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
     play,
     pause,
     dpr,
-    uniforms: primaryPass.uniforms,
-    onUpdated: primaryPass.onUpdated,
-    onBeforeRender: primaryPass.onBeforeRender,
-    onAfterRender: primaryPass.onAfterRender,
+    uniforms: renderPass.uniforms,
+    onUpdated: renderPass.onUpdated,
+    onBeforeRender: renderPass.onBeforeRender,
+    onAfterRender: renderPass.onAfterRender,
     resizeObserver,
   };
 };
