@@ -7,6 +7,7 @@ export { fillTexture, loadTexture, loadVideoTexture } from "./core/texture";
 
 export { useCompositor } from "./hooks/useCompositor";
 export { useEffectPass } from "./hooks/useEffectPass";
+export { useCompositeEffectPass } from "./hooks/useCompositeEffectPass";
 export { useQuadRenderPass } from "./hooks/useQuadRenderPass";
 export { useRenderPass } from "./hooks/useRenderPass";
 export { useWebGLCanvas } from "./hooks/useWebGLCanvas";

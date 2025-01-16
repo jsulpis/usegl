@@ -12,10 +12,14 @@ export type EffectUniforms = Record<
   | UniformValue
   | ((passes: {
       /**
-       * - in an effect with only one pass, the inputPass is the pass rendered before this effect
+       * - in an effect with only one pass, the inputPass is the pass rendered  before this effect
        * - in an effect with multiple passes, the inputPass is the pass rendered before the first pass of the effect
        */
       inputPass: RenderPass;
+      /**
+       * pass rendered immediately before this effect
+       */
+      previousPass: RenderPass;
     }) => UniformValue)
 >;
 
@@ -51,10 +55,13 @@ export interface RenderPass<U extends Uniforms = Record<string, never>> extends 
   initialize: (gl: WebGL2RenderingContext) => void;
 }
 
-export type CompositeEffect = RenderPass<any>[];
+export interface EffectPass<U extends Uniforms = Record<string, never>> extends RenderPass<U> {}
 
-export type PostEffect = RenderPass<any>;
-export type CompositePostEffect = PostEffect[];
+export interface CompositeEffectPass<
+  P extends Record<string, EffectPass<any>> = Record<string, EffectPass<never>>,
+> extends Omit<EffectPass, "fragment" | "vertex" | "uniforms"> {
+  passes: P;
+}
 
 export type DrawMode =
   | "POINTS"
@@ -69,9 +76,11 @@ export interface Resizable {
   setSize: ({ width, height }: { width: number; height: number }) => void;
 }
 
-export type RenderCallback<U extends Uniforms> = (args: Readonly<{ uniforms: U }>) => void;
+export type RenderCallback<U extends Uniforms = Record<string, never>> = (
+  args: Readonly<{ uniforms: U }>,
+) => void;
 
-export type UpdatedCallback<U extends Uniforms> = (
+export type UpdatedCallback<U extends Uniforms = Record<string, never>> = (
   uniforms: Readonly<U>,
   oldUniforms: Readonly<U>,
 ) => void;

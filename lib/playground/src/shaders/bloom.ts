@@ -14,15 +14,27 @@ export const vertex = /*glsl*/ `
 export const fragment = /*glsl*/ `
   in vec2 vUv;
 
+  float sdCircle(vec2 p, float r) {
+    return length(p) - r;
+  }
+
+  vec3 drawCircle(vec2 pos, float radius, vec3 color) {
+    return smoothstep(radius * 1.01, radius * .99, sdCircle(pos, radius)) * color;
+  }
+
   void main() {
-    vec2 uv = gl_PointCoord.xy;
-    gl_FragColor.rgba = mix(vec4(0.), vec4(vUv*1.2, 1., 1.), smoothstep(0.51, 0.49, length(uv - 0.5))) ;
+    vec3 color = vec3(0, 0.07, 0.15);
+    color += drawCircle(vUv - vec2(.4), .1, vec3(vUv, 1.));
+    color += drawCircle(vUv - vec2(.65, .65), .02, vec3(vUv, 1.));
+    color += drawCircle(vUv - vec2(.75, .4), .04, vec3(vUv, 1.));
+    gl_FragColor.rgba = vec4(color, 1.);
   }
 `;
 
 export const mipmapsShader = /*glsl*/ `
 uniform sampler2D u_image;
 uniform vec2 u_resolution;
+uniform float u_threshold;
 
 in vec2 vUv;
 out vec4 outColor;
@@ -57,7 +69,8 @@ vec3 mipmapLevel(float octave) {
 	 for (int i = 0; i < spread; i++) {
 			for (int j = 0; j < spread; j++) {
 				 vec2 off = (vec2(i, j) / u_resolution.xy + vec2(0.0) / u_resolution.xy) * scale / float(spread);
-				 color += texture(u_image, coord + off).rgb;
+				 vec3 imageColor = texture(u_image, coord + off).rgb;
+         color += max(vec3(0.0), imageColor.rgb - vec3(u_threshold));
 
 				 weights += 1.0;
 			}
@@ -132,6 +145,7 @@ void main() {
 export const combineShader = /* glsl */ `
 uniform sampler2D u_image;
 uniform sampler2D u_bloomTexture;
+uniform float u_mix;
 uniform vec2 u_resolution;
 in vec2 vUv;
 out vec4 outColor;
@@ -188,8 +202,8 @@ void main() {
   outColor = baseColor;
 
   float baseColorGreyscale = dot(baseColor.rgb, vec3(0.299, 0.587, 0.114));
+  float mixFactor = (bloomColor.a - baseColorGreyscale * baseColor.a) * u_mix;
 
-
-  outColor = mix(baseColor, bloomColor, bloomColor.a - baseColorGreyscale * baseColor.a);
+  outColor = mix(baseColor, baseColor + bloomColor, mixFactor);
 }
 `;

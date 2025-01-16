@@ -1,5 +1,5 @@
 import { useResizeObserver } from "./useResizeObserver";
-import type { CompositePostEffect, PostEffect, Uniforms } from "../types";
+import type { CompositeEffectPass, EffectPass, Uniforms } from "../types";
 import { useWebGLContext } from "./useWebGLContext";
 import type { QuadPassOptions } from "./useQuadRenderPass";
 import { useQuadRenderPass } from "./useQuadRenderPass";
@@ -12,7 +12,7 @@ interface Props<U extends Uniforms> extends UseLoopOptions, QuadPassOptions<U> {
   canvas: HTMLCanvasElement | OffscreenCanvas | string;
   webglOptions?: WebGLContextAttributes;
   dpr?: number;
-  postEffects?: Array<PostEffect | CompositePostEffect>;
+  postEffects?: Array<EffectPass<any> | CompositeEffectPass<any>>;
   renderMode?: "manual" | "auto";
   colorSpace?: PredefinedColorSpace;
 }

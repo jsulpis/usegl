@@ -1,26 +1,44 @@
 import { createRenderTarget } from "../core/renderTarget";
-import type { CompositePostEffect, EffectUniforms, PostEffect, RenderPass } from "../types";
 import { findUniformName } from "../internal/findName";
+import type { CompositeEffectPass, EffectPass, RenderPass } from "../types";
 
 /**
- * The compositor handles the combination of the render pass and the post effects:
- * - create the render targets for intermediate passes
- * - provide each post effect with its inputPass to use in uniforms
+ * The compositor handles the combination of the render pass and the effects:
+ * - initialize the gl context and create render targets for all effects
+ * - provide each effect with its previousPass and inputPass to use in uniforms
  * - fill the texture uniforms with the previous pass if they are not provided in uniforms
+ * - detect the first texture uniform of each effect and, if it has no value provided, fill it with the previous pass
  * - render all passes in the correct order
  */
-export function useCompositor<U extends EffectUniforms>(
+export function useCompositor(
   gl: WebGL2RenderingContext,
-  renderPass: RenderPass<U>,
-  effects: Array<PostEffect | CompositePostEffect>,
+  renderPass: RenderPass<any>,
+  effects: Array<EffectPass<any> | CompositeEffectPass<Record<string, EffectPass<any>>>>,
 ) {
-  const flatEffects = effects.flat();
+  if (effects.length > 0 && renderPass.target === null) {
+    renderPass.setTarget(createRenderTarget(gl));
+  }
 
-  createRenderTargets(flatEffects, renderPass, gl);
-  setInputPasses(renderPass, effects);
-  autofillTextureUniforms(flatEffects, renderPass);
+  let previousPass = renderPass;
 
-  const allPasses = [renderPass, ...flatEffects];
+  for (const [index, effect] of effects.entries()) {
+    effect.initialize(gl);
+    effect.setTarget(index === effects.length - 1 ? null : createRenderTarget(gl));
+
+    if (isCompositeEffectPass(effect)) {
+      const inputPass = previousPass;
+      for (const effectPass of Object.values(effect.passes)) {
+        const previousPassRef = previousPass;
+        setupEffectPass(effectPass, previousPassRef, inputPass);
+        previousPass = effectPass;
+      }
+    } else {
+      setupEffectPass(effect, previousPass);
+      previousPass = effect;
+    }
+  }
+
+  const allPasses = [renderPass, ...effects];
 
   function render() {
     for (const pass of allPasses) {
@@ -37,72 +55,32 @@ export function useCompositor<U extends EffectUniforms>(
   return { render, setSize, allPasses };
 }
 
-/**
- * Initialize the gl context of the effect passes and create the render targets
- */
-function createRenderTargets(
-  flatEffects: PostEffect[],
-  renderPass: RenderPass<any>,
-  gl: WebGL2RenderingContext,
-) {
-  if (flatEffects.length > 0 && renderPass.target === null) {
-    renderPass.setTarget(createRenderTarget(gl));
-  }
-
-  for (const [index, effect] of flatEffects.entries()) {
-    effect.initialize(gl);
-    effect.setTarget(index === flatEffects.length - 1 ? null : createRenderTarget(gl));
-  }
+function isCompositeEffectPass(
+  effect: EffectPass | CompositeEffectPass<any>,
+): effect is CompositeEffectPass<any> {
+  return typeof (effect as CompositeEffectPass).passes === "object";
 }
 
-/**
- * Provide each effect with its "inputPass":
- * - if the effect has only one pass, the inputPass is the pass preceeding this effect
- * - if the effect has multiple passes, the inputPass is the pass preceeding the first pass of the effect
- */
-function setInputPasses(
-  renderPass: RenderPass<any>,
-  effects: (PostEffect | CompositePostEffect)[],
+function setupEffectPass(
+  effect: EffectPass<any>,
+  previousPass: EffectPass<any> | RenderPass<any>,
+  inputPass?: EffectPass<any> | RenderPass<any>,
 ) {
-  let previousPass = renderPass;
-
-  for (const effect of effects) {
-    if (Array.isArray(effect)) {
-      const inputPass = previousPass;
-      for (const effectPass of effect) {
-        setTextureUniforms(effectPass, inputPass);
-      }
-      previousPass = effect.at(-1)!;
-    } else {
-      setTextureUniforms(effect, previousPass);
-      previousPass = effect;
-    }
-  }
-}
-
-function setTextureUniforms(effect: PostEffect, inputPass: RenderPass<any>) {
+  // provide the previousPass and inputPass to the uniforms functions
   for (const uniformName of Object.keys(effect.uniforms)) {
     const uniformValue = effect.uniforms[uniformName];
     if (typeof uniformValue === "function") {
-      effect.uniforms[uniformName] = () => uniformValue({ inputPass });
+      effect.uniforms[uniformName] = () => uniformValue({ previousPass, inputPass });
     }
   }
-}
 
-/**
- * For each effect pass, find the first texture uniform that has no value provided,
- * and fill it with the previous pass.
- */
-function autofillTextureUniforms(flatEffects: PostEffect[], renderPass: RenderPass<any>) {
-  for (const [index, effect] of flatEffects.entries()) {
-    const textureUniformName =
-      findUniformName(effect.fragment, "image") ||
-      findUniformName(effect.fragment, "texture") ||
-      findUniformName(effect.fragment, "pass");
+  // detect the first texture uniform and, if it has no texture provided, fill it with the previous pass
+  const textureUniformName =
+    findUniformName(effect.fragment, "image") ||
+    findUniformName(effect.fragment, "texture") ||
+    findUniformName(effect.fragment, "pass");
 
-    if (textureUniformName && effect.uniforms[textureUniformName] === undefined) {
-      effect.uniforms[textureUniformName] = () =>
-        (index > 0 ? flatEffects[index - 1] : renderPass).target?.texture;
-    }
+  if (textureUniformName && effect.uniforms[textureUniformName] === undefined) {
+    effect.uniforms[textureUniformName] = () => previousPass.target?.texture;
   }
 }
