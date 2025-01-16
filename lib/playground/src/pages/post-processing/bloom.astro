@@ -3,37 +3,48 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { useEffectPass, useWebGLCanvas } from "usegl";
-  import { fragment, vertex, mipmapsShader, blurShader, combineShader } from "../../shaders/bloom";
+  import { useEffectPass, useWebGLCanvas, useCompositeEffectPass } from "usegl";
+  import { fragment, mipmapsShader, blurShader, combineShader } from "../../shaders/bloom";
   import { incrementRenderCount } from "../../components/renderCount";
 
-  const mipmapsPass = useEffectPass({
+  const mipmaps = useEffectPass({
     fragment: mipmapsShader,
+    uniforms: {
+      u_threshold: 0.2,
+    },
   });
 
-  const horizontalBlurPass = useEffectPass({
+  const horizontalBlur = useEffectPass({
     fragment: blurShader,
     uniforms: {
       u_direction: [1, 0],
     },
   });
 
-  const verticalBlurPass = useEffectPass({
+  const verticalBlur = useEffectPass({
     fragment: blurShader,
     uniforms: {
       u_direction: [0, 1],
     },
   });
 
-  const combinePass = useEffectPass({
+  const combine = useEffectPass({
     fragment: combineShader,
     uniforms: {
       u_image: ({ inputPass }) => inputPass.target!.texture,
-      u_bloomTexture: () => verticalBlurPass.target!.texture,
+      u_bloomTexture: () => verticalBlur.target!.texture,
+      u_mix: 0,
     },
   });
 
-  const bloomEffect = [mipmapsPass, horizontalBlurPass, verticalBlurPass, combinePass];
+  const bloomEffect = useCompositeEffectPass({
+    mipmaps,
+    horizontalBlur,
+    verticalBlur,
+    combine,
+  });
+
+  bloomEffect.passes.combine.uniforms.u_mix = 1;
 
   const vignetteEffect = useEffectPass({
     fragment: /* glsl */ `
@@ -60,30 +71,11 @@ import Layout from "../../layouts/Layout.astro";
 		`,
   });
 
-  const { gl, onAfterRender } = useWebGLCanvas({
+  const { onAfterRender } = useWebGLCanvas({
     canvas: "#glCanvas",
     fragment: fragment,
-    vertex: vertex,
-    attributes: {
-      a_position: {
-        data: [
-          [0.1, 0.5],
-          [-0.3, 0],
-          [0.2, -0.1],
-        ].flat(),
-        size: 2,
-      },
-      a_size: {
-        data: [100, 300, 200],
-        size: 1,
-      },
-    },
     postEffects: [vignetteEffect, bloomEffect],
   });
-
-  gl.enable(gl.BLEND);
-  gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-  gl.clearColor(0, 0.07, 0.15, 1);
 
   onAfterRender(incrementRenderCount);
 </script>
@@ -91,9 +83,3 @@ import Layout from "../../layouts/Layout.astro";
 <Layout title="Bloom">
   <canvas id="glCanvas"></canvas>
 </Layout>
-
-<style>
-  canvas {
-    aspect-ratio: 3 / 2;
-  }
-</style>
