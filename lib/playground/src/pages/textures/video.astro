@@ -6,11 +6,9 @@ import Layout from "../../layouts/Layout.astro";
   import { useWebGLCanvas, loadVideoTexture } from "usegl";
   import { incrementRenderCount } from "../../components/renderCount";
 
-  const texture = await loadVideoTexture(
+  const texture = loadVideoTexture(
     "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm",
-    {
-      startTime: 3,
-    }
+    { startTime: 3 }
   );
 
   const { onAfterRender, render } = useWebGLCanvas({
@@ -49,17 +47,19 @@ import Layout from "../../layouts/Layout.astro";
 
   onAfterRender(incrementRenderCount);
 
-  const video = texture.src as HTMLVideoElement;
+  const video = texture.src;
 
-  render();
+  video.addEventListener(
+    "seeked",
+    () => {
+      render();
 
-  // check that the frames are updated when the video is playing
-  video.currentTime = 5;
-  video.addEventListener("seeked", render, { once: true });
-
-  // useLoop(() => {
-  //   render();
-  // });
+      // check that the frames are updated when the video is playing
+      video.currentTime = 5;
+      video.addEventListener("seeked", render, { once: true });
+    },
+    { once: true }
+  );
 </script>
 
 <Layout title="Texture">

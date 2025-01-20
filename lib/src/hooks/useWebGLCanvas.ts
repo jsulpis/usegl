@@ -7,6 +7,7 @@ import { useCompositor } from "./useCompositor";
 import { findUniformName } from "../internal/findName";
 import type { UseLoopOptions } from "./useLoop";
 import { useLoop } from "./useLoop";
+import { isHTMLImageTexture, isHTMLVideoTexture } from "../core/texture";
 
 interface Props<U extends Uniforms> extends UseLoopOptions, QuadPassOptions<U> {
   canvas: HTMLCanvasElement | OffscreenCanvas | string;
@@ -62,6 +63,20 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
 
   for (const pass of compositor.allPasses) {
     pass.onUpdated(requestRender);
+
+    if (!("uniforms" in pass) || renderMode === "manual") continue;
+
+    // Request a render when an image is loaded or a video frame is rendered
+    for (const uniform of Object.values(pass.uniforms)) {
+      if (isHTMLImageTexture(uniform) && !uniform.src.complete) {
+        uniform.src.addEventListener("load", requestRender, { once: true });
+      } else if (isHTMLVideoTexture(uniform)) {
+        uniform.src.requestVideoFrameCallback(function onFramePlayed() {
+          requestRender();
+          uniform.src.requestVideoFrameCallback(onFramePlayed);
+        });
+      }
+    }
   }
 
   function setSize({ width, height }: { width: number; height: number }) {

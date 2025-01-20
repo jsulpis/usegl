@@ -4,15 +4,15 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-	import { useWebGLCanvas, loadTexture } from "usegl";
-	import { incrementRenderCount } from "../../components/renderCount";
+  import { useWebGLCanvas, loadTexture } from "usegl";
+  import { incrementRenderCount } from "../../components/renderCount";
 
-	const earthNight = await loadTexture("/images/2k_earth_night.jpeg");
-	const earthColor = await loadTexture("/images/2k_earth_color.jpeg");
+  const earthNight = loadTexture("/images/2k_earth_night.jpeg");
+  const earthColor = loadTexture("/images/2k_earth_color.jpeg");
 
-	const { onAfterRender } = useWebGLCanvas({
-		canvas: "#glCanvas",
-		fragment: /* glsl */ `
+  const { onAfterRender } = useWebGLCanvas({
+    canvas: "#glCanvas",
+    fragment: /* glsl */ `
 				uniform vec2 u_resolution;
 				uniform sampler2D uNight;
 				uniform sampler2D uColor;
@@ -103,17 +103,17 @@ import Layout from "../../layouts/Layout.astro";
 					fragColor = vec4(finalColor, 1.0);
 				}
 				`,
-		uniforms: {
-			uColor: earthColor,
-			uNight: earthNight,
-		},
-		immediate: false,
-	});
+    uniforms: {
+      uColor: earthColor,
+      uNight: earthNight,
+    },
+    immediate: false,
+  });
 
-	onAfterRender(incrementRenderCount);
+  onAfterRender(incrementRenderCount);
 </script>
 
 <Layout title="Texture">
-	<GlobalPlayPause />
-	<canvas id="glCanvas"></canvas>
+  <GlobalPlayPause />
+  <canvas id="glCanvas"></canvas>
 </Layout>

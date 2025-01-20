@@ -3,11 +3,11 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-	import { useEffectPass, useWebGLCanvas, loadTexture } from "usegl";
-	import { incrementRenderCount } from "../../components/renderCount";
+  import { useEffectPass, useWebGLCanvas, loadTexture } from "usegl";
+  import { incrementRenderCount } from "../../components/renderCount";
 
-	const vignetteEffect = useEffectPass({
-		fragment: /* glsl */ `
+  const vignetteEffect = useEffectPass({
+    fragment: /* glsl */ `
 			uniform sampler2D uTexture;
 			varying vec2 vUv;
 
@@ -30,10 +30,10 @@ import Layout from "../../layouts/Layout.astro";
 				gl_FragColor = vec4(color, 1.);
 			}
 		`,
-	});
+  });
 
-	const sepiaEffect = useEffectPass({
-		fragment: /* glsl */ `
+  const sepiaEffect = useEffectPass({
+    fragment: /* glsl */ `
 			uniform sampler2D uTexture;
 			varying vec2 vUv;
 
@@ -51,11 +51,11 @@ import Layout from "../../layouts/Layout.astro";
 				gl_FragColor = vec4(color, 1.);
 			}
 		`,
-	});
+  });
 
-	const { onAfterRender } = useWebGLCanvas({
-		canvas: "#glCanvas",
-		fragment: /* glsl */ `
+  const { onAfterRender } = useWebGLCanvas({
+    canvas: "#glCanvas",
+    fragment: /* glsl */ `
 				in vec2 vUv;
 				uniform sampler2D uTexture;
 				uniform vec2 uResolution;
@@ -77,21 +77,21 @@ import Layout from "../../layouts/Layout.astro";
 					fragColor = vec4(color, 1.);
 				}
 				`,
-		uniforms: {
-			uTexture: await loadTexture("/images/lion.jpg"),
-		},
-		postEffects: [sepiaEffect, vignetteEffect],
-	});
+    uniforms: {
+      uTexture: loadTexture("/images/lion.jpg"),
+    },
+    postEffects: [sepiaEffect, vignetteEffect],
+  });
 
-	onAfterRender(incrementRenderCount);
+  onAfterRender(incrementRenderCount);
 </script>
 
 <Layout title="Post-processing">
-	<canvas id="glCanvas"></canvas>
+  <canvas id="glCanvas"></canvas>
 </Layout>
 
 <style>
-	canvas {
-		aspect-ratio: 3 / 2;
-	}
+  canvas {
+    aspect-ratio: 3 / 2;
+  }
 </style>
