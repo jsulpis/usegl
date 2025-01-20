@@ -1,5 +1,34 @@
 # Changelog
 
+## v0.5.0
+
+[compare changes](https://github.com/jsulpis/usegl/compare/v0.4.0...v0.5.0)
+
+### 🚀 Enhancements
+
+- Handle multi-pass post-processing effects ([3250a47](https://github.com/jsulpis/usegl/commit/3250a47))
+- Add useCompositeEffectPass hook to have more control over multi pass effects ([45a0528](https://github.com/jsulpis/usegl/commit/45a0528))
+- Make the texture loaders synchronous and re-render when loaded ([9829a6c](https://github.com/jsulpis/usegl/commit/9829a6c))
+
+### 📖 Documentation
+
+- Add an example for drawing modes ([0ef7432](https://github.com/jsulpis/usegl/commit/0ef7432))
+- Add an example for particles ([a4deedd](https://github.com/jsulpis/usegl/commit/a4deedd))
+- **examples:** Add an example of data texture ([7653a1a](https://github.com/jsulpis/usegl/commit/7653a1a))
+- **examples:** Add an example of image texture ([20a6a00](https://github.com/jsulpis/usegl/commit/20a6a00))
+- **examples:** Add an example of canvas 2D texture ([83ac9fd](https://github.com/jsulpis/usegl/commit/83ac9fd))
+- **examples:** Add an example of play/pause ([1441aff](https://github.com/jsulpis/usegl/commit/1441aff))
+- **examples:** Add an example of pointer coordinates ([cdc6159](https://github.com/jsulpis/usegl/commit/cdc6159))
+- **examples:** Add an example for uniforms ([bd0cbd0](https://github.com/jsulpis/usegl/commit/bd0cbd0))
+- **examples:** Display render count ([47ce9c2](https://github.com/jsulpis/usegl/commit/47ce9c2))
+- **examples:** Add example of vertices with indices ([bfb1293](https://github.com/jsulpis/usegl/commit/bfb1293))
+- **examples:** Add an example of video texture ([229b2a8](https://github.com/jsulpis/usegl/commit/229b2a8))
+- **examples:** Add an example of single pass post-processing ([05bad31](https://github.com/jsulpis/usegl/commit/05bad31))
+- Setup Vitepress with Sandpack ([a77b367](https://github.com/jsulpis/usegl/commit/a77b367))
+- Setup example editor in VitePress ([875fb38](https://github.com/jsulpis/usegl/commit/875fb38))
+- Import all examples in VitePress ([78ca377](https://github.com/jsulpis/usegl/commit/78ca377))
+- Complete the migration to VitePress ([9f20077](https://github.com/jsulpis/usegl/commit/9f20077))
+
 ## v0.4.0
 
 [compare changes](https://github.com/jsulpis/usegl/compare/v0.3.0...v0.4.0)
