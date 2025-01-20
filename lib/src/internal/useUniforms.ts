@@ -1,3 +1,4 @@
+import type { DataTextureParams, ImageTextureParams } from "../core/texture";
 import { fillTexture } from "../core/texture";
 import type { Uniforms, UniformValue, UpdatedCallback } from "../types";
 import { useLifeCycleCallback } from "./useLifeCycleCallback";
@@ -82,7 +83,7 @@ export function useUniforms<U extends Uniforms>(uniforms: U) {
       }
     }
 
-    if (value.src || value.data) {
+    if ((value as ImageTextureParams).src || (value as DataTextureParams).data) {
       if (!textureUnits.has(name)) {
         const texture = _gl.createTexture();
         textureUnits.set(name, { index: textureUnitIndex++, texture });

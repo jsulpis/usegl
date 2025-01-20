@@ -6,7 +6,23 @@ import Layout from "../../layouts/Layout.astro";
   import { useWebGLCanvas, loadTexture } from "usegl";
   import { incrementRenderCount } from "../../components/renderCount";
 
-  const texture = await loadTexture("https://picsum.photos/id/669/600/400");
+  const texture = loadTexture("https://picsum.photos/id/669/600/400", {
+    placeholder: {
+      magFilter: "nearest",
+      data: new Uint8Array(
+        [
+          [255, 255, 255, 255],
+          [255, 255, 255, 255],
+          [255, 255, 255, 255],
+          [255, 255, 255, 255],
+          [99, 46, 22, 255],
+          [255, 255, 255, 255],
+        ].flat()
+      ),
+      width: 3,
+      height: 2,
+    },
+  });
 
   const { onAfterRender } = useWebGLCanvas({
     canvas: "#glCanvas",
