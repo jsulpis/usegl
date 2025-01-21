@@ -1,35 +1,26 @@
-import { loadVideoTexture, useLoop, useWebGLCanvas } from "usegl";
+import { loadVideoTexture, useWebGLCanvas } from "usegl";
 import "./styles.css";
 
-const canvas = document.querySelector("canvas");
+const texture = loadVideoTexture(
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+);
 
-(async () => {
-  const texture = await loadVideoTexture(
-    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-  );
+useWebGLCanvas({
+  canvas: "#glCanvas",
+  fragment: /* glsl */ `
+    varying vec2 vUv;
+    uniform sampler2D uTexture;
 
-  const videoElement = texture.src as HTMLVideoElement;
-  canvas.style.aspectRatio = `${videoElement.videoWidth} / ${videoElement.videoHeight}`;
+    void main() {
+      vec3 color = texture(uTexture, vUv).rgb;
 
-  const { render } = useWebGLCanvas({
-    canvas,
-    fragment: /* glsl */ `
-      varying vec2 vUv;
-      uniform sampler2D uTexture;
+      // try playing with the colors here
+      //color = color.rbg;
 
-      void main() {
-        vec3 color = texture(uTexture, vUv).rgb;
-
-        // try playing with the colors here
-        //color = color.rbg;
-
-        gl_FragColor = vec4(color, 1.);
-      }
-    `,
-    uniforms: {
-      uTexture: texture,
-    },
-  });
-
-  useLoop(render);
-})();
+      gl_FragColor = vec4(color, 1.);
+    }
+  `,
+  uniforms: {
+    uTexture: texture,
+  },
+});

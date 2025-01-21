@@ -2,7 +2,7 @@ export const vertex = /*glsl*/ `
   in vec2 a_position;
   in float a_size;
   out vec2 vUv;
-  uniform vec2 u_resolution;
+  uniform vec2 uResolution;
 
   void main() {
     vUv = (a_position + 1.0) / 2.0;
@@ -32,16 +32,16 @@ export const fragment = /*glsl*/ `
 `;
 
 export const mipmapsShader = /*glsl*/ `
-uniform sampler2D u_image;
-uniform vec2 u_resolution;
-uniform float u_threshold;
+uniform sampler2D uImage;
+uniform vec2 uResolution;
+uniform float uThreshold;
 
 in vec2 vUv;
 out vec4 outColor;
 
 vec2 CalcOffset(float octave) {
 	 vec2 offset = vec2(0.0);
-	 vec2 padding = vec2(10.0) / u_resolution.xy;
+	 vec2 padding = vec2(10.0) / uResolution.xy;
 
 	 offset.x = -min(1.0, floor(octave / 3.0)) * (0.25 + padding.x);
 
@@ -68,9 +68,9 @@ vec3 mipmapLevel(float octave) {
 
 	 for (int i = 0; i < spread; i++) {
 			for (int j = 0; j < spread; j++) {
-				 vec2 off = (vec2(i, j) / u_resolution.xy + vec2(0.0) / u_resolution.xy) * scale / float(spread);
-				 vec3 imageColor = texture(u_image, coord + off).rgb;
-         color += max(vec3(0.0), imageColor.rgb - vec3(u_threshold));
+				 vec2 off = (vec2(i, j) / uResolution.xy + vec2(0.0) / uResolution.xy) * scale / float(spread);
+				 vec3 imageColor = texture(uImage, coord + off).rgb;
+         color += max(vec3(0.0), imageColor.rgb - vec3(uThreshold));
 
 				 weights += 1.0;
 			}
@@ -91,14 +91,14 @@ vec3 mipmapLevel(float octave) {
 `;
 
 export const blurShader = /*glsl*/ `
-uniform sampler2D u_image;
-uniform vec2 u_resolution;
-uniform vec2 u_direction;
+uniform sampler2D uImage;
+uniform vec2 uResolution;
+uniform vec2 uDirection;
 in vec2 vUv;
 out vec4 outColor;
 
 vec3 ColorFetch(vec2 coord) {
-	 return texture(u_image, coord).rgb;
+	 return texture(uImage, coord).rgb;
 }
 
 float weights[5];
@@ -129,9 +129,9 @@ void main() {
 
 		 for(int i = 1; i < 5; i++)
 		 {
-				 vec2 offset = vec2(offsets[i]) / u_resolution.xy;
-				 color += ColorFetch(uv + offset * .5 * u_direction) * weights[i];
-				 color += ColorFetch(uv - offset * .5 * u_direction) * weights[i];
+				 vec2 offset = vec2(offsets[i]) / uResolution.xy;
+				 color += ColorFetch(uv + offset * .5 * uDirection) * weights[i];
+				 color += ColorFetch(uv - offset * .5 * uDirection) * weights[i];
 				 weightSum += weights[i] * 2.0;
 		 }
 
@@ -143,21 +143,21 @@ void main() {
 `;
 
 export const combineShader = /* glsl */ `
-uniform sampler2D u_image;
-uniform sampler2D u_bloomTexture;
-uniform float u_mix;
-uniform vec2 u_resolution;
+uniform sampler2D uImage;
+uniform sampler2D uBloomTexture;
+uniform float uMix;
+uniform vec2 uResolution;
 in vec2 vUv;
 out vec4 outColor;
 
 
 
 vec3 ColorFetch(vec2 coord) {
-return texture(u_image, coord).rgb;
+return texture(uImage, coord).rgb;
 }
 
 vec3 BloomFetch(vec2 coord) {
-return texture(u_bloomTexture, coord).rgb;
+return texture(uBloomTexture, coord).rgb;
 }
 
 
@@ -174,14 +174,14 @@ float scale = exp2(octave);
 vec2 CalcOffset(float octave) {
 vec2 offset = vec2(0.0);
 
-vec2 padding = vec2(10.0) / u_resolution.xy;
+vec2 padding = vec2(10.0) / uResolution.xy;
 
 offset.x = -min(1.0, floor(octave / 3.0)) * (0.25 + padding.x);
 
 offset.y = -(1.0 - (1.0 / exp2(octave))) - padding.y * octave;
 offset.y += min(1.0, floor(octave / 3.0)) * (0.35 + padding.y);
 
-return offset + .5 / u_resolution.xy;
+return offset + .5 / uResolution.xy;
 }
 
 vec3 GetBloom(vec2 coord) {
@@ -196,13 +196,13 @@ return bloom;
 }
 
 void main() {
-  vec4 baseColor = texture(u_image, vUv);
+  vec4 baseColor = texture(uImage, vUv);
   vec4 bloomColor = vec4(GetBloom(vUv), 1);
 
   outColor = baseColor;
 
   float baseColorGreyscale = dot(baseColor.rgb, vec3(0.299, 0.587, 0.114));
-  float mixFactor = (bloomColor.a - baseColorGreyscale * baseColor.a) * u_mix;
+  float mixFactor = (bloomColor.a - baseColorGreyscale * baseColor.a) * uMix;
 
   outColor = mix(baseColor, baseColor + bloomColor, mixFactor);
 }
