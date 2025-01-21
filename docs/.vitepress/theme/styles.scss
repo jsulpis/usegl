@@ -108,7 +108,8 @@
   }
 
   html.dark & {
-    .cm-scroller {
+    .cm-scroller,
+    .sp-tabs-scrollable-container {
       color-scheme: dark;
     }
   }

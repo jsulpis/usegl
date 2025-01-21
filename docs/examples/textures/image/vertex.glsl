@@ -1,3 +1,8 @@
+/**
+* This is an example of implementation of the `object-fit: contain/cover` CSS property.
+* It would be much simpler to give the canvas the size of the image.
+*/
+
 attribute vec2 position;
 attribute vec2 uv;
 uniform sampler2D uTexture;
