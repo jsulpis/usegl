@@ -55,7 +55,7 @@ export interface RenderPass<U extends Uniforms = Record<string, never>> extends 
   initialize: (gl: WebGL2RenderingContext) => void;
 }
 
-export interface EffectPass<U extends Uniforms = Record<string, never>> extends RenderPass<U> {}
+export type EffectPass<U extends Uniforms = Record<string, never>> = RenderPass<U>;
 
 export interface CompositeEffectPass<
   P extends Record<string, EffectPass<any>> = Record<string, EffectPass<never>>,
