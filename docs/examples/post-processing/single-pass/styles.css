@@ -7,8 +7,7 @@ body {
 }
 
 canvas {
-  max-width: 100svw;
-  max-height: 100svh;
+  width: 100svw;
   aspect-ratio: 600 / 400;
   display: block;
 }

@@ -30,6 +30,7 @@ export interface BoundingRect {
  * Dynamically get the bounding rectangle of an HTML element
  */
 export function useBoundingRect(target: HTMLElement, options: UseBoundingRectOptions = {}) {
+  /* eslint-disable unicorn/prefer-global-this */
   const {
     windowResize = typeof window !== "undefined",
     windowScroll = typeof window !== "undefined",

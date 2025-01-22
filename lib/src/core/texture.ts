@@ -176,7 +176,7 @@ export function isHTMLVideoTexture(
 export function loadTexture<P extends Omit<ImageTextureParams, "src">>(src: string, params?: P) {
   const img = document.createElement("img");
 
-  if (src.startsWith("http") && new URL(src).origin !== window.location.origin) {
+  if (src.startsWith("http") && new URL(src).origin !== globalThis.location.origin) {
     img.crossOrigin = "anonymous";
   }
 
@@ -217,7 +217,7 @@ export function loadVideoTexture<P extends LoadVideoOptions>(src: string, params
   video.setAttribute("loop", "");
   video.setAttribute("autoplay", "");
 
-  if (src.startsWith("http") && new URL(src).origin !== window.location.origin) {
+  if (src.startsWith("http") && new URL(src).origin !== globalThis.location.origin) {
     video.crossOrigin = "anonymous";
   }
 
