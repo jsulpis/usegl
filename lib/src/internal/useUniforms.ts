@@ -3,10 +3,11 @@ import { fillTexture } from "../core/texture";
 import type { Uniforms, UniformValue, UpdatedCallback } from "../types";
 import { useLifeCycleCallback } from "./useLifeCycleCallback";
 
-let textureUnitIndex = 0;
-
 export function useUniforms<U extends Uniforms>(uniforms: U) {
   type UniformName = Extract<keyof U, string>;
+
+  let textureUnitIndex = 0;
+  const textureUnits = new Map<UniformName, { index: number; texture?: WebGLTexture | null }>();
 
   let _gl: WebGL2RenderingContext;
   let _program: WebGLProgram;
@@ -40,8 +41,6 @@ export function useUniforms<U extends Uniforms>(uniforms: U) {
       },
     },
   );
-
-  const textureUnits = new Map<UniformName, { index: number; texture?: WebGLTexture | null }>();
 
   function setUniforms() {
     for (const [uniformName, uniformValue] of Object.entries(uniformsProxy)) {
