@@ -247,3 +247,32 @@ export function loadVideoTexture<P extends LoadVideoOptions>(src: string, params
 
   return { ...(params as P), src: video };
 }
+
+export function createFloatDataTexture(data: number[] | Float32Array): DataTextureParams {
+  const elementsCount = data.length / 4;
+  const textureWidth = Math.ceil(Math.sqrt(elementsCount));
+  const textureHeight = Math.ceil(elementsCount / textureWidth);
+
+  let dataArray: Float32Array;
+  if (data.length === textureWidth * textureHeight * 4) {
+    dataArray = data instanceof Float32Array ? data : new Float32Array(data);
+  } else {
+    dataArray = new Float32Array(textureWidth * textureHeight * 4).map(() => -1);
+    dataArray.set(data);
+  }
+
+  return {
+    data: dataArray,
+    format: WebGL2RenderingContext.RGBA,
+    type: WebGL2RenderingContext.FLOAT,
+    internalFormat: WebGL2RenderingContext.RGBA32F,
+    generateMipmaps: false,
+    width: textureWidth,
+    height: textureHeight,
+    minFilter: "nearest",
+    magFilter: "nearest",
+    flipY: false,
+    wrapS: "clamp-to-edge",
+    wrapT: "clamp-to-edge",
+  };
+}

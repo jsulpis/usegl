@@ -3,7 +3,7 @@ export { createAndBindBuffer } from "./core/buffer";
 export { createProgram } from "./core/program";
 export { createRenderTarget, setRenderTarget } from "./core/renderTarget";
 export { createShader } from "./core/shader";
-export { fillTexture, loadTexture, loadVideoTexture } from "./core/texture";
+export { fillTexture, loadTexture, loadVideoTexture, createFloatDataTexture } from "./core/texture";
 
 export { useCompositor } from "./hooks/useCompositor";
 export { useEffectPass } from "./hooks/useEffectPass";
@@ -16,3 +16,4 @@ export { useLoop, playAllLoops, pauseAllLoops } from "./hooks/useLoop";
 export { useResizeObserver } from "./hooks/useResizeObserver";
 export { useBoundingRect } from "./hooks/useBoundingRect";
 export { usePointerEvents } from "./hooks/usePointerEvents";
+export { usePingPongFBO } from "./hooks/usePingPongFBO";

@@ -24,12 +24,13 @@ export function useQuadRenderPass<U extends Uniforms>(
   );
 
   if (!hasPositionAttribute) {
-    const positionAttributeName = findAttributeName(vertex, "position") || "aPosition";
-
-    attributes[positionAttributeName] = {
-      size: 2,
-      data: quadVertexPositions,
-    };
+    const positionAttributeName = findAttributeName(vertexShader, "position");
+    if (positionAttributeName) {
+      attributes[positionAttributeName] = {
+        size: 2,
+        data: quadVertexPositions,
+      };
+    }
   }
 
   return useRenderPass(gl, {

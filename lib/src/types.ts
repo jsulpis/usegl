@@ -35,15 +35,15 @@ export interface Attribute {
 }
 
 export interface RenderTarget {
-  framebuffer: WebGLFramebuffer | null;
-  texture: WebGLTexture | null;
+  framebuffer: WebGLFramebuffer;
+  texture: WebGLTexture;
   width: number;
   height: number;
   setSize: (width: number, height: number) => void;
 }
 
 export interface RenderPass<U extends Uniforms = Record<string, never>> extends Resizable {
-  render: () => void;
+  render: (opts?: { target?: RenderTarget | null }) => void;
   target: RenderTarget | null;
   setTarget: (target: RenderTarget | null) => void;
   uniforms: U;

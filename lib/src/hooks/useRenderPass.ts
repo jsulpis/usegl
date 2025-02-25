@@ -101,19 +101,20 @@ export function useRenderPass<U extends Uniforms>(
   const [beforeRenderCallbacks, onBeforeRender] = useLifeCycleCallback<RenderCallback<U>>();
   const [afterRenderCallbacks, onAfterRender] = useLifeCycleCallback<RenderCallback<U>>();
 
-  function render() {
+  function render({ target }: { target?: RenderTarget | null } = {}) {
     if (_gl == undefined) {
       throw new Error("The render pass must be initialized before calling the render function");
     }
-    for (const callback of beforeRenderCallbacks) {
-      callback({ uniforms: getUniformsSnapshot() });
-    }
 
-    setRenderTarget(_gl, _target);
+    setRenderTarget(_gl, target ?? _target);
     _gl.useProgram(_program);
 
     bindVAO();
     setUniforms();
+
+    for (const callback of beforeRenderCallbacks) {
+      callback({ uniforms: getUniformsSnapshot() });
+    }
 
     if (hasIndices) {
       _gl.drawElements(_gl[drawMode], getVertexCount(), indexType, 0);
