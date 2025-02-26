@@ -17,3 +17,4 @@ export { useResizeObserver } from "./hooks/useResizeObserver";
 export { useBoundingRect } from "./hooks/useBoundingRect";
 export { usePointerEvents } from "./hooks/usePointerEvents";
 export { usePingPongFBO } from "./hooks/usePingPongFBO";
+export { useTransformFeedback } from "./hooks/useTransformFeedback";

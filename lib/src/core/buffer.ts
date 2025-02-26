@@ -1,7 +1,7 @@
 import type { TypedArray } from "../types";
 
 export function createAndBindBuffer(
-  gl: WebGLRenderingContext,
+  gl: WebGL2RenderingContext,
   target: GLenum,
   data: TypedArray | number[],
 ) {
