@@ -88,20 +88,16 @@ import Layout from "../../layouts/Layout.astro";
     attributes: {
       aCoords: positions.coordsAttribute,
     },
+    transparent: true,
   });
 
   renderPass.onAfterRender(incrementRenderCount);
 
   renderPass.onCanvasReady(() => {
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-
     useLoop(({ deltaTime }) => {
       positions.uniforms.uDeltaTime = deltaTime / 500;
       positions.render();
-
-      gl.enable(gl.BLEND);
       renderPass.render();
-      gl.disable(gl.BLEND);
     });
   });
 </script>
