@@ -21,6 +21,7 @@ export type RenderPassOptions<U extends Uniforms = Record<string, never>> = {
   uniforms?: U;
   transparent?: boolean;
   drawMode?: DrawMode;
+  transformFeedbackVaryings?: string[];
 };
 
 export function useRenderPass<U extends Uniforms>(
@@ -33,6 +34,7 @@ export function useRenderPass<U extends Uniforms>(
     uniforms: userUniforms = {} as U,
     transparent = false,
     drawMode: userDrawMode,
+    transformFeedbackVaryings,
   }: RenderPassOptions<U>,
 ): RenderPass<U> {
   /**
@@ -60,7 +62,7 @@ export function useRenderPass<U extends Uniforms>(
 
   function initialize(gl: WebGL2RenderingContext) {
     _gl = gl;
-    const program = createProgram(_gl, fragment, vertex);
+    const program = createProgram(_gl, fragment, vertex, transformFeedbackVaryings);
     if (program == null) {
       throw new Error("could not initialize the render pass");
     }

@@ -1,0 +1,88 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<script>
+  import { useWebGLContext, useTransformFeedback } from "usegl";
+  import { incrementRenderCount } from "../../components/renderCount";
+
+  const { gl } = useWebGLContext("#glCanvas");
+
+  function printData(selector: string, data: number[] | Float32Array) {
+    document.querySelector(selector)!.textContent = data.join(", ");
+  }
+
+  const a = [1, 2, 3, 4, 5, 6];
+  const b = [3, 6, 9, 12, 15, 18];
+
+  printData("#a", a);
+  printData("#b", b);
+
+  const { render, onAfterRender, getOutputData } = useTransformFeedback(gl, {
+    vertex: /* glsl */ `
+      in float a;
+      in float b;
+      out float sum;
+      out float product;
+
+      void main() {
+        sum = a + b;
+        product = a * b;
+      }
+    `,
+    attributes: {
+      a: {
+        size: 1,
+        data: a,
+      },
+      b: {
+        size: 1,
+        data: b,
+      },
+    },
+    outputs: {
+      sum: { size: 1 },
+      product: { size: 1 },
+    },
+  });
+
+  onAfterRender(incrementRenderCount);
+  render();
+
+  printData("#sum", getOutputData("sum"));
+  printData("#product", getOutputData("product"));
+</script>
+
+<Layout title="Maths">
+  <canvas id="glCanvas"></canvas>
+  <div>
+    <table>
+      <tr>
+        <th>A</th>
+        <td id="a"></td>
+      </tr>
+      <tr>
+        <th>B</th>
+        <td id="b"></td>
+      </tr>
+      <tr>
+        <th>Sum</th>
+        <td id="sum"></td>
+      </tr>
+      <tr>
+        <th>Product</th>
+        <td id="product"></td>
+      </tr>
+    </table>
+  </div>
+</Layout>
+
+<style>
+  canvas {
+    display: none;
+  }
+  table {
+    font-size: 2rem;
+    border-spacing: 1em 0.5em;
+  }
+</style>
