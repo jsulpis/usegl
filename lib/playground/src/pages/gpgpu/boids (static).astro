@@ -2,8 +2,9 @@
 import Layout from "../../layouts/Layout.astro";
 ---
 
+<!-- Static sample made for visual regression testing  -->
 <script>
-  import { useWebGLContext, useLoop, usePingPongFBO, useWebGLCanvas } from "usegl";
+  import { useWebGLContext, usePingPongFBO, useWebGLCanvas } from "usegl";
   import { incrementRenderCount } from "../../components/renderCount";
   import {
     boidsPositions,
@@ -13,8 +14,6 @@ import Layout from "../../layouts/Layout.astro";
   } from "../../shaders/boids";
 
   const { gl, canvas } = useWebGLContext("#glCanvas");
-
-  const numParticles = 300;
 
   const velocities = usePingPongFBO(gl, {
     fragment: boidsVelocities,
@@ -31,12 +30,12 @@ import Layout from "../../layouts/Layout.astro";
     },
     dataTexture: {
       name: "tVelocities",
-      initialData: Array.from({ length: numParticles }).flatMap(() => [
-        Math.random() * 0.2 - 0.1,
-        Math.random() * 0.2 - 0.1,
-        0,
-        0,
-      ]),
+      initialData: [
+        [-0.1, -0.1, 0, 0],
+        [0.1, 0.1, 0, 0],
+        [0.1, -0.1, 0, 0],
+        [-0.1, 0.1, 0, 0],
+      ].flat(),
     },
   });
 
@@ -48,17 +47,14 @@ import Layout from "../../layouts/Layout.astro";
     },
     dataTexture: {
       name: "tPositions",
-      initialData: Array.from({ length: numParticles }).flatMap(() => [
-        Math.random() * 2 - 1,
-        Math.random() * 2 - 1,
-        0,
-        0,
-      ]),
+      initialData: [
+        [-0.5, -0.5, 0, 0],
+        [0.5, 0.5, 0, 0],
+        [0.5, -0.5, 0, 0],
+        [-0.5, 0.5, 0, 0],
+      ].flat(),
     },
   });
-
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-  gl.enable(gl.BLEND);
 
   const renderPass = useWebGLCanvas({
     canvas,
@@ -75,17 +71,19 @@ import Layout from "../../layouts/Layout.astro";
   renderPass.onAfterRender(incrementRenderCount);
 
   renderPass.onCanvasReady(() => {
-    useLoop(({ deltaTime }) => {
-      velocities.uniforms.uDeltaTime = deltaTime / 500;
-      velocities.render();
+    velocities.render();
+    positions.render();
+    renderPass.render();
 
-      positions.uniforms.uDeltaTime = deltaTime / 500;
-      positions.render();
+    velocities.uniforms.uDeltaTime = 0.8;
+    velocities.render();
+    positions.uniforms.uDeltaTime = 0.8;
+    positions.render();
+    renderPass.render();
 
-      gl.enable(gl.BLEND);
-      renderPass.render();
-      gl.disable(gl.BLEND);
-    });
+    velocities.render();
+    positions.render();
+    renderPass.render();
   });
 </script>
 
