@@ -1,4 +1,4 @@
-export function useLifeCycleCallback<C>() {
+export function useLifeCycleCallback<C = () => void>() {
   const callbacks: C[] = [];
 
   function addCallback(callback: C) {
