@@ -2,14 +2,9 @@
 import Layout from "../../layouts/Layout.astro";
 ---
 
+<!-- Static sample made for visual regression testing  -->
 <script>
-  import {
-    useWebGLContext,
-    useLoop,
-    usePingPongFBO,
-    useWebGLCanvas,
-    createFloatDataTexture,
-  } from "usegl";
+  import { useWebGLContext, usePingPongFBO, useWebGLCanvas, createFloatDataTexture } from "usegl";
   import { incrementRenderCount } from "../../components/renderCount";
 
   const { gl, canvas } = useWebGLContext("#glCanvas");
@@ -36,29 +31,27 @@ import Layout from "../../layouts/Layout.astro";
     }
   `;
 
-  const numParticles = 100;
-
   const positions = usePingPongFBO(gl, {
     fragment: positionsFragment,
     uniforms: {
       uDeltaTime: 0,
       tVelocities: createFloatDataTexture(
-        Array.from({ length: numParticles }).flatMap(() => [
-          Math.random() * 0.2 - 0.1,
-          Math.random() * 0.2 - 0.1,
-          0,
-          0,
-        ])
+        [
+          [-0.1, -0.1, 0, 0],
+          [0.1, 0.1, 0, 0],
+          [0.1, -0.1, 0, 0],
+          [-0.1, 0.1, 0, 0],
+        ].flat()
       ),
     },
     dataTexture: {
       name: "tPositions",
-      initialData: Array.from({ length: numParticles }).flatMap(() => [
-        Math.random() * 2 - 1,
-        Math.random() * 2 - 1,
-        0,
-        0,
-      ]),
+      initialData: [
+        [-0.5, -0.5, 0, 0],
+        [0.5, 0.5, 0, 0],
+        [0.5, -0.5, 0, 0],
+        [-0.5, 0.5, 0, 0],
+      ].flat(),
     },
   });
 
@@ -70,7 +63,7 @@ import Layout from "../../layouts/Layout.astro";
 
       void main() {
         gl_Position = vec4(texture2D(uPositions, aCoords).xy, 0, 1);
-        gl_PointSize = 20.0;
+        gl_PointSize = 40.0;
       }
     `,
     fragment: `
@@ -93,16 +86,12 @@ import Layout from "../../layouts/Layout.astro";
   renderPass.onAfterRender(incrementRenderCount);
 
   renderPass.onCanvasReady(() => {
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    positions.render();
+    renderPass.render();
 
-    useLoop(({ deltaTime }) => {
-      positions.uniforms.uDeltaTime = deltaTime / 500;
-      positions.render();
-
-      gl.enable(gl.BLEND);
-      renderPass.render();
-      gl.disable(gl.BLEND);
-    });
+    positions.uniforms.uDeltaTime = 1;
+    positions.render();
+    renderPass.render();
   });
 </script>
 

@@ -2,13 +2,15 @@ import { test, expect } from "@playwright/test";
 
 import { routes } from "../playground/src/components/routes";
 
-const ignoreRoutes = new Set(["pause", "dataTexture"]);
+const ignoreRoutes = new Set(["pause", "dataTexture", "particles - FBO", "boids"]);
 
 const routesToTest = routes.filter(({ route }) => !ignoreRoutes.has(route));
 
 const expectedRendersByDemo = {
   scissor: "2",
   video: "2",
+  "particles - FBO (static)": "3",
+  "boids (static)": "4",
   mipmap: /[1-3]/,
   texture: /1|2/,
   sepia: /1|2/,
