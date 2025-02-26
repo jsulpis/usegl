@@ -8,6 +8,7 @@ import { findUniformName } from "../internal/findName";
 import type { UseLoopOptions } from "./useLoop";
 import { useLoop } from "./useLoop";
 import { isHTMLImageTexture, isHTMLVideoTexture } from "../core/texture";
+import { useLifeCycleCallback } from "../internal/useLifeCycleCallback";
 
 interface Props<U extends Uniforms> extends UseLoopOptions, QuadPassOptions<U> {
   canvas: HTMLCanvasElement | OffscreenCanvas | string;
@@ -105,21 +106,36 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
 
   let resizeObserver: ReturnType<typeof useResizeObserver> | null = null;
 
+  const [canvasReadyCallbacks, onCanvasReady] = useLifeCycleCallback();
+  let isFirstResize = true;
+
+  function resizeCanvas(width: number, height: number) {
+    setSize({ width: width * dpr, height: height * dpr });
+    if (isFirstResize) {
+      for (const callback of canvasReadyCallbacks) callback();
+      isFirstResize = false;
+    }
+  }
+
   // resize only if HTMLCanvasElement, because we can't know the size of an OffscreenCanvas
   if (canvas instanceof HTMLCanvasElement) {
     // don't automatically resize if the renderMode is manual, because the call to gl.viewport() will break the canvas
     if (renderMode === "auto") {
       resizeObserver = useResizeObserver(canvas, ({ size }) => {
-        setSize({ width: size.width * dpr, height: size.height * dpr });
+        resizeCanvas(size.width, size.height);
       });
     } else {
-      setSize({ width: canvas.clientWidth * dpr, height: canvas.clientHeight * dpr });
+      resizeCanvas(canvas.clientWidth, canvas.clientHeight);
     }
   }
 
   return {
     gl,
     render,
+    /**
+     * Register a callback to execute after the initial resizing of the canvas.
+     */
+    onCanvasReady,
     canvas,
     setSize,
     play,
