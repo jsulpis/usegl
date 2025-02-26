@@ -32,9 +32,9 @@ export function usePingPongFBO<U extends Uniforms>(
 
   const coords = new Float32Array(elementsCount * 2);
   for (let i = 0; i < elementsCount; i++) {
-    const x = (i % textureParams.width) / textureParams.width;
-    const y = Math.floor(i / textureParams.height) / textureParams.height;
-    coords.set([x, y], i * 2);
+    const u = ((i % textureParams.width) + 0.5) / textureParams.width;
+    const v = (Math.floor(i / textureParams.width) + 0.5) / textureParams.height;
+    coords.set([u, v], i * 2);
   }
 
   const fboPass = useQuadRenderPass(gl, {

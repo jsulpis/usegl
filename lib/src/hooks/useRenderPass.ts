@@ -19,6 +19,7 @@ export type RenderPassOptions<U extends Uniforms = Record<string, never>> = {
   vertex: string;
   attributes?: Record<string, Attribute>;
   uniforms?: U;
+  transparent?: boolean;
   drawMode?: DrawMode;
 };
 
@@ -30,6 +31,7 @@ export function useRenderPass<U extends Uniforms>(
     vertex,
     attributes = {},
     uniforms: userUniforms = {} as U,
+    transparent = false,
     drawMode: userDrawMode,
   }: RenderPassOptions<U>,
 ): RenderPass<U> {
@@ -108,6 +110,13 @@ export function useRenderPass<U extends Uniforms>(
 
     setRenderTarget(_gl, target ?? _target);
     _gl.useProgram(_program);
+
+    if (transparent) {
+      _gl.enable(_gl.BLEND);
+      _gl.blendFunc(_gl.SRC_ALPHA, _gl.ONE_MINUS_SRC_ALPHA);
+    } else {
+      _gl.disable(_gl.BLEND);
+    }
 
     bindVAO();
     setUniforms();
