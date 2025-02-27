@@ -1,5 +1,29 @@
 # Changelog
 
+## v0.6.0
+
+[compare changes](https://github.com/jsulpis/usegl/compare/v0.5.0...v0.6.0)
+
+### 🚀 Enhancements
+
+- Add support for ping pong FBO technique ([39c7004](https://github.com/jsulpis/usegl/commit/39c7004))
+- Add 'onCanvasReady' is useWebGLCanvas ([ee41ecc](https://github.com/jsulpis/usegl/commit/ee41ecc))
+- Add a "transparent" option on the renderPass ([e73e9db](https://github.com/jsulpis/usegl/commit/e73e9db))
+- Add useTransformFeedback to do maths on the GPU ([2a3bb42](https://github.com/jsulpis/usegl/commit/2a3bb42))
+
+### 🩹 Fixes
+
+- Wrong count of texture units ([c8a77aa](https://github.com/jsulpis/usegl/commit/c8a77aa))
+
+### 📖 Documentation
+
+- Update the examples with the new synchronous loaders api ([4c76307](https://github.com/jsulpis/usegl/commit/4c76307))
+- Add an example of multi-pass post-processing effect (bloom) ([ae7fdcc](https://github.com/jsulpis/usegl/commit/ae7fdcc))
+
+### 🏡 Chore
+
+- Update dependencies ([18f0c9b](https://github.com/jsulpis/usegl/commit/18f0c9b))
+
 ## v0.5.0
 
 [compare changes](https://github.com/jsulpis/usegl/compare/v0.4.0...v0.5.0)
