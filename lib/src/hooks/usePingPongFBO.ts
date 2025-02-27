@@ -13,8 +13,8 @@ export type PingPongFBOOptions<U extends Uniforms = Record<string, never>> = {
 };
 
 interface PingPongFBOPass<U extends Uniforms = Record<string, never>> extends RenderPass<U> {
-  outputTexture: DataTextureParams | WebGLTexture;
-  coordsAttribute: Attribute;
+  texture: DataTextureParams | WebGLTexture;
+  coords: Attribute;
 }
 
 export function usePingPongFBO<U extends Uniforms>(
@@ -32,8 +32,8 @@ export function usePingPongFBO<U extends Uniforms>(
 
   const coords = new Float32Array(elementsCount * 2);
   for (let i = 0; i < elementsCount; i++) {
-    const u = ((i % textureParams.width) + 0.5) / textureParams.width;
-    const v = (Math.floor(i / textureParams.width) + 0.5) / textureParams.height;
+    const u = (i % textureParams.width) / textureParams.width;
+    const v = Math.floor(i / textureParams.width) / textureParams.height;
     coords.set([u, v], i * 2);
   }
 
@@ -45,8 +45,8 @@ export function usePingPongFBO<U extends Uniforms>(
   });
 
   const pingPongFBOPass: PingPongFBOPass<U> = Object.assign(fboPass, {
-    outputTexture: initialDataTexture,
-    coordsAttribute: {
+    texture: initialDataTexture,
+    coords: {
       data: coords,
       size: 2,
     },
@@ -65,7 +65,7 @@ export function usePingPongFBO<U extends Uniforms>(
 
   pingPongFBOPass.render = () => {
     renderFn({ target: fboWrite });
-    pingPongFBOPass.outputTexture = fboWrite.texture;
+    pingPongFBOPass.texture = fboWrite.texture;
     Object.assign(pingPongFBOPass.uniforms, {
       [dataTextureName]: () => fboRead.texture,
     });
