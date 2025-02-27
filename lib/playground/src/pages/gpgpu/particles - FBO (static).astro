@@ -76,10 +76,10 @@ import Layout from "../../layouts/Layout.astro";
       }
     `,
     uniforms: {
-      uPositions: () => positions.outputTexture,
+      uPositions: () => positions.texture,
     },
     attributes: {
-      aCoords: positions.coordsAttribute,
+      aCoords: positions.coords,
     },
     transparent: true,
   });

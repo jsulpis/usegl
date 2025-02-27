@@ -27,7 +27,7 @@ import Layout from "../../layouts/Layout.astro";
       uCohesionWeight: 0.8,
       uBorderForce: 1,
       uBorderDistance: 0.8,
-      tPositions: () => positions.outputTexture,
+      tPositions: () => positions.texture,
     },
     dataTexture: {
       name: "tVelocities",
@@ -44,7 +44,7 @@ import Layout from "../../layouts/Layout.astro";
     fragment: boidsPositions,
     uniforms: {
       uDeltaTime: 0,
-      tVelocities: () => velocities.outputTexture,
+      tVelocities: () => velocities.texture,
     },
     dataTexture: {
       name: "tPositions",
@@ -62,10 +62,10 @@ import Layout from "../../layouts/Layout.astro";
     vertex: renderPassVertex,
     fragment: renderPassFragment,
     uniforms: {
-      tPositions: () => positions.outputTexture,
+      tPositions: () => positions.texture,
     },
     attributes: {
-      aCoords: positions.coordsAttribute,
+      aCoords: positions.coords,
     },
     transparent: true,
   });
