@@ -1,0 +1,14 @@
+body {
+  margin: 0;
+}
+
+canvas {
+  width: 100svw;
+  height: 100svh;
+  display: block;
+  background: black;
+}
+
+.tp-dfwv {
+  width: 370px !important;
+}
