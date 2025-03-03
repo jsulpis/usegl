@@ -1,5 +1,6 @@
 ---
-title: ping pong FBO (Boids)
+title: Boids
+position: 2
 ---
 
 ::: example-editor {deps=tweakpane@^4.0.5}

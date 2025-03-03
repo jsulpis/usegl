@@ -16,14 +16,23 @@ export const examplesSidebar = sections.map((section) => {
 
   return {
     text: upperFirst(section),
-    items: pages.map((page) => {
-      const indexPath = path.join(sectionPath, page, "index.md");
-      const { data } = matter(fs.readFileSync(indexPath, "utf8"));
-      return {
-        text: data.title || page,
-        link: `/examples/${section}/${page}/`,
-      };
-    }),
+    items: pages
+      .map((page) => {
+        const indexPath = path.join(sectionPath, page, "index.md");
+        const { data } = matter(fs.readFileSync(indexPath, "utf8"));
+        return {
+          title: data.title || page,
+          slug: page,
+          position: data.position || 0,
+        };
+      })
+      .sort((a, b) => a.position - b.position)
+      .map((data) => {
+        return {
+          text: data.title,
+          link: `/examples/${section}/${data.slug}/`,
+        };
+      }),
   };
 });
 

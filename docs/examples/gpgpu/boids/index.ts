@@ -28,10 +28,10 @@ const velocities = usePingPongFBO(gl, {
   dataTexture: {
     name: "tVelocities",
     initialData: Array.from({ length: count }).flatMap(() => [
-      Math.random() * 0.2 - 0.1,
-      Math.random() * 0.2 - 0.1,
-      0,
-      0,
+      /* R */ Math.random() * 0.2 - 0.1,
+      /* G */ Math.random() * 0.2 - 0.1,
+      /* B */ 0,
+      /* A */ 0,
     ]),
   },
 });
@@ -45,10 +45,10 @@ const positions = usePingPongFBO(gl, {
   dataTexture: {
     name: "tPositions",
     initialData: Array.from({ length: count }).flatMap(() => [
-      Math.random() * 2 - 1,
-      Math.random() * 2 - 1,
-      0,
-      0,
+      /* R */ Math.random() * 2 - 1,
+      /* G */ Math.random() * 2 - 1,
+      /* B */ 0,
+      /* A */ 0,
     ]),
   },
 });
@@ -67,6 +67,7 @@ const renderPass = useWebGLCanvas({
   transparent: true,
 });
 
+// Wait for the canvas to be resized to avoid a flash at the first renders
 renderPass.onCanvasReady(() => {
   useLoop(({ deltaTime }) => {
     velocities.uniforms.uDeltaTime = deltaTime / 500;
