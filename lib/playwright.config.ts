@@ -16,7 +16,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 3 : 0,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: "html",
+  reporter: [["html", { host: "0.0.0.0" }]],
   use: {
     trace: "on-first-retry",
     baseURL: serverUrl,

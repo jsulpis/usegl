@@ -1,0 +1,8 @@
+services:
+  test:
+    build: .
+    ports:
+      - "9323:9323"
+    volumes:
+      - ./test-results:/app/test-results
+      - ./tests/__screenshots__:/app/tests/__screenshots__
