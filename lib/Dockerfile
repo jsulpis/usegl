@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright:v1.49.1 AS base
+FROM mcr.microsoft.com/playwright:v1.54.1 AS base
 RUN npm i -g pnpm
 
 FROM base AS deps

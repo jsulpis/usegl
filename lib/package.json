@@ -36,15 +36,15 @@
   },
   "devDependencies": {
     "@astrojs/check": "0.9.4",
-    "@playwright/test": "1.49.1",
-    "@types/node": "22.10.7",
-    "astro": "5.1.8",
-    "changelogen": "0.5.7",
-    "eslint": "9.18.0",
-    "eslint-config-unjs": "0.4.2",
-    "prettier": "3.4.2",
-    "typescript": "5.7.3",
-    "unbuild": "3.3.1"
+    "@playwright/test": "1.54.1",
+    "@types/node": "22.16.5",
+    "astro": "5.12.3",
+    "changelogen": "0.6.2",
+    "eslint": "9.32.0",
+    "eslint-config-unjs": "0.5.0",
+    "prettier": "3.6.2",
+    "typescript": "5.8.3",
+    "unbuild": "3.6.0"
   },
   "changelog": {
     "excludeAuthors": [
