@@ -6,7 +6,6 @@ import type { CompositeEffectPass, EffectPass, RenderPass } from "../types";
  * The compositor handles the combination of the render pass and the effects:
  * - initialize the gl context and create render targets for all effects
  * - provide each effect with its previousPass and inputPass to use in uniforms
- * - fill the texture uniforms with the previous pass if they are not provided in uniforms
  * - detect the first texture uniform of each effect and, if it has no value provided, fill it with the previous pass
  * - render all passes in the correct order
  */
@@ -23,7 +22,10 @@ export function useCompositor(
 
   for (const [index, effect] of effects.entries()) {
     effect.initialize(gl);
-    effect.setTarget(index === effects.length - 1 ? null : createRenderTarget(gl));
+
+    if (index < effects.length - 1 && effect.target == undefined) {
+      effect.setTarget(createRenderTarget(gl));
+    }
 
     if (isCompositeEffectPass(effect)) {
       const inputPass = previousPass;
