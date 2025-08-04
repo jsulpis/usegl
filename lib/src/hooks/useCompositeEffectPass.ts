@@ -28,7 +28,7 @@ export function useCompositeEffectPass<P extends Record<string, EffectPass<any>>
     for (const [index, pass] of effectPasses.entries()) {
       pass.initialize(gl);
 
-      if (index < effectPasses.length - 1) {
+      if (index < effectPasses.length - 1 && pass.target == undefined) {
         pass.setTarget(createRenderTarget(gl));
       }
 
