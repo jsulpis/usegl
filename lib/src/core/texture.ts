@@ -1,6 +1,11 @@
 export type TextureData = ArrayBufferView | null;
 
-type BaseTextureParams = {
+type MagFilter = "linear" | "nearest";
+type MinFilter = "linear" | "nearest" | "linear-mipmap-linear" | "nearest-mipmap-linear";
+type ColorSpace = "srgb" | "linear-rgb";
+type WrappingMode = "clamp-to-edge" | "repeat" | "mirrored-repeat";
+
+export type BaseTextureParams = {
   /**
    * @default "linear-mipmap-linear" if generateMipmaps is true, "linear" otherwise
    */
@@ -38,6 +43,10 @@ type BaseTextureParams = {
    */
   internalFormat?: number;
   /**
+   * @default "linear-rgb"
+   */
+  colorSpace?: ColorSpace;
+  /**
    * @default WebGL2RenderingContext.RGBA
    */
   format?: number;
@@ -74,10 +83,6 @@ export type ImageTextureParams = BaseTextureParams & {
 };
 
 export type TextureParams = DataTextureParams | ImageTextureParams;
-
-type MagFilter = "linear" | "nearest";
-type MinFilter = "linear" | "nearest" | "linear-mipmap-linear" | "nearest-mipmap-linear";
-type WrappingMode = "clamp-to-edge" | "repeat" | "mirrored-repeat";
 
 const minFilterMap: Record<MinFilter, number> = {
   linear: WebGL2RenderingContext.LINEAR,
@@ -118,8 +123,11 @@ export function fillTexture(
   const {
     level = 0,
     flipY = true,
-    internalFormat = WebGL2RenderingContext.RGBA,
     format = WebGL2RenderingContext.RGBA,
+    colorSpace = "linear-rgb",
+    internalFormat = colorSpace === "srgb"
+      ? WebGL2RenderingContext.SRGB8_ALPHA8
+      : WebGL2RenderingContext.RGBA,
     type = WebGL2RenderingContext.UNSIGNED_BYTE,
     generateMipmaps = true,
     anisotropy = navigator.hardwareConcurrency, // in most case between 4 and 12, depending on the hardware range
