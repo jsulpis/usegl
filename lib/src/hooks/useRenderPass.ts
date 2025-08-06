@@ -37,7 +37,7 @@ export function useRenderPass<U extends Uniforms>(
     transformFeedbackVaryings,
   }: RenderPassOptions<U>,
 ): RenderPass<U> {
-  /**
+  /*
    * INIT
    */
 
@@ -77,7 +77,7 @@ export function useRenderPass<U extends Uniforms>(
     initialize(gl);
   }
 
-  /**
+  /*
    * UPDATE
    */
 
@@ -96,7 +96,7 @@ export function useRenderPass<U extends Uniforms>(
     _target = target;
   }
 
-  /**
+  /*
    * RENDER
    */
 
