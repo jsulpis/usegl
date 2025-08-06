@@ -2,9 +2,11 @@ import type { RenderTarget } from "../types";
 import type { DataTextureParams } from "./texture";
 import { fillTexture } from "./texture";
 
+export type RenderTargetParams = Partial<Omit<DataTextureParams, "data">>;
+
 export function createRenderTarget(
   gl: WebGL2RenderingContext,
-  params?: Omit<DataTextureParams, "data">,
+  params?: RenderTargetParams,
 ): RenderTarget {
   let _width = params?.width ?? gl.canvas.width;
   let _height = params?.height ?? gl.canvas.height;
@@ -14,10 +16,10 @@ export function createRenderTarget(
   let _texture = gl.createTexture()!;
   fillTexture(gl, _texture, {
     data: null,
-    ...params,
     width: _width,
     height: _height,
     generateMipmaps: false,
+    ...params,
   });
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
@@ -38,7 +40,6 @@ export function createRenderTarget(
     });
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-    gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 0, 0, width, height);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, newTexture, 0);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
