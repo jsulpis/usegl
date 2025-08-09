@@ -3,78 +3,25 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { useEffectPass, useWebGLCanvas, useCompositeEffectPass } from "usegl";
-  import { fragment, mipmapsShader, blurShader, combineShader } from "../../shaders/bloom";
+  import { useWebGLCanvas, loadTexture, bloom } from "usegl";
+  import { fragment } from "../../shaders/bloom";
   import { incrementRenderCount } from "../../components/renderCount";
 
-  const mipmaps = useEffectPass({
-    fragment: mipmapsShader,
-    uniforms: {
-      uThreshold: 0.2,
-    },
-  });
-
-  const horizontalBlur = useEffectPass({
-    fragment: blurShader,
-    uniforms: {
-      uDirection: [1, 0],
-    },
-  });
-
-  const verticalBlur = useEffectPass({
-    fragment: blurShader,
-    uniforms: {
-      uDirection: [0, 1],
-    },
-  });
-
-  const combine = useEffectPass({
-    fragment: combineShader,
-    uniforms: {
-      uImage: ({ inputPass }) => inputPass.target!.texture,
-      uBloomTexture: () => verticalBlur.target!.texture,
-      uMix: 0,
-    },
-  });
-
-  const bloomEffect = useCompositeEffectPass({
-    mipmaps,
-    horizontalBlur,
-    verticalBlur,
-    combine,
-  });
-
-  bloomEffect.passes.combine.uniforms.uMix = 1;
-
-  const vignetteEffect = useEffectPass({
-    fragment: /* glsl */ `
-			uniform sampler2D uTexture;
-			varying vec2 vUv;
-
-			#define SIZE .6      // (0.0 - 1.0)
-			#define ROUNDNESS .7 // (0.0 = rectangle, 1.0 = round)
-			#define STRENGTH .6  // (0.0 - 1.0)
-
-			float vignette() {
-				vec2 centered = vUv * 2.0 - 1.0;
-				float circDist = length(centered);
-				float rectDist = max(abs(centered.x), abs(centered.y));
-				float dist = mix(rectDist, circDist, ROUNDNESS);
-				return 1. - smoothstep(SIZE, SIZE * 2., dist) * STRENGTH;
-			}
-
-			void main() {
-				vec4 color = texture(uTexture, vUv);
-        color.rgb *= vignette();
-				gl_FragColor = color;
-			}
-		`,
-  });
+  const radius = 0.65;
+  const levels = 8;
+  const mix = 0.5;
 
   const { onAfterRender } = useWebGLCanvas({
     canvas: "#glCanvas",
     fragment: fragment,
-    postEffects: [vignetteEffect, bloomEffect],
+    uniforms: {
+      uTexture: loadTexture(
+        "https://st.depositphotos.com/2300153/2648/i/950/depositphotos_26489675-stock-photo-dark-room-with-window.jpg",
+        // "https://st.depositphotos.com/8521256/56706/v/600/depositphotos_567060820-stock-video-white-picture-of-rectangle-on.jpg",
+        { colorSpace: "srgb" }
+      ),
+    },
+    postEffects: [bloom({ levels, radius, mix })],
   });
 
   onAfterRender(incrementRenderCount);
@@ -83,3 +30,10 @@ import Layout from "../../layouts/Layout.astro";
 <Layout title="Bloom">
   <canvas id="glCanvas"></canvas>
 </Layout>
+
+<style>
+  canvas {
+    width: 600px;
+    height: 600px;
+  }
+</style>
