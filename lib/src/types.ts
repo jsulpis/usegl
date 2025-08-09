@@ -58,7 +58,7 @@ export interface RenderPass<U extends Uniforms = Record<string, never>> extends 
 export type EffectPass<U extends Uniforms = Record<string, never>> = RenderPass<U>;
 
 export interface CompositeEffectPass<
-  P extends Record<string, EffectPass<any>> = Record<string, EffectPass<never>>,
+  P extends EffectPass<any>[] = EffectPass<never>[],
 > extends Omit<EffectPass, "fragment" | "vertex" | "uniforms"> {
   passes: P;
 }
