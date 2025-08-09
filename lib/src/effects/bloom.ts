@@ -21,7 +21,6 @@ const targetConfig = {
 export function bloom(params: BloomParams = {}) {
   const { levels = 8, radius = 0.65, mix = 0.5 } = params;
 
-  const passes: Record<string, EffectPass<any>> = {};
   const downsamplePasses: EffectPass<any>[] = [];
 
   // --- Downsample pyramid (progressively half resolution) ---
@@ -36,7 +35,6 @@ export function bloom(params: BloomParams = {}) {
       },
     });
     downsamplePasses.push(pass);
-    passes[`downsample${level}`] = pass;
   }
 
   // --- Upsample & accumulate ---
@@ -59,7 +57,6 @@ export function bloom(params: BloomParams = {}) {
       },
     });
     upsamplePasses.push(pass);
-    passes[`upsample${level}`] = pass;
   }
 
   // --- Combine original + bloom ---
@@ -71,9 +68,8 @@ export function bloom(params: BloomParams = {}) {
       uMix: mix,
     },
   });
-  passes["combine"] = combine;
 
-  const compositePass = useCompositeEffectPass(passes);
+  const compositePass = useCompositeEffectPass([...downsamplePasses, ...upsamplePasses, combine]);
 
   return {
     ...compositePass,

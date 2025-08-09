@@ -8,11 +8,10 @@ import type {
   UpdatedCallback,
 } from "../types";
 
-export function useCompositeEffectPass<P extends Record<string, EffectPass<any>>>(
+export function useCompositeEffectPass<P extends EffectPass<any>[]>(
   passes: P,
 ): CompositeEffectPass<P> {
-  const effectPasses = Object.values(passes);
-  const outputPass = effectPasses.at(-1)!;
+  const outputPass = passes.at(-1)!;
 
   const [beforeRenderCallbacks, onBeforeRender] = useLifeCycleCallback<RenderCallback<any>>();
   const [afterRenderCallbacks, onAfterRender] = useLifeCycleCallback<RenderCallback<any>>();
@@ -20,15 +19,15 @@ export function useCompositeEffectPass<P extends Record<string, EffectPass<any>>
 
   function render() {
     for (const callback of beforeRenderCallbacks) callback({ uniforms: {} });
-    for (const pass of effectPasses) pass.render();
+    for (const pass of passes) pass.render();
     for (const callback of afterRenderCallbacks) callback({ uniforms: {} });
   }
 
   function initialize(gl: WebGL2RenderingContext) {
-    for (const [index, pass] of effectPasses.entries()) {
+    for (const [index, pass] of passes.entries()) {
       pass.initialize(gl);
 
-      if (index < effectPasses.length - 1 && pass.target == undefined) {
+      if (index < passes.length - 1 && pass.target == undefined) {
         pass.setTarget(createRenderTarget(gl));
       }
 
@@ -41,7 +40,7 @@ export function useCompositeEffectPass<P extends Record<string, EffectPass<any>>
   }
 
   function setSize(size: { width: number; height: number }) {
-    for (const pass of effectPasses) {
+    for (const pass of passes) {
       pass.setSize(size);
     }
   }

@@ -12,7 +12,7 @@ import type { CompositeEffectPass, EffectPass, RenderPass } from "../types";
 export function useCompositor(
   gl: WebGL2RenderingContext,
   renderPass: RenderPass<any>,
-  effects: Array<EffectPass<any> | CompositeEffectPass<Record<string, EffectPass<any>>>>,
+  effects: Array<EffectPass<any> | CompositeEffectPass<EffectPass<any>[]>>,
 ) {
   if (effects.length > 0 && renderPass.target === null) {
     renderPass.setTarget(createRenderTarget(gl));
@@ -29,7 +29,7 @@ export function useCompositor(
 
     if (isCompositeEffectPass(effect)) {
       const inputPass = previousPass;
-      for (const effectPass of Object.values(effect.passes)) {
+      for (const effectPass of effect.passes) {
         const previousPassRef = previousPass;
         setupEffectPass(effectPass, previousPassRef, inputPass);
         previousPass = effectPass;
@@ -60,7 +60,7 @@ export function useCompositor(
 function isCompositeEffectPass(
   effect: EffectPass | CompositeEffectPass<any>,
 ): effect is CompositeEffectPass<any> {
-  return typeof (effect as CompositeEffectPass).passes === "object";
+  return Array.isArray((effect as CompositeEffectPass).passes);
 }
 
 function setupEffectPass(
