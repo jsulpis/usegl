@@ -18,3 +18,5 @@ export { useBoundingRect } from "./hooks/useBoundingRect";
 export { usePointerEvents } from "./hooks/usePointerEvents";
 export { usePingPongFBO } from "./hooks/usePingPongFBO";
 export { useTransformFeedback } from "./hooks/useTransformFeedback";
+
+export { bloom } from "./effects/bloom";
