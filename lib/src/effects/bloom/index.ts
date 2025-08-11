@@ -1,6 +1,6 @@
-import { useCompositeEffectPass } from "../hooks/useCompositeEffectPass";
-import { useEffectPass } from "../hooks/useEffectPass";
-import type { CompositeEffectPass, EffectPass } from "../types";
+import { useCompositeEffectPass } from "../../hooks/useCompositeEffectPass";
+import { useEffectPass } from "../../hooks/useEffectPass";
+import type { CompositeEffectPass, EffectPass } from "../../types";
 
 import downsampleFragment from "./glsl/downsample.frag?raw";
 import sampleVertex from "./glsl/sample.vert?raw";
@@ -11,11 +11,6 @@ export type BloomParams = {
   levels?: number;
   radius?: number;
   mix?: number;
-};
-
-const targetConfig = {
-  internalFormat: WebGL2RenderingContext.RGBA16F,
-  type: WebGL2RenderingContext.FLOAT,
 };
 
 export function bloom(params: BloomParams = {}) {
@@ -29,7 +24,6 @@ export function bloom(params: BloomParams = {}) {
       fragment: downsampleFragment,
       vertex: sampleVertex,
       resolutionScale: 1 / 2 ** level,
-      target: targetConfig,
       uniforms: {
         uTexelSizeMultiplier: 0.5,
       },
@@ -45,7 +39,6 @@ export function bloom(params: BloomParams = {}) {
       fragment: upsampleFragment,
       vertex: sampleVertex,
       resolutionScale: 1 / 2 ** level,
-      target: targetConfig,
       uniforms: {
         uTexelSizeMultiplier: 1,
         uCurrentTexture: () => downsamplePasses[level].target!.texture,
@@ -69,13 +62,5 @@ export function bloom(params: BloomParams = {}) {
     },
   });
 
-  const compositePass = useCompositeEffectPass([...downsamplePasses, ...upsamplePasses, combine]);
-
-  return {
-    ...compositePass,
-    initialize: (gl) => {
-      gl.getExtension("EXT_color_buffer_float");
-      compositePass.initialize(gl);
-    },
-  } as CompositeEffectPass;
+  return useCompositeEffectPass([...downsamplePasses, ...upsamplePasses, combine]);
 }
