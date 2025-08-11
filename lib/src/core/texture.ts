@@ -129,8 +129,8 @@ export function fillTexture(
       ? WebGL2RenderingContext.SRGB8_ALPHA8
       : WebGL2RenderingContext.RGBA,
     type = WebGL2RenderingContext.UNSIGNED_BYTE,
-    generateMipmaps = true,
-    anisotropy = navigator.hardwareConcurrency, // in most case between 4 and 12, depending on the hardware range
+    generateMipmaps = "src" in params, // no mipmap for data textures
+    anisotropy = 1,
     minFilter = generateMipmaps ? "linear-mipmap-linear" : "linear",
     magFilter = "linear",
     wrapS = "clamp-to-edge",
@@ -152,14 +152,17 @@ export function fillTexture(
     gl.generateMipmap(gl.TEXTURE_2D);
 
     // anisotropic filtering
-    const ext = gl.getExtension("EXT_texture_filter_anisotropic");
-    if (ext && anisotropy > 1) {
-      const maxAnisotropy = gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
-      gl.texParameterf(
-        gl.TEXTURE_2D,
-        ext.TEXTURE_MAX_ANISOTROPY_EXT,
-        Math.min(maxAnisotropy, anisotropy),
-      );
+    if (anisotropy > 1) {
+      console.log("anisotropy", anisotropy);
+      const ext = gl.getExtension("EXT_texture_filter_anisotropic");
+      if (ext) {
+        const maxAnisotropy = gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+        gl.texParameterf(
+          gl.TEXTURE_2D,
+          ext.TEXTURE_MAX_ANISOTROPY_EXT,
+          Math.min(maxAnisotropy, anisotropy),
+        );
+      }
     }
   }
 
@@ -274,13 +277,10 @@ export function createFloatDataTexture(data: number[] | Float32Array): DataTextu
     format: WebGL2RenderingContext.RGBA,
     type: WebGL2RenderingContext.FLOAT,
     internalFormat: WebGL2RenderingContext.RGBA32F,
-    generateMipmaps: false,
     width: textureWidth,
     height: textureHeight,
     minFilter: "nearest",
     magFilter: "nearest",
     flipY: false,
-    wrapS: "clamp-to-edge",
-    wrapT: "clamp-to-edge",
   };
 }
