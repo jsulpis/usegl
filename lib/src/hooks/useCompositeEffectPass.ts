@@ -1,4 +1,3 @@
-import { createRenderTarget } from "../core/renderTarget";
 import { useLifeCycleCallback } from "../internal/useLifeCycleCallback";
 import type {
   CompositeEffectPass,
@@ -24,12 +23,8 @@ export function useCompositeEffectPass<P extends EffectPass<any>[]>(
   }
 
   function initialize(gl: WebGL2RenderingContext) {
-    for (const [index, pass] of passes.entries()) {
+    for (const pass of passes) {
       pass.initialize(gl);
-
-      if (index < passes.length - 1 && pass.target == undefined) {
-        pass.setTarget(createRenderTarget(gl));
-      }
 
       pass.onUpdated((newUniforms, oldUniforms) => {
         for (const callback of onUpdatedCallbacks) {
@@ -50,7 +45,9 @@ export function useCompositeEffectPass<P extends EffectPass<any>[]>(
   }
 
   return {
-    target: outputPass.target,
+    get target() {
+      return outputPass.target;
+    },
     passes,
     onBeforeRender,
     onAfterRender,

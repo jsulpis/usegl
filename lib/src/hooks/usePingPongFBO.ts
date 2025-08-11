@@ -21,7 +21,7 @@ export function usePingPongFBO<U extends Uniforms>(
   gl: WebGL2RenderingContext,
   { uniforms = {} as U, dataTexture, fragment }: PingPongFBOOptions<U>,
 ) {
-  // enable the extension for float textures
+  // add the ability to render to 32-bit floating-point buffers
   gl.getExtension("EXT_color_buffer_float");
 
   const { initialData, name: dataTextureName = "tData" } = dataTexture;

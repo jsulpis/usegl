@@ -14,13 +14,13 @@ import Layout from "../../layouts/Layout.astro";
   const { onAfterRender } = useWebGLCanvas({
     canvas: "#glCanvas",
     fragment: fragment,
-    uniforms: {
-      uTexture: loadTexture(
-        "https://st.depositphotos.com/2300153/2648/i/950/depositphotos_26489675-stock-photo-dark-room-with-window.jpg",
-        // "https://st.depositphotos.com/8521256/56706/v/600/depositphotos_567060820-stock-video-white-picture-of-rectangle-on.jpg",
-        { colorSpace: "srgb" }
-      ),
-    },
+    // uniforms: {
+    //   uTexture: loadTexture(
+    //     "https://st.depositphotos.com/2300153/2648/i/950/depositphotos_26489675-stock-photo-dark-room-with-window.jpg",
+    //     // "https://st.depositphotos.com/8521256/56706/v/600/depositphotos_567060820-stock-video-white-picture-of-rectangle-on.jpg",
+    //     { colorSpace: "srgb" }
+    //   ),
+    // },
     postEffects: [bloom({ levels, radius, mix }), linearToSRGB()],
   });
 
@@ -30,10 +30,3 @@ import Layout from "../../layouts/Layout.astro";
 <Layout title="Bloom">
   <canvas id="glCanvas"></canvas>
 </Layout>
-
-<style>
-  canvas {
-    width: 600px;
-    height: 600px;
-  }
-</style>
