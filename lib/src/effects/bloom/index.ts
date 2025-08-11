@@ -1,16 +1,24 @@
 import { useCompositeEffectPass } from "../../hooks/useCompositeEffectPass";
 import { useEffectPass } from "../../hooks/useEffectPass";
-import type { CompositeEffectPass, EffectPass } from "../../types";
+import type { EffectPass } from "../../types";
 
 import downsampleFragment from "./glsl/downsample.frag?raw";
 import sampleVertex from "./glsl/sample.vert?raw";
 import upsampleFragment from "./glsl/upsample.frag?raw";
 import combineFragment from "./glsl/combine.frag?raw";
+import { RenderTargetParams } from "../../core/renderTarget";
 
 export type BloomParams = {
   levels?: number;
   radius?: number;
   mix?: number;
+};
+
+const floatTargetConfig: RenderTargetParams = {
+  internalFormat: WebGL2RenderingContext.RGBA16F,
+  type: WebGL2RenderingContext.HALF_FLOAT,
+  minFilter: "linear",
+  magFilter: "linear",
 };
 
 export function bloom(params: BloomParams = {}) {
@@ -22,6 +30,7 @@ export function bloom(params: BloomParams = {}) {
   for (let level = 1; level <= levels; level++) {
     const pass = useEffectPass({
       fragment: downsampleFragment,
+      target: floatTargetConfig,
       vertex: sampleVertex,
       resolutionScale: 1 / 2 ** level,
       uniforms: {
@@ -37,6 +46,7 @@ export function bloom(params: BloomParams = {}) {
   for (let level = levels - 1; level >= 1; level--) {
     const pass = useEffectPass({
       fragment: upsampleFragment,
+      target: floatTargetConfig,
       vertex: sampleVertex,
       resolutionScale: 1 / 2 ** level,
       uniforms: {
@@ -55,6 +65,7 @@ export function bloom(params: BloomParams = {}) {
   // --- Combine original + bloom ---
   const combine = useEffectPass({
     fragment: combineFragment,
+    target: floatTargetConfig,
     uniforms: {
       uImage: ({ inputPass }) => inputPass.target!.texture,
       uBloomTexture: ({ previousPass }) => previousPass.target!.texture,

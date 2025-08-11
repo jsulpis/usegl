@@ -14,6 +14,9 @@ export function useCompositor(
   renderPass: RenderPass<any>,
   effects: Array<EffectPass<any> | CompositeEffectPass<EffectPass<any>[]>>,
 ) {
+  // add the ability to render to floating-point buffers
+  gl.getExtension("EXT_color_buffer_float");
+
   if (effects.length > 0 && renderPass.target === null) {
     renderPass.setTarget(createRenderTarget(gl));
   }
@@ -23,8 +26,8 @@ export function useCompositor(
   for (const [index, effect] of effects.entries()) {
     effect.initialize(gl);
 
-    if (index < effects.length - 1 && effect.target == undefined) {
-      effect.setTarget(createRenderTarget(gl));
+    if (index === effects.length - 1 && effect.target !== null) {
+      effect.setTarget(null);
     }
 
     if (isCompositeEffectPass(effect)) {

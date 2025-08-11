@@ -15,10 +15,15 @@ type EffectPassOptions<U extends EffectUniforms> = Omit<QuadPassOptions<U>, "tar
   target?: RenderTargetParams | null;
 };
 
+const effectTargetConfig: RenderTargetParams = {
+  minFilter: "nearest",
+  magFilter: "nearest",
+};
+
 export function useEffectPass<U extends EffectUniforms>(
   options: EffectPassOptions<U>,
 ): EffectPass<U> {
-  const { target, resolutionScale = 1 } = options;
+  const { target = effectTargetConfig, resolutionScale = 1 } = options;
 
   const renderPass = useQuadRenderPass(undefined, { ...options, target: null });
 
