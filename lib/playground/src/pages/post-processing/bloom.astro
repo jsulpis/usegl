@@ -7,10 +7,6 @@ import Layout from "../../layouts/Layout.astro";
   import { fragment } from "../../shaders/bloom";
   import { incrementRenderCount } from "../../components/renderCount";
 
-  const radius = 0.65;
-  const levels = 8;
-  const mix = 0.5;
-
   const { onAfterRender } = useWebGLCanvas({
     canvas: "#glCanvas",
     fragment: fragment,
@@ -21,7 +17,7 @@ import Layout from "../../layouts/Layout.astro";
     //     { colorSpace: "srgb" }
     //   ),
     // },
-    postEffects: [bloom({ levels, radius, mix }), linearToSRGB()],
+    postEffects: [bloom(), linearToSRGB()],
   });
 
   onAfterRender(incrementRenderCount);

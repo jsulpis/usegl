@@ -4,12 +4,14 @@ import type {
   EffectPass,
   RenderCallback,
   RenderTarget,
+  Uniforms,
   UpdatedCallback,
 } from "../types";
 
-export function useCompositeEffectPass<P extends EffectPass<any>[]>(
-  passes: P,
-): CompositeEffectPass<P> {
+export function useCompositeEffectPass<U extends Uniforms = Record<string, never>>(
+  passes: EffectPass[],
+  uniforms: U,
+): CompositeEffectPass<U> {
   const outputPass = passes.at(-1)!;
 
   const [beforeRenderCallbacks, onBeforeRender] = useLifeCycleCallback<RenderCallback<any>>();
@@ -48,6 +50,7 @@ export function useCompositeEffectPass<P extends EffectPass<any>[]>(
     get target() {
       return outputPass.target;
     },
+    uniforms,
     passes,
     onBeforeRender,
     onAfterRender,

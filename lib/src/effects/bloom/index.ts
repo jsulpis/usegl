@@ -73,5 +73,24 @@ export function bloom(params: BloomParams = {}) {
     },
   });
 
-  return useCompositeEffectPass([...downsamplePasses, ...upsamplePasses, combine]);
+  const bloomPasses = [...downsamplePasses, ...upsamplePasses, combine];
+
+  const bloomUniforms = {
+    get uRadius() {
+      return upsamplePasses[0].uniforms.uRadius;
+    },
+    set uRadius(value: number) {
+      upsamplePasses.forEach((pass) => {
+        pass.uniforms.uRadius = value;
+      });
+    },
+    get uMix() {
+      return combine.uniforms.uMix;
+    },
+    set uMix(value: number) {
+      combine.uniforms.uMix = value;
+    },
+  };
+
+  return useCompositeEffectPass(bloomPasses, bloomUniforms);
 }

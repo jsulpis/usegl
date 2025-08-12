@@ -12,7 +12,7 @@ import type { CompositeEffectPass, EffectPass, RenderPass } from "../types";
 export function useCompositor(
   gl: WebGL2RenderingContext,
   renderPass: RenderPass<any>,
-  effects: Array<EffectPass<any> | CompositeEffectPass<EffectPass<any>[]>>,
+  effects: Array<EffectPass<any> | CompositeEffectPass<any>>,
 ) {
   // add the ability to render to floating-point buffers
   gl.getExtension("EXT_color_buffer_float");
