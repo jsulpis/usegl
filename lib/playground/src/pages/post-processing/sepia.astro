@@ -39,11 +39,14 @@ import Layout from "../../layouts/Layout.astro";
 
 			#define STRENGTH .75
 
-			vec3 sepia(vec3 color) {
-				const vec3 sepiaColor = vec3(1.2, 1.0, 0.7);
-				float grayScale = dot(color, vec3(0.299, 0.587, 0.114));
-				return grayScale * sepiaColor;
-			}
+      // sepia filter from the CSS specification : https://drafts.fxtf.org/filter-effects/#sepiaEquivalent
+      vec3 sepia(vec3 c){
+        return c * mat3(
+          0.393, 0.769, 0.189,
+          0.349, 0.686, 0.168,
+          0.272, 0.534, 0.131
+        );
+      }
 
 			void main() {
 				vec3 color = texture(uTexture, vUv).rgb;
@@ -56,27 +59,27 @@ import Layout from "../../layouts/Layout.astro";
   const { onAfterRender } = useWebGLCanvas({
     canvas: "#glCanvas",
     fragment: /* glsl */ `
-				in vec2 vUv;
-				uniform sampler2D uTexture;
-				uniform vec2 uResolution;
-				out vec4 fragColor;
+      in vec2 vUv;
+      uniform sampler2D uTexture;
+      uniform vec2 uResolution;
+      out vec4 fragColor;
 
-				void main() {
-					vec2 textureResolution = vec2(textureSize(uTexture, 0));
-					float canvasRatio = uResolution.x / uResolution.y;
-					float textureRatio = textureResolution.x / textureResolution.y;
+      void main() {
+        vec2 textureResolution = vec2(textureSize(uTexture, 0));
+        float canvasRatio = uResolution.x / uResolution.y;
+        float textureRatio = textureResolution.x / textureResolution.y;
 
-					vec2 uv = vUv - 0.5;
-					uv.x *= canvasRatio / textureRatio;
-					uv += 0.5;
+        vec2 uv = vUv - 0.5;
+        uv.x *= canvasRatio / textureRatio;
+        uv += 0.5;
 
-					vec3 color = texture(uTexture, uv).rgb;
-					color *= step(0., uv.x) * (1. - step(1., uv.x));
-					color *= step(0., uv.y) * (1. - step(1., uv.y));
+        vec3 color = texture(uTexture, uv).rgb;
+        color *= step(0., uv.x) * (1. - step(1., uv.x));
+        color *= step(0., uv.y) * (1. - step(1., uv.y));
 
-					fragColor = vec4(color, 1.);
-				}
-				`,
+        fragColor = vec4(color, 1.);
+      }
+    `,
     uniforms: {
       uTexture: loadTexture("/images/lion.jpg"),
     },
