@@ -30,5 +30,5 @@ void main() {
     color += weights[i] * texture(uInputTexture, sampleUv);
   }
 
-  fragColor = texture(uInputTexture, vUv);
+  fragColor = color;
 }

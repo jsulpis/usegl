@@ -54,7 +54,7 @@ export function bloom(params: BloomParams = {}) {
         uCurrentTexture: () => downsamplePasses[level].target!.texture,
         uPreviousTexture:
           level === levels - 1
-            ? () => downsamplePasses[levels - 1].target!.texture
+            ? () => downsamplePasses.at(-1)!.target!.texture
             : () => upsamplePasses[levels - 1 - level - 1].target!.texture,
         uRadius: radius,
       },
