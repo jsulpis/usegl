@@ -1,8 +1,8 @@
 import { useEffectPass } from "../../hooks/useEffectPass";
-import linearToSRGBFrag from "./linearToSRGB.frag";
+import { linearToSRGBFragment } from "./linearToSRGB.frag";
 
 export function linearToSRGB() {
   return useEffectPass({
-    fragment: linearToSRGBFrag,
+    fragment: linearToSRGBFragment,
   });
 }
