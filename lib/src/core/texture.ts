@@ -129,7 +129,7 @@ export function fillTexture(
       ? WebGL2RenderingContext.SRGB8_ALPHA8
       : WebGL2RenderingContext.RGBA,
     type = WebGL2RenderingContext.UNSIGNED_BYTE,
-    generateMipmaps = "src" in params, // no mipmap for data textures
+    generateMipmaps = "src" in params && params.src != null, // no mipmap for data textures
     anisotropy = 1,
     minFilter = generateMipmaps ? "linear-mipmap-linear" : "linear",
     magFilter = "linear",
@@ -153,7 +153,6 @@ export function fillTexture(
 
     // anisotropic filtering
     if (anisotropy > 1) {
-      console.log("anisotropy", anisotropy);
       const ext = gl.getExtension("EXT_texture_filter_anisotropic");
       if (ext) {
         const maxAnisotropy = gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT);

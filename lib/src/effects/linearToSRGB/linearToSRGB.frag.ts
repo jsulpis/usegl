@@ -13,4 +13,4 @@ export const linearToSRGBFragment = /* glsl */ `
       color.a
     );
   }
-`
+`;

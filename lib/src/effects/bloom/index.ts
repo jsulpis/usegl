@@ -2,7 +2,7 @@ import { useCompositeEffectPass } from "../../hooks/useCompositeEffectPass";
 import { useEffectPass } from "../../hooks/useEffectPass";
 import type { EffectPass } from "../../types";
 
-import { RenderTargetParams } from "../../core/renderTarget";
+import type { RenderTargetParams } from "../../core/renderTarget";
 import { downSampleFragment } from "./glsl/downsample.frag";
 import { combineFragment } from "./glsl/combine.frag";
 import { sampleVertex } from "./glsl/sample.vert";
@@ -80,9 +80,9 @@ export function bloom(params: BloomParams = {}) {
       return upsamplePasses[0].uniforms.uRadius;
     },
     set uRadius(value: number) {
-      upsamplePasses.forEach((pass) => {
+      for (const pass of upsamplePasses) {
         pass.uniforms.uRadius = value;
-      });
+      }
     },
     get uMix() {
       return combine.uniforms.uMix;
