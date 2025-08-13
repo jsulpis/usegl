@@ -2,11 +2,11 @@ import { useCompositeEffectPass } from "../../hooks/useCompositeEffectPass";
 import { useEffectPass } from "../../hooks/useEffectPass";
 import type { EffectPass } from "../../types";
 
-import downsampleFragment from "./glsl/downsample.frag?raw";
-import sampleVertex from "./glsl/sample.vert?raw";
-import upsampleFragment from "./glsl/upsample.frag?raw";
-import combineFragment from "./glsl/combine.frag?raw";
 import { RenderTargetParams } from "../../core/renderTarget";
+import { downSampleFragment } from "./glsl/downsample.frag";
+import { combineFragment } from "./glsl/combine.frag";
+import { sampleVertex } from "./glsl/sample.vert";
+import { upsampleFragment } from "./glsl/upsample.frag";
 
 export type BloomParams = {
   levels?: number;
@@ -29,7 +29,7 @@ export function bloom(params: BloomParams = {}) {
   // --- Downsample pyramid (progressively half resolution) ---
   for (let level = 1; level <= levels; level++) {
     const pass = useEffectPass({
-      fragment: downsampleFragment,
+      fragment: downSampleFragment,
       target: floatTargetConfig,
       vertex: sampleVertex,
       resolutionScale: 1 / 2 ** level,
