@@ -3,6 +3,7 @@
   "include": ["../src", "src"],
   "compilerOptions": {
     "strict": true,
+    "types": ["vite-plugin-glsl/ext"],
     "paths": {
       "usegl": ["../src/index.ts"]
     }

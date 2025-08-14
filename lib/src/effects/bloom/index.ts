@@ -1,12 +1,11 @@
 import { useCompositeEffectPass } from "../../hooks/useCompositeEffectPass";
 import { useEffectPass } from "../../hooks/useEffectPass";
 import type { EffectPass } from "../../types";
-
 import type { RenderTargetParams } from "../../core/renderTarget";
-import { downSampleFragment } from "./glsl/downsample.frag";
-import { combineFragment } from "./glsl/combine.frag";
-import { sampleVertex } from "./glsl/sample.vert";
-import { upsampleFragment } from "./glsl/upsample.frag";
+import downSampleFragment from "./glsl/downsample.frag";
+import combineFragment from "./glsl/combine.frag";
+import sampleVertex from "./glsl/sample.vert";
+import upsampleFragment from "./glsl/upsample.frag";
 
 export type BloomParams = {
   levels?: number;
