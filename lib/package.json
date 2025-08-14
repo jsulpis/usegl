@@ -8,19 +8,17 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs"
-    }
+    ".": "./dist/index.js",
+    "./package.json": "./package.json"
   },
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "unbuild",
+    "build": "tsdown",
     "dev": "astro dev --port 3000",
     "format": "prettier src --check",
     "format:fix": "prettier src --write",
@@ -42,13 +40,13 @@
     "eslint": "9.32.0",
     "eslint-config-unjs": "0.5.0",
     "prettier": "3.6.2",
-    "typescript": "5.8.3",
-    "unbuild": "3.6.0"
+    "tsdown": "0.14.1",
+    "typescript": "5.8.3"
   },
   "changelog": {
     "excludeAuthors": [
       ""
     ]
   },
-  "packageManager": "pnpm@10.13.1"
+  "packageManager": "pnpm@10.14.0"
 }
