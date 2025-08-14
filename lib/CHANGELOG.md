@@ -1,5 +1,42 @@
 # Changelog
 
+## v0.7.0
+
+[compare changes](https://github.com/jsulpis/usegl/compare/v0.6.0...v0.7.0)
+
+### 🚀 Enhancements
+
+- Add srgb to linear rgb color space conversion for textures ([6518243](https://github.com/jsulpis/usegl/commit/6518243))
+- Allow to scale the render target of an effect pass ([086f899](https://github.com/jsulpis/usegl/commit/086f899))
+- Add bloom effect ([47ade94](https://github.com/jsulpis/usegl/commit/47ade94))
+- Add linearToSRGB effect ([1a37be8](https://github.com/jsulpis/usegl/commit/1a37be8))
+- Add uniforms to CompositeEffectPass ([e702d8d](https://github.com/jsulpis/usegl/commit/e702d8d))
+
+### 🩹 Fixes
+
+- Don't override the render target of an effect pass if it already exists ([a665bb2](https://github.com/jsulpis/usegl/commit/a665bb2))
+- Automatic uniform / attribute name recognition broken with minified shader code ([6af2036](https://github.com/jsulpis/usegl/commit/6af2036))
+- Fix broken render targets on effects ([1e212cb](https://github.com/jsulpis/usegl/commit/1e212cb))
+
+### 💅 Refactors
+
+- Use an array of passes instead of an object in CompositeEffectPass ([0a5b05c](https://github.com/jsulpis/usegl/commit/0a5b05c))
+- Optimize default texture params ([322d9fe](https://github.com/jsulpis/usegl/commit/322d9fe))
+- Use vite-plugin-glsl to load shaders ([d7624bd](https://github.com/jsulpis/usegl/commit/d7624bd))
+
+### 📖 Documentation
+
+- Add an example of boids (ping pong FBO) ([babad94](https://github.com/jsulpis/usegl/commit/babad94))
+- Add an example of simple particules (ping pong FBO) ([8547e22](https://github.com/jsulpis/usegl/commit/8547e22))
+- Add Conway's Game of Life example ([5fbd838](https://github.com/jsulpis/usegl/commit/5fbd838))
+
+### 🏡 Chore
+
+- Update dependencies ([b234932](https://github.com/jsulpis/usegl/commit/b234932))
+- Update docker setup for playwright tests ([74e203d](https://github.com/jsulpis/usegl/commit/74e203d))
+- Update the sepia effect in playground ([23b862e](https://github.com/jsulpis/usegl/commit/23b862e))
+- Migrate bundler from unbuild to tsdown ([abbc7ba](https://github.com/jsulpis/usegl/commit/abbc7ba))
+
 ## v0.6.0
 
 [compare changes](https://github.com/jsulpis/usegl/compare/v0.5.0...v0.6.0)
