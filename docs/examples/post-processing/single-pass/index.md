@@ -1,5 +1,5 @@
 ---
-title: Single pass (sepia)
+title: Single pass
 ---
 
 ::: example-editor {deps=tweakpane@^4.0.5}
