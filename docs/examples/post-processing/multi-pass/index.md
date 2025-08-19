@@ -1,15 +1,14 @@
 ---
-title: "Multi pass (bloom)"
+title: Multi pass
 ---
 
 ::: example-editor {deps=tweakpane@^4.0.5}
 
 <<< ./index.ts
-<<< ./circles.frag
-<<< ./mipmap.frag
+<<< ./dots.frag
 <<< ./blur.frag
 <<< ./combine.frag
-<<< ./styles.css
+<<< @/snippets/canvas-square/styles.css
 <<< @/snippets/default/index.html
 
 :::

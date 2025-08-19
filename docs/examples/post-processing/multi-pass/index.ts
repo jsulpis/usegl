@@ -1,91 +1,68 @@
 import { useEffectPass, useWebGLCanvas, useCompositeEffectPass } from "usegl";
-import fragment from "./circles.frag?raw";
-import mipmapsShader from "./mipmap.frag?raw";
-import blurShader from "./blur.frag?raw";
-import combineShader from "./combine.frag?raw";
+import directionalBlurFragment from "./blur.frag?raw";
+import combineFragment from "./combine.frag?raw";
+import dotsFragment from "./dots.frag?raw";
 import { Pane } from "tweakpane";
 import "./styles.css";
 
-const mipmaps = useEffectPass({
-  fragment: mipmapsShader,
-  uniforms: {
-    uThreshold: 0.2,
-  },
-});
-
 const horizontalBlur = useEffectPass({
-  fragment: blurShader,
+  fragment: directionalBlurFragment,
   uniforms: {
+    uTexture: ({ inputPass }) => inputPass.target!.texture, // optional, the texture uniform is automatically set
     uDirection: [1, 0],
+    uRadius: 30,
   },
 });
 
 const verticalBlur = useEffectPass({
-  fragment: blurShader,
+  fragment: directionalBlurFragment,
   uniforms: {
+    uTexture: () => horizontalBlur.target!.texture, // optional, the texture uniform is automatically set
     uDirection: [0, 1],
+    uRadius: 30,
   },
 });
 
 const combine = useEffectPass({
-  fragment: combineShader,
+  fragment: combineFragment,
   uniforms: {
     uBaseImage: ({ inputPass }) => inputPass.target!.texture,
-    uBloomTexture: () => verticalBlur.target!.texture,
+    uBloomTexture: ({ previousPass }) => previousPass.target!.texture, // same as () => verticalBlur.target!.texture
     uMix: 1,
   },
 });
 
-const bloomEffect = useCompositeEffectPass({
-  mipmaps,
-  horizontalBlur,
-  verticalBlur,
-  combine,
-});
+const bloomPasses = [horizontalBlur, verticalBlur, combine];
 
-const vignetteEffect = useEffectPass({
-  fragment: /* glsl */ `
-    uniform sampler2D uTexture;
-    uniform float uSize;      // (0.0 - 1.0)
-    uniform float uRoundness; // (0.0 = rectangle, 1.0 = round)
-    uniform float uStrength;  // (0.0 - 1.0)
-    varying vec2 vUv;
-
-    float vignette() {
-      vec2 centered = vUv * 2.0 - 1.0;
-      float circDist = length(centered);
-      float rectDist = max(abs(centered.x), abs(centered.y));
-      float dist = mix(rectDist, circDist, uRoundness);
-      return 1. - smoothstep(uSize, uSize * 2., dist) * uStrength;
-    }
-
-    void main() {
-      vec4 color = texture(uTexture, vUv);
-      color.rgb *= vignette();
-      gl_FragColor = color;
-    }
-  `,
-  uniforms: {
-    uStrength: 0.5,
-    uSize: 0.6,
-    uRoundness: 0.7,
+const bloomUniforms = {
+  get uRadius() {
+    return verticalBlur.uniforms.uRadius;
   },
-});
+  set uRadius(value: number) {
+    verticalBlur.uniforms.uRadius = value;
+    horizontalBlur.uniforms.uRadius = value;
+  },
+  get uMix() {
+    return combine.uniforms.uMix;
+  },
+  set uMix(value: number) {
+    combine.uniforms.uMix = value;
+  },
+};
+
+const bloom = useCompositeEffectPass(bloomPasses, bloomUniforms);
 
 useWebGLCanvas({
   canvas: "#glCanvas",
-  fragment: fragment,
-  postEffects: [vignetteEffect, bloomEffect],
+  dpr: 1,
+  fragment: dotsFragment,
+  postEffects: [bloom],
 });
 
 const pane = new Pane({ title: "Uniforms" });
 
-// You can update the uniforms of each individual pass, which will trigger a re-render
-const bloom = pane.addFolder({ title: "Bloom" });
-bloom.addBinding(bloomEffect.passes.mipmaps.uniforms, "uThreshold", { min: 0, max: 1 });
-bloom.addBinding(combine.uniforms, "uMix", { min: 0, max: 1 });
-
-const vignette = pane.addFolder({ title: "Vignette" });
-vignette.addBinding(vignetteEffect.uniforms, "uStrength", { min: 0, max: 1 });
-vignette.addBinding(vignetteEffect.uniforms, "uSize", { min: 0, max: 1 });
-vignette.addBinding(vignetteEffect.uniforms, "uRoundness", { min: 0, max: 1 });
+// Updating the uniforms of the composite pass will update those of the individual passes,
+// which will trigger a re-render
+const bloomFolder = pane.addFolder({ title: "Bloom" });
+bloomFolder.addBinding(bloomUniforms, "uMix", { min: 0, max: 1 });
+bloomFolder.addBinding(bloomUniforms, "uRadius", { min: 0, max: 50 });

@@ -2,20 +2,20 @@ import { useEffectPass, useWebGLCanvas, loadTexture } from "usegl";
 import { Pane } from "tweakpane";
 import "./styles.css";
 
-const image = loadTexture("https://picsum.photos/id/323/600/400");
-
-const sepiaEffect = useEffectPass({
+const sepia = useEffectPass({
   fragment: /* glsl */ `
     uniform sampler2D uTexture; // output of the render pass
     uniform float uStrength;
     in vec2 vUv;
     out vec4 fragColor;
 
-    #define SEPIA_COLOR vec3(1.2, 1.0, 0.7)
-
-    vec3 sepia(vec3 color) {
-      float grayScale = dot(color, vec3(0.299, 0.587, 0.114));
-      return grayScale * SEPIA_COLOR;
+    // sepia filter from the CSS specification : https://drafts.fxtf.org/filter-effects/#sepiaEquivalent
+    vec3 sepia(vec3 c){
+      return c * mat3(
+        0.393, 0.769, 0.189,
+        0.349, 0.686, 0.168,
+        0.272, 0.534, 0.131
+      );
     }
 
     void main() {
@@ -25,7 +25,7 @@ const sepiaEffect = useEffectPass({
     }
   `,
   uniforms: {
-    uStrength: 0.75,
+    uStrength: 1,
   },
 });
 
@@ -41,9 +41,9 @@ const { onAfterRender } = useWebGLCanvas({
     }
   `,
   uniforms: {
-    uPicture: image,
+    uPicture: loadTexture("https://picsum.photos/id/323/600/400"),
   },
-  postEffects: [sepiaEffect],
+  postEffects: [sepia],
 });
 
 const renderCount = document.querySelector("#renderCount");
@@ -51,6 +51,6 @@ onAfterRender(() => {
   renderCount.textContent = `${Number(renderCount.textContent) + 1}`;
 });
 
-// You can update the uniforms of an effect pass
+// You can dynamically update the uniforms of an effect pass, like any other pass
 const pane = new Pane({ title: "Uniforms" });
-pane.addBinding(sepiaEffect.uniforms, "uStrength", { min: 0, max: 1 });
+pane.addBinding(sepia.uniforms, "uStrength", { min: 0, max: 1 });
