@@ -7,7 +7,7 @@
       ...props,
       deps: {
         ...deps,
-        usegl: '0.6.0',
+        usegl: '0.7.0',
       },
     }"
   >
