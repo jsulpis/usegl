@@ -9,8 +9,8 @@ import type {
 } from "../types";
 
 export function useCompositeEffectPass<U extends Uniforms = Record<string, never>>(
-  passes: EffectPass[],
-  uniforms: U,
+  passes: EffectPass<Uniforms>[],
+  uniforms: U = {} as U,
 ): CompositeEffectPass<U> {
   const outputPass = passes.at(-1)!;
 
