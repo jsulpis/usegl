@@ -1,6 +1,7 @@
 import { createRenderTarget } from "../core/renderTarget";
 import { findUniformName } from "../internal/findName";
 import type { CompositeEffectPass, EffectPass, RenderPass } from "../types";
+import { floatTargetConfig } from "./useEffectPass";
 
 /**
  * The compositor handles the combination of the render pass and the effects:
@@ -18,7 +19,7 @@ export function useCompositor(
   gl.getExtension("EXT_color_buffer_float");
 
   if (effects.length > 0 && renderPass.target === null) {
-    renderPass.setTarget(createRenderTarget(gl));
+    renderPass.setTarget(createRenderTarget(gl, floatTargetConfig));
   }
 
   let previousPass = renderPass;

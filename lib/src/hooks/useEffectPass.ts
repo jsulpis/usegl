@@ -15,15 +15,15 @@ type EffectPassOptions<U extends EffectUniforms> = Omit<QuadPassOptions<U>, "tar
   target?: RenderTargetParams | null;
 };
 
-const effectTargetConfig: RenderTargetParams = {
-  minFilter: "nearest",
-  magFilter: "nearest",
+export const floatTargetConfig: RenderTargetParams = {
+  internalFormat: WebGL2RenderingContext.RGBA16F,
+  type: WebGL2RenderingContext.HALF_FLOAT,
 };
 
 export function useEffectPass<U extends EffectUniforms>(
   options: EffectPassOptions<U>,
 ): EffectPass<U> {
-  const { target = effectTargetConfig, resolutionScale = 1 } = options;
+  const { target = floatTargetConfig, resolutionScale = 1 } = options;
 
   const renderPass = useQuadRenderPass(undefined, { ...options, target: null });
 
