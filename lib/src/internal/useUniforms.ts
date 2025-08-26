@@ -56,6 +56,7 @@ export function useUniforms<U extends Uniforms>(uniforms: U) {
     if (uniformLocation === -1) return -1;
 
     if (typeof value === "number") return _gl.uniform1f(uniformLocation, value);
+    if (typeof value === "boolean") return _gl.uniform1i(uniformLocation, value ? 1 : 0);
 
     if (value instanceof WebGLTexture) {
       if (!textureUnits.has(name)) {
