@@ -1,5 +1,31 @@
 # Changelog
 
+## v0.8.0
+
+[compare changes](https://github.com/jsulpis/usegl/compare/v0.7.0...v0.8.0)
+
+### 🚀 Enhancements
+
+- **postprocessing:** Use float textures for all render targets ([8722877](https://github.com/jsulpis/usegl/commit/8722877))
+- **postprocessing:** Add tone mapping operators ([eacf322](https://github.com/jsulpis/usegl/commit/eacf322))
+- Add support for boolean uniforms ([a727fff](https://github.com/jsulpis/usegl/commit/a727fff))
+- **postprocessing:** Include linear to srgb conversion in the tone mapping passes ([17ece66](https://github.com/jsulpis/usegl/commit/17ece66))
+- **postprocessing:** ⚠️  Replace linearToSRGB with linearToneMapping ([372a98c](https://github.com/jsulpis/usegl/commit/372a98c))
+- Remove the need to use onCanvasReady ([d66ebd8](https://github.com/jsulpis/usegl/commit/d66ebd8))
+
+### 🩹 Fixes
+
+- Bad types for the compositeEffectPass ([cfe8e78](https://github.com/jsulpis/usegl/commit/cfe8e78))
+
+### 📖 Documentation
+
+- Add an example for the builtin bloom effect ([1f5c297](https://github.com/jsulpis/usegl/commit/1f5c297))
+- Improve examples of effect passes ([0959428](https://github.com/jsulpis/usegl/commit/0959428))
+
+#### ⚠️ Breaking Changes
+
+- **postprocessing:** ⚠️  Replace linearToSRGB with linearToneMapping ([372a98c](https://github.com/jsulpis/usegl/commit/372a98c))
+
 ## v0.7.0
 
 [compare changes](https://github.com/jsulpis/usegl/compare/v0.6.0...v0.7.0)
