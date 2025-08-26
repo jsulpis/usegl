@@ -1,7 +1,6 @@
 import { useCompositeEffectPass } from "../../hooks/useCompositeEffectPass";
-import { useEffectPass } from "../../hooks/useEffectPass";
+import { floatTargetConfig, useEffectPass } from "../../hooks/useEffectPass";
 import type { EffectPass } from "../../types";
-import type { RenderTargetParams } from "../../core/renderTarget";
 import downSampleFragment from "./glsl/downsample.frag";
 import combineFragment from "./glsl/combine.frag";
 import sampleVertex from "./glsl/sample.vert";
@@ -11,13 +10,6 @@ export type BloomParams = {
   levels?: number;
   radius?: number;
   mix?: number;
-};
-
-const floatTargetConfig: RenderTargetParams = {
-  internalFormat: WebGL2RenderingContext.RGBA16F,
-  type: WebGL2RenderingContext.HALF_FLOAT,
-  minFilter: "linear",
-  magFilter: "linear",
 };
 
 export function bloom(params: BloomParams = {}) {
