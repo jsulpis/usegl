@@ -43,7 +43,7 @@ const positions = usePingPongFBO(gl, {
         /* G */ Math.random() * 0.2 - 0.1,
         /* B */ 0,
         /* A */ 0,
-      ]),
+      ])
     ),
   },
   dataTexture: {
@@ -86,11 +86,8 @@ const renderPass = useWebGLCanvas({
   transparent: true,
 });
 
-// Wait for the canvas to be resized to avoid a flash at the first renders
-renderPass.onCanvasReady(() => {
-  useLoop(({ deltaTime }) => {
-    positions.uniforms.uDeltaTime = deltaTime / 500;
-    positions.render();
-    renderPass.render();
-  });
+useLoop(({ deltaTime }) => {
+  positions.uniforms.uDeltaTime = deltaTime / 500;
+  positions.render();
+  renderPass.render();
 });

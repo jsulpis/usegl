@@ -67,17 +67,14 @@ const renderPass = useWebGLCanvas({
   transparent: true,
 });
 
-// Wait for the canvas to be resized to avoid a flash at the first renders
-renderPass.onCanvasReady(() => {
-  useLoop(({ deltaTime }) => {
-    velocities.uniforms.uDeltaTime = deltaTime / 500;
-    velocities.render();
+useLoop(({ deltaTime }) => {
+  velocities.uniforms.uDeltaTime = deltaTime / 500;
+  velocities.render();
 
-    positions.uniforms.uDeltaTime = deltaTime / 500;
-    positions.render();
+  positions.uniforms.uDeltaTime = deltaTime / 500;
+  positions.render();
 
-    renderPass.render();
-  });
+  renderPass.render();
 });
 
 const pane = new Pane({ title: "Uniforms", expanded: false });
