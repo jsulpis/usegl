@@ -72,16 +72,14 @@ import Layout from "../../layouts/Layout.astro";
 
   renderPass.onAfterRender(incrementRenderCount);
 
-  renderPass.onCanvasReady(() => {
-    useLoop(({ deltaTime }) => {
-      velocities.uniforms.uDeltaTime = deltaTime / 500;
-      velocities.render();
+  useLoop(({ deltaTime }) => {
+    velocities.uniforms.uDeltaTime = deltaTime / 500;
+    velocities.render();
 
-      positions.uniforms.uDeltaTime = deltaTime / 500;
-      positions.render();
+    positions.uniforms.uDeltaTime = deltaTime / 500;
+    positions.render();
 
-      renderPass.render();
-    });
+    renderPass.render();
   });
 </script>
 

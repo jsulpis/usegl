@@ -41,8 +41,13 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
   const renderPass = useQuadRenderPass(gl, props);
   const compositor = useCompositor(gl, renderPass, postEffects);
 
+  // don't render before the first resize of the canvas to avoid a glitch
+  let isCanvasResized = false;
+
   function render() {
-    compositor.render();
+    if (isCanvasResized) {
+      compositor.render();
+    }
   }
 
   let requestedRender = false;
@@ -107,13 +112,12 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
   let resizeObserver: ReturnType<typeof useResizeObserver> | null = null;
 
   const [canvasReadyCallbacks, onCanvasReady] = useLifeCycleCallback();
-  let isFirstResize = true;
 
   function resizeCanvas(width: number, height: number) {
     setSize({ width: width * dpr, height: height * dpr });
-    if (isFirstResize) {
+    if (!isCanvasResized) {
       for (const callback of canvasReadyCallbacks) callback();
-      isFirstResize = false;
+      isCanvasResized = true;
     }
   }
 
