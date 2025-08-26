@@ -1,7 +1,4 @@
-uniform sampler2D uTexture;
-uniform float uExposure;
-
-varying vec2 vUv;
+#include "./_common.glsl"
 
 // sRGB => XYZ => D65_2_D60 => AP1 => RRT_SAT
 const mat3 ACESInputMat = mat3(
@@ -27,8 +24,8 @@ vec3 RRTAndODTFit( vec3 v ) {
 // Three.js implementation of ACES Filmic Tone Mapping
 // source: https://github.com/mrdoob/three.js/blob/7f848acd7dc54062c50fca749211ecea0af8742b/src/renderers/shaders/ShaderChunk/tonemapping_pars_fragment.glsl.js#L46
 
-vec3 ACESFilmicToneMapping( vec3 color ) {
-	color *= uExposure / 0.6;
+vec3 toneMapping( vec3 color ) {
+	color /= 0.6;
 
 	color = ACESInputMat * color;
 	color = RRTAndODTFit( color );
@@ -37,8 +34,4 @@ vec3 ACESFilmicToneMapping( vec3 color ) {
 	return color;
 }
 
-void main() {
-  vec4 color = texture(uTexture, vUv) * uExposure;
-  color.rgb = ACESFilmicToneMapping(color.rgb);
-  gl_FragColor = clamp(color, 0.0, 1.0);
-}
+#include "./_main.glsl"

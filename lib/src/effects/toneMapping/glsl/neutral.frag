@@ -1,7 +1,4 @@
-uniform sampler2D uTexture;
-uniform float uExposure;
-
-varying vec2 vUv;
+#include "./_common.glsl"
 
 const float startCompression = 0.8 - 0.04;
 const float desaturation = 0.15;
@@ -9,7 +6,7 @@ const float desaturation = 0.15;
 // Khronos PBR Neutral
 // https://modelviewer.dev/examples/tone-mapping
 
-vec3 NeutralToneMapping( vec3 color ) {
+vec3 toneMapping( vec3 color ) {
   float x = min(color.r, min(color.g, color.b));
   float offset = x < 0.08 ? x - 6.25 * x * x : 0.04;
   color -= offset;
@@ -25,8 +22,4 @@ vec3 NeutralToneMapping( vec3 color ) {
   return mix(color, newPeak * vec3(1, 1, 1), g);
 }
 
-void main() {
-  vec4 color = texture(uTexture, vUv) * uExposure;
-  color.rgb = NeutralToneMapping(color.rgb);
-  gl_FragColor = clamp(color, 0.0, 1.0);
-}
+#include "./_main.glsl"
