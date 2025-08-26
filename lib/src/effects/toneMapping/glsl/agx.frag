@@ -1,7 +1,4 @@
-uniform sampler2D uTexture;
-uniform float uExposure;
-
-varying vec2 vUv;
+#include "./_common.glsl"
 
 // Matrices for rec 2020 <> rec 709 color space conversion
 // matrix provided in row-major order so it has been transposed
@@ -57,7 +54,7 @@ const float AgxMaxEv = 4.026069;    // log2( pow( 2, LOG2_MAX ) * MIDDLE_GRAY )
 // Three.js implementation of AgX Tone Mapping, based on Filament, based on Blender
 // source: https://github.com/mrdoob/three.js/blob/c5e5c609904ff38e701f7cafccbd454d363019c7/src/renderers/shaders/ShaderChunk/tonemapping_pars_fragment.glsl.js#L113
 
-vec3 AgXToneMapping( vec3 color ) {
+vec3 toneMapping( vec3 color ) {
 	color = LINEAR_SRGB_TO_LINEAR_REC2020 * color;
 	color = AgXInsetMatrix * color;
 
@@ -81,8 +78,4 @@ vec3 AgXToneMapping( vec3 color ) {
 	return color;
 }
 
-void main() {
-  vec4 color = texture(uTexture, vUv) * uExposure;
-  color.rgb = AgXToneMapping(color.rgb);
-  gl_FragColor = clamp(color, 0.0, 1.0);
-}
+#include "./_main.glsl"

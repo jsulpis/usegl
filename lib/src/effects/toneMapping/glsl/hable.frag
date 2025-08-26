@@ -1,7 +1,4 @@
-uniform sampler2D uTexture;
-uniform float uExposure;
-
-varying vec2 vUv;
+#include "./_common.glsl"
 
 // Uncharted 2 filmic curve by John Hable
 // http://filmicworlds.com/blog/filmic-tonemapping-operators/
@@ -19,14 +16,10 @@ vec3 uncharted2Tonemap(vec3 x) {
   return ((x*(A*x+C*B)+D*E)/(x*(A*x+B)+D*F)) - E/F;
 }
 
-vec3 hableToneMapping(vec3 color) {
+vec3 toneMapping(vec3 color) {
   vec3 mapped = uncharted2Tonemap(exposureBias * color);
   vec3 whiteScale = 1.0 / uncharted2Tonemap(vec3(W));
   return mapped * whiteScale;
 }
 
-void main() {
-  vec4 color = texture(uTexture, vUv) * uExposure;
-  color.rgb = hableToneMapping(color.rgb);
-  gl_FragColor = clamp(color, 0.0, 1.0);
-}
+#include "./_main.glsl"

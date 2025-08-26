@@ -1,12 +1,10 @@
-uniform sampler2D uTexture;
-uniform float uExposure;
-uniform float uWhitePoint;
+#include "./_common.glsl"
 
-varying vec2 vUv;
+uniform float uWhitePoint;
 
 // Reinhard tonemapping extended with white point
 
-vec3 ReinhardToneMapping(vec3 color) {
+vec3 toneMapping(vec3 color) {
   vec3 mapped = color.rgb / (1.0 + color.rgb);
 
   if (uWhitePoint > 1.0) {
@@ -16,8 +14,4 @@ vec3 ReinhardToneMapping(vec3 color) {
   return mapped;
 }
 
-void main() {
-  vec4 color = texture(uTexture, vUv) * uExposure;
-  color.rgb = ReinhardToneMapping(color.rgb);
-  gl_FragColor = clamp(color, 0.0, 1.0);
-}
+#include "./_main.glsl"

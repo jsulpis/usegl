@@ -21,8 +21,15 @@ function createToneMappingPass(fragment: string, params: ToneMappingParams = {})
   });
 }
 
-export function reinhardToneMapping(params: ToneMappingParams = {}) {
-  return createToneMappingPass(reinhardFragment, params);
+export function reinhardToneMapping(params: ToneMappingParams & { whitePoint?: number } = {}) {
+  const { exposure = 1, whitePoint = 1 } = params;
+  return useEffectPass({
+    fragment: reinhardFragment,
+    uniforms: {
+      uExposure: exposure,
+      uWhitePoint: whitePoint,
+    },
+  });
 }
 
 export function hableToneMapping(params: ToneMappingParams = {}) {
