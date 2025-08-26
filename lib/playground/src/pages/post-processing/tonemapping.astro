@@ -8,14 +8,14 @@ import Layout from "../../layouts/Layout.astro";
     useWebGLCanvas,
     loadTexture,
     acesToneMapping,
+    reinhardToneMapping,
     hableToneMapping,
     neutralToneMapping,
     agxToneMapping,
     cineonToneMapping,
+    linearToneMapping,
   } from "usegl";
   import { incrementRenderCount } from "../../components/renderCount";
-  import { reinhardToneMapping } from "usegl";
-  import { linearToSRGB } from "usegl";
 
   const testShader = /* glsl */ `
 uniform float uExposure;
@@ -68,6 +68,7 @@ void main() {
       uExposure: 1.5,
     },
     postEffects: [
+      // linearToneMapping(),
       // reinhardToneMapping(),
       // acesToneMapping(),
       // cineonToneMapping(),
