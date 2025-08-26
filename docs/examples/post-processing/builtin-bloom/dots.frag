@@ -22,9 +22,9 @@ void main() {
     offset += atan(4. * r, ringRadius);
   }
 
-  // important !
+  // important!
   // - the colors need to be in linear space for the bloom calculation to be correct
-  // - there needs to be a final pass to convert linear RGB back to sRGB
+  // - a final pass is needed to convert linear RGB back to sRGB (can be done with a builtin tone mapping pass)
   color = pow(color, vec3(2.2));
 
   gl_FragColor = vec4(color, 1.0);

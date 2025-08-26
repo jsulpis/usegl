@@ -1,10 +1,6 @@
 import { loadVideoTexture, useWebGLCanvas } from "usegl";
 import "./styles.css";
 
-const texture = loadVideoTexture(
-  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-);
-
 useWebGLCanvas({
   canvas: "#glCanvas",
   fragment: /* glsl */ `
@@ -21,6 +17,8 @@ useWebGLCanvas({
     }
   `,
   uniforms: {
-    uTexture: texture,
+    uTexture: loadVideoTexture(
+      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+    ),
   },
 });
