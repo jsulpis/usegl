@@ -20,8 +20,8 @@ export { usePingPongFBO } from "./hooks/usePingPongFBO";
 export { useTransformFeedback } from "./hooks/useTransformFeedback";
 
 export { bloom } from "./effects/bloom";
-export { linearToSRGB } from "./effects/linearToSRGB";
 export {
+  linearToneMapping,
   reinhardToneMapping,
   hableToneMapping,
   acesToneMapping,

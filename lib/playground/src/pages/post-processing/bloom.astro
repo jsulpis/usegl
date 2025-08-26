@@ -3,7 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { useWebGLCanvas, loadTexture, bloom, linearToSRGB } from "usegl";
+  import { useWebGLCanvas, loadTexture, bloom, linearToneMapping } from "usegl";
   import { fragment } from "../../shaders/bloom";
   import { incrementRenderCount } from "../../components/renderCount";
 
@@ -17,7 +17,7 @@ import Layout from "../../layouts/Layout.astro";
     //     { colorSpace: "srgb" }
     //   ),
     // },
-    postEffects: [bloom(), linearToSRGB()],
+    postEffects: [bloom(), linearToneMapping()],
   });
 
   onAfterRender(incrementRenderCount);

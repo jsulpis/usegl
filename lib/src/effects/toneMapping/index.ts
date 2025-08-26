@@ -1,5 +1,6 @@
 import { useEffectPass } from "../../hooks/useEffectPass";
 
+import linearFragment from "./glsl/linear.frag";
 import acesFragment from "./glsl/aces.frag";
 import reinhardFragment from "./glsl/reinhard.frag";
 import hableFragment from "./glsl/hable.frag";
@@ -51,6 +52,10 @@ export function reinhardToneMapping(params: ReinhardToneMappingParams = {}) {
       uWhitePoint: whitePoint,
     },
   });
+}
+
+export function linearToneMapping(params: ToneMappingParams = {}) {
+  return createToneMappingPass(linearFragment, params);
 }
 
 export function hableToneMapping(params: ToneMappingParams = {}) {
