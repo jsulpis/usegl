@@ -9,8 +9,8 @@ const routesToTest = routes.filter(({ route }) => !ignoreRoutes.has(route));
 const expectedRendersByDemo = {
   scissor: "2",
   video: "2",
-  "particles - FBO (static)": "3",
-  "boids (static)": "4",
+  "particles - FBO (static)": "2",
+  "boids (static)": "3",
   mipmap: /[1-3]/,
   texture: /1|2/,
   sepia: /1|2/,

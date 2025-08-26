@@ -90,9 +90,11 @@ import Layout from "../../layouts/Layout.astro";
     positions.render();
     renderPass.render();
 
-    positions.uniforms.uDeltaTime = 1;
-    positions.render();
-    renderPass.render();
+    requestAnimationFrame(() => {
+      positions.uniforms.uDeltaTime = 1;
+      positions.render();
+      renderPass.render();
+    });
   });
 </script>
 
