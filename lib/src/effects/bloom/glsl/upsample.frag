@@ -30,5 +30,5 @@ void main() {
 
   vec4 currColor = texture(uCurrentTexture, vUv);
 
-  fragColor = max(currColor, mix(currColor, prevColor, uRadius));
+  fragColor = mix(currColor, prevColor, uRadius);
 }

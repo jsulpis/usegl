@@ -21,3 +21,11 @@ export { useTransformFeedback } from "./hooks/useTransformFeedback";
 
 export { bloom } from "./effects/bloom";
 export { linearToSRGB } from "./effects/linearToSRGB";
+export {
+  reinhardToneMapping,
+  hableToneMapping,
+  acesToneMapping,
+  neutralToneMapping,
+  cineonToneMapping,
+  agxToneMapping,
+} from "./effects/toneMapping";
