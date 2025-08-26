@@ -8,25 +8,46 @@ import cineonFragment from "./glsl/cineon.frag";
 import agxFragment from "./glsl/agx.frag";
 
 export type ToneMappingParams = {
+  /**
+   * The exposure level to apply to the image before the tone mapping.
+   * @default 1
+   */
   exposure?: number;
+  /**
+   * The color space to output the final image in.
+   * @default "sRGB"
+   */
+  outputColorSpace?: "sRGB" | "linear";
 };
 
 function createToneMappingPass(fragment: string, params: ToneMappingParams = {}) {
-  const { exposure = 1 } = params;
+  const { exposure = 1, outputColorSpace = "sRGB" } = params;
   return useEffectPass({
     fragment,
     uniforms: {
       uExposure: exposure,
+      uConvertToSRGB: outputColorSpace === "sRGB",
     },
   });
 }
 
-export function reinhardToneMapping(params: ToneMappingParams & { whitePoint?: number } = {}) {
-  const { exposure = 1, whitePoint = 1 } = params;
+type ReinhardToneMappingParams = ToneMappingParams & {
+  /**
+   * The white point to use for extended Reinhard tone mapping.
+   * A value of 1 disables the extended tone mapping.
+   *
+   * @default 1
+   */
+  whitePoint?: number;
+};
+
+export function reinhardToneMapping(params: ReinhardToneMappingParams = {}) {
+  const { exposure = 1, outputColorSpace = "sRGB", whitePoint = 1 } = params;
   return useEffectPass({
     fragment: reinhardFragment,
     uniforms: {
       uExposure: exposure,
+      uConvertToSRGB: outputColorSpace === "sRGB",
       uWhitePoint: whitePoint,
     },
   });
