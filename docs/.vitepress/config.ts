@@ -1,4 +1,4 @@
-import { defineConfig } from "vitepress";
+import { defineConfig, loadEnv } from "vitepress";
 import { groupIconMdPlugin, groupIconVitePlugin } from "vitepress-plugin-group-icons";
 import container from "markdown-it-container";
 import { renderSandbox } from "vitepress-plugin-sandpack";
@@ -6,6 +6,8 @@ import { createRequire } from "node:module";
 import { examplesSidebar } from "./sidebars";
 const require = createRequire(import.meta.url);
 const pkg = require("../node_modules/usegl/package.json");
+
+const env = loadEnv(process.env.VERCEL_ENV || "development", process.cwd(), "");
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -61,6 +63,17 @@ export default defineConfig({
       copyright: "Copyright © 2024-present Julien Sulpis",
     },
   },
+
+  head: [
+    [
+      "script",
+      {
+        defer: "true",
+        src: env.UMAMI_SCRIPT_URL || "",
+        "data-website-id": env.UMAMI_WEBSITE_ID || "",
+      },
+    ],
+  ],
 
   markdown: {
     config(md) {
