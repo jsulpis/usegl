@@ -1,4 +1,4 @@
-import { useLifeCycleCallback } from "../internal/useLifeCycleCallback";
+import { useHook } from "../internal/useHook";
 import type {
   CompositeEffectPass,
   EffectPass,
@@ -14,41 +14,33 @@ export function useCompositeEffectPass<U extends Uniforms = Record<string, never
 ): CompositeEffectPass<U> {
   const outputPass = passes.at(-1)!;
 
-  const [beforeRenderCallbacks, onBeforeRender] = useLifeCycleCallback<RenderCallback<any>>();
-  const [afterRenderCallbacks, onAfterRender] = useLifeCycleCallback<RenderCallback<any>>();
-  const [onUpdatedCallbacks, onUpdated] = useLifeCycleCallback<UpdatedCallback<any>>();
-  const [onResizeCallbacks, onResize] =
-    useLifeCycleCallback<(width: number, height: number) => void>();
-  const [onInitCallbacks, onInit] = useLifeCycleCallback<(gl: WebGL2RenderingContext) => void>();
+  const [onBeforeRender, executeBeforeRenderCallbacks] = useHook<RenderCallback<any>>();
+  const [onAfterRender, executeAfterRenderCallbacks] = useHook<RenderCallback<any>>();
+  const [onUpdated, executeUpdateCallbacks] = useHook<UpdatedCallback<any>>();
+  const [onResize, executeResizeCallbacks] = useHook<(width: number, height: number) => void>();
+  const [onInit, executeInitCallbacks] = useHook<(gl: WebGL2RenderingContext) => void>();
 
   function render() {
-    for (const callback of beforeRenderCallbacks) callback({ uniforms: {} });
+    executeBeforeRenderCallbacks({ uniforms });
     for (const pass of passes) pass.render();
-    for (const callback of afterRenderCallbacks) callback({ uniforms: {} });
+    executeAfterRenderCallbacks({ uniforms });
   }
 
   function initialize(gl: WebGL2RenderingContext) {
     for (const pass of passes) {
       pass.initialize(gl);
-
       pass.onUpdated((newUniforms, oldUniforms) => {
-        for (const callback of onUpdatedCallbacks) {
-          callback(newUniforms, oldUniforms);
-        }
+        executeUpdateCallbacks(newUniforms, oldUniforms);
       });
     }
-    for (const callback of onInitCallbacks) {
-      callback(gl);
-    }
+    executeInitCallbacks(gl);
   }
 
   function setSize(size: { width: number; height: number }) {
     for (const pass of passes) {
       pass.setSize(size);
     }
-    for (const callback of onResizeCallbacks) {
-      callback(size.width, size.height);
-    }
+    executeResizeCallbacks(size.width, size.height);
   }
 
   function setTarget(target: RenderTarget | null) {
