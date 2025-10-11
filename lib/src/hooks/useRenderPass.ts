@@ -22,6 +22,7 @@ export type RenderPassOptions<U extends Uniforms = Record<string, never>> = {
   transparent?: boolean;
   drawMode?: DrawMode;
   transformFeedbackVaryings?: string[];
+  resolutionScale?: number;
 };
 
 export function useRenderPass<U extends Uniforms>(
@@ -35,6 +36,7 @@ export function useRenderPass<U extends Uniforms>(
     transparent = false,
     drawMode: userDrawMode,
     transformFeedbackVaryings,
+    resolutionScale = 1,
   }: RenderPassOptions<U>,
 ): RenderPass<U> {
   /*
@@ -60,6 +62,8 @@ export function useRenderPass<U extends Uniforms>(
     indexType,
   } = useAttributes(attributes);
 
+  const [initCallbacks, onInit] = useLifeCycleCallback<(gl: WebGL2RenderingContext) => void>();
+
   function initialize(gl: WebGL2RenderingContext) {
     _gl = gl;
     const program = createProgram(_gl, fragment, vertex, transformFeedbackVaryings);
@@ -71,6 +75,10 @@ export function useRenderPass<U extends Uniforms>(
 
     initializeUniforms(_gl, _program);
     initializeAttributes(_gl, _program);
+
+    for (const callback of initCallbacks) {
+      callback(_gl);
+    }
   }
 
   if (gl) {
@@ -83,12 +91,21 @@ export function useRenderPass<U extends Uniforms>(
 
   const resolutionUniformName = findUniformName(fragment + vertex, "resolution");
 
+  const [resizeCallbacks, onResize] =
+    useLifeCycleCallback<(width: number, height: number) => void>();
+
   function setSize(size: { width: number; height: number }) {
+    const width = size.width * resolutionScale;
+    const height = size.height * resolutionScale;
+
     if (resolutionUniformName && userUniforms[resolutionUniformName] === undefined) {
-      (uniformsProxy as Record<string, unknown>)[resolutionUniformName] = [size.width, size.height];
+      (uniformsProxy as Record<string, unknown>)[resolutionUniformName] = [width, height];
     }
     if (_target != null) {
-      _target.setSize(size.width, size.height);
+      _target.setSize(width, height);
+    }
+    for (const callback of resizeCallbacks) {
+      callback(width, height);
     }
   }
 
@@ -152,5 +169,7 @@ export function useRenderPass<U extends Uniforms>(
     onUpdated,
     onBeforeRender,
     onAfterRender,
+    onInit,
+    onResize,
   };
 }
