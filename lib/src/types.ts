@@ -52,6 +52,8 @@ export interface RenderPass<U extends Uniforms = Record<string, never>> extends 
   onUpdated: (callback: UpdatedCallback<U>) => void;
   onBeforeRender: (callback: RenderCallback<U>) => void;
   onAfterRender: (callback: RenderCallback<U>) => void;
+  onInit: (callback: (gl: WebGL2RenderingContext) => void) => void;
+  onResize: (callback: (width: number, height: number) => void) => void;
   initialize: (gl: WebGL2RenderingContext) => void;
 }
 

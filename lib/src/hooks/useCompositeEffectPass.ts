@@ -17,6 +17,9 @@ export function useCompositeEffectPass<U extends Uniforms = Record<string, never
   const [beforeRenderCallbacks, onBeforeRender] = useLifeCycleCallback<RenderCallback<any>>();
   const [afterRenderCallbacks, onAfterRender] = useLifeCycleCallback<RenderCallback<any>>();
   const [onUpdatedCallbacks, onUpdated] = useLifeCycleCallback<UpdatedCallback<any>>();
+  const [onResizeCallbacks, onResize] =
+    useLifeCycleCallback<(width: number, height: number) => void>();
+  const [onInitCallbacks, onInit] = useLifeCycleCallback<(gl: WebGL2RenderingContext) => void>();
 
   function render() {
     for (const callback of beforeRenderCallbacks) callback({ uniforms: {} });
@@ -34,11 +37,17 @@ export function useCompositeEffectPass<U extends Uniforms = Record<string, never
         }
       });
     }
+    for (const callback of onInitCallbacks) {
+      callback(gl);
+    }
   }
 
   function setSize(size: { width: number; height: number }) {
     for (const pass of passes) {
       pass.setSize(size);
+    }
+    for (const callback of onResizeCallbacks) {
+      callback(size.width, size.height);
     }
   }
 
@@ -55,6 +64,8 @@ export function useCompositeEffectPass<U extends Uniforms = Record<string, never
     onBeforeRender,
     onAfterRender,
     onUpdated,
+    onResize,
+    onInit,
     initialize,
     render,
     setSize,

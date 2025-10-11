@@ -69,43 +69,58 @@ export function trails(params?: TrailsParams) {
     },
   });
 
-  const uniforms = Object.defineProperty(trailPass.uniforms, "uErosion", {
-    get() {
+  const uniforms = {
+    get uErosion() {
       return erosion;
     },
-    set(value: number) {
+    set uErosion(value: number) {
       erosion = value;
       trailPass.uniforms.uKernelSize = [
         Math.sqrt(erosion) / fboRead.width,
         Math.sqrt(erosion) / fboRead.height,
       ];
     },
-  }) as typeof trailPass.uniforms & { uErosion: number };
+    get uFadeout() {
+      return trailPass.uniforms.uFadeout;
+    },
+    set uFadeout(value: number) {
+      trailPass.uniforms.uFadeout = value;
+    },
+    get uTailColor() {
+      return trailPass.uniforms.uTailColor;
+    },
+    set uTailColor(value: [number, number, number, number]) {
+      trailPass.uniforms.uTailColor = value;
+    },
+    get uTailColorFalloff() {
+      return trailPass.uniforms.uTailColorFalloff;
+    },
+    set uTailColorFalloff(value: number) {
+      trailPass.uniforms.uTailColorFalloff = value;
+    },
+  };
 
   const trailsPass = useCompositeEffectPass([trailPass, outputPass], uniforms);
 
-  const originalLightTrailsSetSize = trailsPass.setSize;
-  trailsPass.setSize = (size: { width: number; height: number }) => {
-    originalLightTrailsSetSize(size);
-    fboRead.setSize(size.width, size.height);
-    fboWrite.setSize(size.width, size.height);
+  trailsPass.onResize((width, height) => {
+    fboRead.setSize(width, height);
+    fboWrite.setSize(width, height);
 
     trailPass.uniforms.uKernelSize = [
       Math.sqrt(erosion) / fboRead.width,
       Math.sqrt(erosion) / fboRead.height,
     ];
-  };
+  });
 
-  const originalInitializeFn = trailsPass.initialize;
-  trailsPass.initialize = (gl) => {
-    originalInitializeFn(gl);
+  trailsPass.onInit((gl) => {
     fboRead = createRenderTarget(gl, floatTargetConfig);
     fboWrite = createRenderTarget(gl, floatTargetConfig);
-  };
+  });
 
   trailsPass.onBeforeRender(() => {
     trailPass.setTarget(fboWrite);
   });
+
   trailsPass.onAfterRender(swap);
 
   return trailsPass;
