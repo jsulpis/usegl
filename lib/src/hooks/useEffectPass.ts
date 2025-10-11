@@ -38,7 +38,13 @@ export function useEffectPass<U extends EffectUniforms>(
   const renderPassInitialize = renderPass.initialize;
   renderPass.initialize = function (gl) {
     if (target != null && !("framebuffer" in target)) {
-      renderPass.setTarget(createRenderTarget(gl, target));
+      renderPass.setTarget(
+        createRenderTarget(gl, {
+          ...target,
+          width: (target.width ?? gl.canvas.width) * resolutionScale,
+          height: (target.height ?? gl.canvas.height) * resolutionScale,
+        }),
+      );
     }
     renderPassInitialize(gl);
   };

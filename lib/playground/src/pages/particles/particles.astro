@@ -4,41 +4,41 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-	import { useLoop, useWebGLCanvas } from "usegl";
-	import { incrementRenderCount } from "../../components/renderCount";
+  import { useLoop, useWebGLCanvas } from "usegl";
+  import { incrementRenderCount } from "../../components/renderCount";
 
-	// Set up geometry
-	const count = 1000;
-	const positions = [];
-	const indices = [];
+  // Set up geometry
+  const count = 1000;
+  const positions = [];
+  const indices = [];
 
-	// Fibonacci sphere points
-	function fibonacciSpherePoint(index: number, totalPoints: number) {
-		const phi = Math.acos(1 - (2 * index) / totalPoints);
-		const theta = Math.sqrt(totalPoints * Math.PI) * phi;
+  // Fibonacci sphere points
+  function fibonacciSpherePoint(index: number, totalPoints: number) {
+    const phi = Math.acos(1 - (2 * index) / totalPoints);
+    const theta = Math.sqrt(totalPoints * Math.PI) * phi;
 
-		const x = Math.cos(theta) * Math.sin(phi);
-		const y = Math.sin(theta) * Math.sin(phi);
-		const z = Math.cos(phi);
+    const x = Math.cos(theta) * Math.sin(phi);
+    const y = Math.sin(theta) * Math.sin(phi);
+    const z = Math.cos(phi);
 
-		return { x, y, z };
-	}
+    return { x, y, z };
+  }
 
-	for (let i = 0; i < count; i++) {
-		const { x, y, z } = fibonacciSpherePoint(i, count);
-		positions.push(x, y, z);
-		indices.push(i);
-	}
+  for (let i = 0; i < count; i++) {
+    const { x, y, z } = fibonacciSpherePoint(i, count);
+    positions.push(x, y, z);
+    indices.push(i);
+  }
 
-	const { uniforms, onAfterRender } = useWebGLCanvas({
-		canvas: "#glCanvas",
-		fragment: /* glsl */ `
+  const { uniforms, onAfterRender } = useWebGLCanvas({
+    canvas: "#glCanvas",
+    fragment: /* glsl */ `
 			varying vec4 vColor;
 			void main(){
 					gl_FragColor = vColor;
 			}
 		`,
-		vertex: /* glsl */ `
+    vertex: /* glsl */ `
 			attribute vec3 aPosition;
 			attribute float index;
 			uniform float uThreshold;
@@ -60,39 +60,39 @@ import Layout from "../../layouts/Layout.astro";
 				gl_PointSize = (2. - gl_Position.z) / .5 + 4.;
 			}
 		`,
-		uniforms: {
-			uThreshold: 0,
-		},
-		attributes: {
-			aPosition: {
-				data: positions,
-				size: 3,
-			},
-			index: {
-				data: indices,
-				size: 1,
-			},
-		},
-		immediate: false,
-	});
+    uniforms: {
+      uThreshold: 0,
+    },
+    attributes: {
+      aPosition: {
+        data: positions,
+        size: 3,
+      },
+      index: {
+        data: indices,
+        size: 1,
+      },
+    },
+    immediate: false,
+  });
 
-	let direction = 1;
+  let direction = 1;
 
-	useLoop(
-		() => {
-			uniforms.uThreshold += (count * direction) / 500;
+  useLoop(
+    () => {
+      uniforms.uThreshold += (count * direction) / 500;
 
-			if (uniforms.uThreshold > count || uniforms.uThreshold < 1) {
-				direction = -direction;
-			}
-		},
-		{ immediate: false }
-	);
+      if (uniforms.uThreshold > count || uniforms.uThreshold < 1) {
+        direction = -direction;
+      }
+    },
+    { immediate: false }
+  );
 
-	onAfterRender(incrementRenderCount);
+  onAfterRender(incrementRenderCount);
 </script>
 
 <Layout title="Particles">
-	<GlobalPlayPause />
-	<canvas id="glCanvas"></canvas>
+  <GlobalPlayPause />
+  <canvas id="glCanvas"></canvas>
 </Layout>

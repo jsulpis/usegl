@@ -1,0 +1,170 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<script>
+  import { useWebGLCanvas, linearToneMapping, trails } from "usegl";
+  import { Pane } from "tweakpane";
+
+  // const trailsEffect = trails();
+
+  // const pane = new Pane();
+  // pane.addBinding(trailsEffect.uniforms, "uErosion", { min: 0, max: 1 });
+  // pane.addBinding(trailsEffect.uniforms, "uFadeout", { min: 0, max: 0.5 });
+  // pane
+  //   .addBinding(
+  //     {
+  //       color: {
+  //         r: trailsEffect.uniforms.uTailColor[0],
+  //         g: trailsEffect.uniforms.uTailColor[1],
+  //         b: trailsEffect.uniforms.uTailColor[2],
+  //         a: trailsEffect.uniforms.uTailColor[3],
+  //       },
+  //     },
+  //     "color",
+  //     {
+  //       label: "uTrailColor",
+  //       color: { type: "float" },
+  //     }
+  //   )
+  //   .on("change", ({ value }) => {
+  //     trailsEffect.uniforms.uTailColor = [value.r, value.g, value.b, value.a];
+  //   });
+  // pane.addBinding(trailsEffect.uniforms, "uTailColorFalloff", { min: 0, max: 0.5 });
+
+  // // Set up geometry
+  // const count = 100;
+  // const positions = [];
+  // const indices = [];
+
+  // // Fibonacci sphere points
+  // function fibonacciSpherePoint(index: number, totalPoints: number) {
+  //   const phi = Math.acos(1 - (2 * index) / totalPoints);
+  //   const theta = Math.sqrt(totalPoints * Math.PI) * phi;
+
+  //   const x = Math.cos(theta) * Math.sin(phi);
+  //   const y = Math.sin(theta) * Math.sin(phi);
+  //   const z = Math.cos(phi);
+
+  //   return { x, y, z };
+  // }
+
+  // for (let i = 0; i < count; i++) {
+  //   const { x, y, z } = fibonacciSpherePoint(i, count);
+  //   positions.push(x, y, z);
+  //   indices.push(i);
+  // }
+
+  // useWebGLCanvas({
+  //   canvas: "#glCanvas",
+  //   fragment: /* glsl */ `
+  // 		varying vec4 vColor;
+  // 		void main(){
+  // 				gl_FragColor = vColor;
+  // 		}
+  // 	`,
+  //   vertex: /* glsl */ `
+  // 		attribute vec3 aPosition;
+  // 		attribute float index;
+  // 		uniform float uThreshold;
+  // 		uniform float uTime;
+  // 		varying vec4 vColor;
+
+  // 		mat4 rotateY(float angle) {
+  // 			return mat4(
+  // 				cos(angle), 0., sin(angle), 0.,
+  // 				0., 1., 0., 0.,
+  // 				-sin(angle), 0., cos(angle), 0.,
+  // 				0., 0., 0., 1.
+  // 			);
+  // 		}
+
+  // 		void main(){
+  // 			vColor = vec4(1., 0.15, 0., floor(index / uThreshold));
+  // 			gl_Position = vec4(aPosition * .6, 1.0) * rotateY(uTime / 2.);
+  // 			gl_PointSize = (2. - gl_Position.z) / .5 + 4.;
+  // 		}
+  // 	`,
+  //   uniforms: {
+  //     uThreshold: 0,
+  //   },
+  //   attributes: {
+  //     aPosition: {
+  //       data: positions,
+  //       size: 3,
+  //     },
+  //     index: {
+  //       data: indices,
+  //       size: 1,
+  //     },
+  //   },
+  //   postEffects: [trailsEffect, linearToneMapping({ exposure: 1 })],
+  // });
+
+  ["#glCanvas", "#glCanvas2"].forEach((selector, i) => {
+    useWebGLCanvas({
+      canvas: selector,
+      fragment: /* glsl */ `
+      varying vec2 vUv;
+      uniform float uTime;
+  		uniform vec2 uResolution;
+
+      #define PI 3.14159265359
+      #define dotRadius 0.02
+      #define dotColor vec4(1., .6, 0., 1.)
+      #define circleRadius 0.2
+      #define count 3
+      #define speed 2.0
+
+      vec2 rotate(vec2 uv, float angle) {
+        float cosA = cos(angle);
+        float sinA = sin(angle);
+        mat2 rotation = mat2(cosA, -sinA, sinA, cosA);
+        return rotation * uv;
+      }
+
+  		void main() {
+        vec2 uv = (vUv - .5) * uResolution / min(uResolution.x, uResolution.y);
+        uv = rotate(uv, uTime * speed);
+  			float circleMask = 0.;
+        for (int i = 0; i < count; i++) {
+          circleMask += 1. - step(dotRadius, distance(uv, rotate(vec2(circleRadius), float(i) * 2. * PI / float(count))));
+        }
+        vec4 color = mix(vec4(0.), dotColor, step(.1, circleMask)) * 1.;
+
+  			gl_FragColor = pow(color, vec4(2.2));
+  		}
+    `,
+      postEffects: [trails(), linearToneMapping({ exposure: 1 })],
+    });
+  });
+</script>
+
+<Layout title="Trails">
+  <div class="container">
+    <canvas id="glCanvas"></canvas>
+    <canvas id="glCanvas2"></canvas>
+  </div>
+</Layout>
+
+<style>
+  .container {
+    display: grid;
+    width: 95%;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding: 1rem;
+    background: blue;
+  }
+
+  canvas {
+    width: 100%;
+
+    &:nth-of-type(1) {
+      background: black;
+    }
+    &:nth-of-type(2) {
+      background: white;
+    }
+  }
+</style>

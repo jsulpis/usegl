@@ -20,6 +20,7 @@ export { usePingPongFBO } from "./hooks/usePingPongFBO";
 export { useTransformFeedback } from "./hooks/useTransformFeedback";
 
 export { bloom } from "./effects/bloom";
+export { trails } from "./effects/trails";
 export {
   linearToneMapping,
   reinhardToneMapping,
