@@ -11,7 +11,7 @@ import { setRenderTarget } from "../core/renderTarget";
 import { findUniformName } from "../internal/findName";
 import { useUniforms } from "../internal/useUniforms";
 import { useAttributes } from "../internal/useAttributes";
-import { useLifeCycleCallback } from "../internal/useLifeCycleCallback";
+import { useHook } from "../internal/useHook";
 
 export type RenderPassOptions<U extends Uniforms = Record<string, never>> = {
   target?: RenderTarget | null;
@@ -62,7 +62,7 @@ export function useRenderPass<U extends Uniforms>(
     indexType,
   } = useAttributes(attributes);
 
-  const [initCallbacks, onInit] = useLifeCycleCallback<(gl: WebGL2RenderingContext) => void>();
+  const [onInit, executeInitCallbacks] = useHook<(gl: WebGL2RenderingContext) => void>();
 
   function initialize(gl: WebGL2RenderingContext) {
     _gl = gl;
@@ -76,9 +76,7 @@ export function useRenderPass<U extends Uniforms>(
     initializeUniforms(_gl, _program);
     initializeAttributes(_gl, _program);
 
-    for (const callback of initCallbacks) {
-      callback(_gl);
-    }
+    executeInitCallbacks(_gl);
   }
 
   if (gl) {
@@ -91,8 +89,7 @@ export function useRenderPass<U extends Uniforms>(
 
   const resolutionUniformName = findUniformName(fragment + vertex, "resolution");
 
-  const [resizeCallbacks, onResize] =
-    useLifeCycleCallback<(width: number, height: number) => void>();
+  const [onResize, executeResizeCallbacks] = useHook<(width: number, height: number) => void>();
 
   function setSize(size: { width: number; height: number }) {
     const width = size.width * resolutionScale;
@@ -104,9 +101,7 @@ export function useRenderPass<U extends Uniforms>(
     if (_target != null) {
       _target.setSize(width, height);
     }
-    for (const callback of resizeCallbacks) {
-      callback(width, height);
-    }
+    executeResizeCallbacks(width, height);
   }
 
   function setTarget(target: RenderTarget | null) {
@@ -119,8 +114,8 @@ export function useRenderPass<U extends Uniforms>(
 
   const drawMode = userDrawMode || (vertex.includes("gl_PointSize") ? "POINTS" : "TRIANGLES");
 
-  const [beforeRenderCallbacks, onBeforeRender] = useLifeCycleCallback<RenderCallback<U>>();
-  const [afterRenderCallbacks, onAfterRender] = useLifeCycleCallback<RenderCallback<U>>();
+  const [onBeforeRender, executeBeforeRenderCallbacks] = useHook<RenderCallback<U>>();
+  const [onAfterRender, executeAfterRenderCallbacks] = useHook<RenderCallback<U>>();
 
   function render({ target }: { target?: RenderTarget | null } = {}) {
     if (_gl == undefined) {
@@ -140,9 +135,7 @@ export function useRenderPass<U extends Uniforms>(
     bindVAO();
     setUniforms();
 
-    for (const callback of beforeRenderCallbacks) {
-      callback({ uniforms: getUniformsSnapshot() });
-    }
+    executeBeforeRenderCallbacks({ uniforms: getUniformsSnapshot() });
 
     if (hasIndices) {
       _gl.drawElements(_gl[drawMode], getVertexCount(), indexType, 0);
@@ -150,9 +143,7 @@ export function useRenderPass<U extends Uniforms>(
       _gl.drawArrays(_gl[drawMode], 0, getVertexCount());
     }
 
-    for (const callback of afterRenderCallbacks) {
-      callback({ uniforms: getUniformsSnapshot() });
-    }
+    executeAfterRenderCallbacks({ uniforms: getUniformsSnapshot() });
   }
 
   return {

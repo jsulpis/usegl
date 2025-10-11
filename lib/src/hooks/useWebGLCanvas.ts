@@ -8,7 +8,7 @@ import { findUniformName } from "../internal/findName";
 import type { UseLoopOptions } from "./useLoop";
 import { useLoop } from "./useLoop";
 import { isHTMLImageTexture, isHTMLVideoTexture } from "../core/texture";
-import { useLifeCycleCallback } from "../internal/useLifeCycleCallback";
+import { useHook } from "../internal/useHook";
 
 interface Props<U extends Uniforms> extends UseLoopOptions, QuadPassOptions<U> {
   canvas: HTMLCanvasElement | OffscreenCanvas | string;
@@ -111,12 +111,12 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
 
   let resizeObserver: ReturnType<typeof useResizeObserver> | null = null;
 
-  const [canvasReadyCallbacks, onCanvasReady] = useLifeCycleCallback();
+  const [onCanvasReady, executeCanvasReadyCallbacks] = useHook();
 
   function resizeCanvas(width: number, height: number) {
     setSize({ width: width * dpr, height: height * dpr });
     if (!isCanvasResized) {
-      for (const callback of canvasReadyCallbacks) callback();
+      executeCanvasReadyCallbacks();
       isCanvasResized = true;
     }
   }

@@ -1,7 +1,7 @@
 import type { DataTextureParams, ImageTextureParams } from "../core/texture";
 import { fillTexture } from "../core/texture";
 import type { Uniforms, UniformValue, UpdatedCallback } from "../types";
-import { useLifeCycleCallback } from "./useLifeCycleCallback";
+import { useHook } from "./useHook";
 
 export function useUniforms<U extends Uniforms>(uniforms: U) {
   type UniformName = Extract<keyof U, string>;
@@ -12,7 +12,7 @@ export function useUniforms<U extends Uniforms>(uniforms: U) {
   let _gl: WebGL2RenderingContext;
   let _program: WebGLProgram;
 
-  const [onUpdatedCallbacks, onUpdated] = useLifeCycleCallback<UpdatedCallback<U>>();
+  const [onUpdated, executeUpdateCallbacks] = useHook<UpdatedCallback<U>>();
 
   const uniformsLocations = new Map<UniformName, WebGLUniformLocation>();
 
@@ -35,7 +35,7 @@ export function useUniforms<U extends Uniforms>(uniforms: U) {
           const oldTarget = getSnapshot(target);
           target[uniform as keyof U] = value;
           const newTarget = getSnapshot(target);
-          for (const callback of onUpdatedCallbacks) callback(newTarget, oldTarget);
+          executeUpdateCallbacks(newTarget, oldTarget);
         }
         return true;
       },
