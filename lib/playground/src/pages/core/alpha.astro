@@ -1,0 +1,59 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<script>
+  import { useWebGLCanvas } from "usegl";
+  import { incrementRenderCount } from "../../components/renderCount";
+
+  const glCanvas = useWebGLCanvas({
+    canvas: "#glCanvas",
+    fragment: /* glsl */ `
+    varying vec2 uv;
+    void main() {
+      float circle = 1. - smoothstep(.2, .4, length(uv - vec2(0.5)));
+      gl_FragColor = vec4(vec3(0,0,1), circle);
+    }
+    `,
+    webglOptions: { premultipliedAlpha: false },
+  });
+  glCanvas.onAfterRender(incrementRenderCount);
+
+  const glCanvas2 = useWebGLCanvas({
+    canvas: "#glCanvas2",
+    fragment: /* glsl */ `
+    varying vec2 uv;
+    void main() {
+      float circle = 1. - smoothstep(.2, .4, length(uv - vec2(0.5)));
+      gl_FragColor = vec4(circle * vec3(0,0,1), circle);
+    }
+    `,
+    // webglOptions: { premultipliedAlpha: true }, // default
+  });
+  glCanvas2.onAfterRender(incrementRenderCount);
+</script>
+
+<Layout title="Alpha">
+  <div class="container">
+    <canvas width="15" height="15" id="glCanvas"></canvas>
+    <canvas width="15" height="15" id="glCanvas2"></canvas>
+  </div>
+</Layout>
+
+<style>
+  .container {
+    display: flex;
+    justify-content: center;
+    width: min(80%, 700px);
+    background: yellow;
+  }
+
+  canvas {
+    aspect-ratio: 1;
+    border-radius: 0;
+    width: min(50%, 350px);
+    aspect-ratio: 1;
+    border: 0;
+    image-rendering: pixelated;
+  }
+</style>

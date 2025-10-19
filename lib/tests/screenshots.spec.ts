@@ -14,6 +14,7 @@ const expectedRendersByDemo = {
   mipmap: /[1-3]/,
   texture: /1|2/,
   sepia: /1|2/,
+  alpha: "2",
 };
 
 for (const { section, route } of routesToTest) {
