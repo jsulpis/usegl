@@ -113,7 +113,7 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
 
   const [onCanvasReady, executeCanvasReadyCallbacks] = useHook();
 
-  function resizeCanvas(width: number, height: number) {
+  function resizeCanvas(width: number, height: number, dpr: number) {
     setSize({ width: width * dpr, height: height * dpr });
     if (!isCanvasResized) {
       executeCanvasReadyCallbacks();
@@ -123,13 +123,16 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
 
   // resize only if HTMLCanvasElement, because we can't know the size of an OffscreenCanvas
   if (canvas instanceof HTMLCanvasElement) {
+    if (canvas.getAttribute("width") && canvas.getAttribute("height")) {
+      resizeCanvas(canvas.width, canvas.height, 1);
+    }
     // don't automatically resize if the renderMode is manual, because the call to gl.viewport() will break the canvas
-    if (renderMode === "auto") {
+    else if (renderMode === "auto") {
       resizeObserver = useResizeObserver(canvas, ({ size }) => {
-        resizeCanvas(size.width, size.height);
+        resizeCanvas(size.width, size.height, dpr);
       });
     } else {
-      resizeCanvas(canvas.clientWidth, canvas.clientHeight);
+      resizeCanvas(canvas.clientWidth, canvas.clientHeight, dpr);
     }
   }
 
