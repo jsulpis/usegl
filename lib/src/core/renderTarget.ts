@@ -64,11 +64,18 @@ export function createRenderTarget(
   };
 }
 
-export function setRenderTarget(gl: WebGL2RenderingContext, target: RenderTarget | null) {
+export function setRenderTarget(
+  gl: WebGL2RenderingContext,
+  target: RenderTarget | null,
+  clear = true,
+) {
   const framebuffer = target?.framebuffer || null;
   const { width, height } = target || gl.canvas;
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   gl.viewport(0, 0, width, height);
+
+  if (clear) {
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  }
 }
