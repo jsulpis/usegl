@@ -1,0 +1,74 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<script>
+  import {
+    createRenderTarget,
+    linearToneMapping,
+    useCompositor,
+    useQuadRenderPass,
+    useWebGLCanvas,
+    useWebGLContext,
+  } from "usegl";
+  import { incrementRenderCount } from "../../components/renderCount";
+
+  const ctx = useWebGLContext("#glCanvas");
+  const target = createRenderTarget(ctx.gl);
+
+  const glCanvas = useWebGLCanvas({
+    canvas: "#glCanvas",
+    target,
+    fragment: /* glsl */ `
+      varying vec2 vUv;
+      uniform vec2 uResolution;
+
+      void main() {
+        vec2 uv = (vUv - .5) * 2.0 * uResolution / min(uResolution.x, uResolution.y);
+
+        float circleLeft = 1. - smoothstep(.3,.6, distance(uv, vec2(-.3, .2)));
+        float circleRight = 1. - smoothstep(.3,.6, distance(uv, vec2(.3, .2)));
+        float alpha = max(circleLeft, circleRight);
+
+        gl_FragColor = vec4(circleLeft, circleRight, 0, alpha);
+      }
+    `,
+  });
+  glCanvas.onAfterRender(incrementRenderCount);
+
+  const bluePass = useQuadRenderPass(glCanvas.gl, {
+    target,
+    fragment: /* glsl */ `
+      varying vec2 vUv;
+      uniform vec2 uResolution;
+
+      void main() {
+        vec2 uv = (vUv - .5) * 2.0 * uResolution / min(uResolution.x, uResolution.y);
+
+        float circleMiddle = 1. - smoothstep(.3,.6, distance(uv, vec2(0, -.3)));
+        gl_FragColor = vec4(0, 0, circleMiddle, circleMiddle);
+      }
+    `,
+    uniforms: {
+      uResolution: () => glCanvas.uniforms.uResolution,
+    },
+    blending: "additive",
+  });
+  bluePass.onAfterRender(incrementRenderCount);
+
+  const compositor = useCompositor(glCanvas.gl, bluePass, [linearToneMapping()]);
+
+  glCanvas.onAfterRender(() => {
+    compositor.render({ clear: false });
+  });
+</script>
+
+<Layout title="Blending">
+  <canvas id="glCanvas"></canvas>
+</Layout>
+
+<style>
+  canvas {
+    background: darkgray;
+  }
+</style>

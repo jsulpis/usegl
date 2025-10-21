@@ -15,6 +15,7 @@ const expectedRendersByDemo = {
   texture: /1|2/,
   sepia: /1|2/,
   alpha: "2",
+  blending: "2",
 };
 
 for (const { section, route } of routesToTest) {

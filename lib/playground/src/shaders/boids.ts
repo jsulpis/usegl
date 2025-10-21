@@ -155,6 +155,7 @@ out vec4 outColor;
 
 void main() {
   vec2 uv = gl_PointCoord.xy;
-  outColor = vec4(vColor.rgb, vColor.a * smoothstep(0.5, 0.4, length(uv - 0.5)));
+  outColor.a = vColor.a * smoothstep(0.5, 0.4, length(uv - 0.5));
+  outColor.rgb = vColor.rgb * outColor.a;
 }
 `;
