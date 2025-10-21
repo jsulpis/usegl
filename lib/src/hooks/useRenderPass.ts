@@ -19,7 +19,7 @@ export type RenderPassOptions<U extends Uniforms = Record<string, never>> = {
   vertex: string;
   attributes?: Record<string, Attribute>;
   uniforms?: U;
-  transparent?: boolean;
+  blending?: "none" | "normal" | "additive";
   drawMode?: DrawMode;
   transformFeedbackVaryings?: string[];
   resolutionScale?: number;
@@ -33,7 +33,7 @@ export function useRenderPass<U extends Uniforms>(
     vertex,
     attributes = {},
     uniforms: userUniforms = {} as U,
-    transparent = false,
+    blending = "none",
     drawMode: userDrawMode,
     transformFeedbackVaryings,
     resolutionScale = 1,
@@ -125,15 +125,9 @@ export function useRenderPass<U extends Uniforms>(
     setRenderTarget(_gl, target ?? _target, clear);
     _gl.useProgram(_program);
 
-    if (transparent) {
-      _gl.enable(_gl.BLEND);
-      _gl.blendFunc(_gl.SRC_ALPHA, _gl.ONE_MINUS_SRC_ALPHA);
-    } else {
-      _gl.disable(_gl.BLEND);
-    }
-
     bindVAO();
     setUniforms();
+    setBlending(_gl, blending);
 
     executeBeforeRenderCallbacks({ uniforms: getUniformsSnapshot() });
 
@@ -163,4 +157,22 @@ export function useRenderPass<U extends Uniforms>(
     onInit,
     onResize,
   };
+}
+
+function setBlending(gl: WebGL2RenderingContext, blending: "none" | "normal" | "additive") {
+  if (blending === "none") {
+    return gl.disable(gl.BLEND);
+  }
+
+  gl.enable(gl.BLEND);
+
+  // assuming premultiplied alpha
+  switch (blending) {
+    case "normal": {
+      return gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    }
+    case "additive": {
+      return gl.blendFunc(gl.ONE, gl.ONE);
+    }
+  }
 }

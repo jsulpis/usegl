@@ -67,7 +67,7 @@ import Layout from "../../layouts/Layout.astro";
     attributes: {
       aCoords: positions.coords,
     },
-    transparent: true,
+    blending: "normal",
   });
 
   renderPass.onAfterRender(incrementRenderCount);
