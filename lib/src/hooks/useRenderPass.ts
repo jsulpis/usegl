@@ -117,12 +117,12 @@ export function useRenderPass<U extends Uniforms>(
   const [onBeforeRender, executeBeforeRenderCallbacks] = useHook<RenderCallback<U>>();
   const [onAfterRender, executeAfterRenderCallbacks] = useHook<RenderCallback<U>>();
 
-  function render({ target }: { target?: RenderTarget | null } = {}) {
+  function render({ target, clear }: { target?: RenderTarget | null; clear?: boolean } = {}) {
     if (_gl == undefined) {
       throw new Error("The render pass must be initialized before calling the render function");
     }
 
-    setRenderTarget(_gl, target ?? _target);
+    setRenderTarget(_gl, target ?? _target, clear);
     _gl.useProgram(_program);
 
     if (transparent) {

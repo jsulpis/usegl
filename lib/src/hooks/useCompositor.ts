@@ -50,10 +50,10 @@ export function useCompositor(
 
   const allPasses = [renderPass, ...effects];
 
-  function render() {
+  function render({ clear }: { clear?: boolean } = {}) {
     executeBeforeRenderCallbacks();
-    for (const pass of allPasses) {
-      pass.render();
+    for (const [index, pass] of allPasses.entries()) {
+      pass.render(index === 0 ? { clear } : {});
     }
     executeAfterRenderCallbacks();
   }

@@ -43,7 +43,7 @@ export interface RenderTarget {
 }
 
 export interface RenderPass<U extends Uniforms = Record<string, never>> extends Resizable {
-  render: (opts?: { target?: RenderTarget | null }) => void;
+  render: (opts?: { target?: RenderTarget | null; clear?: boolean }) => void;
   target: RenderTarget | null;
   setTarget: (target: RenderTarget | null) => void;
   uniforms: U;
