@@ -1,5 +1,6 @@
 import { createRenderTarget } from "../core/renderTarget";
 import { findUniformName } from "../internal/findName";
+import { useHook } from "../internal/useHook";
 import type { CompositeEffectPass, EffectPass, RenderPass } from "../types";
 import { floatTargetConfig } from "./useEffectPass";
 
@@ -17,6 +18,9 @@ export function useCompositor(
 ) {
   // add the ability to render to floating-point buffers
   gl.getExtension("EXT_color_buffer_float");
+
+  const [onBeforeRender, executeBeforeRenderCallbacks] = useHook();
+  const [onAfterRender, executeAfterRenderCallbacks] = useHook();
 
   if (effects.length > 0 && renderPass.target === null) {
     renderPass.setTarget(createRenderTarget(gl, floatTargetConfig));
@@ -47,9 +51,11 @@ export function useCompositor(
   const allPasses = [renderPass, ...effects];
 
   function render() {
+    executeBeforeRenderCallbacks();
     for (const pass of allPasses) {
       pass.render();
     }
+    executeAfterRenderCallbacks();
   }
 
   function setSize(size: { width: number; height: number }) {
@@ -58,7 +64,7 @@ export function useCompositor(
     }
   }
 
-  return { render, setSize, allPasses };
+  return { render, setSize, allPasses, onBeforeRender, onAfterRender };
 }
 
 function isCompositeEffectPass(
