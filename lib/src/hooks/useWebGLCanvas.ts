@@ -150,8 +150,8 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
     dpr,
     uniforms: renderPass.uniforms,
     onUpdated: renderPass.onUpdated,
-    onBeforeRender: renderPass.onBeforeRender,
-    onAfterRender: renderPass.onAfterRender,
+    onBeforeRender: compositor.onBeforeRender,
+    onAfterRender: compositor.onAfterRender,
     resizeObserver,
   };
 };
