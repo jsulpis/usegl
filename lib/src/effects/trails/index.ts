@@ -8,7 +8,7 @@ import outputFragment from "./glsl/output.frag";
 export type TrailsParams = {
   /**
    * Intensity of the erosion effect that makes the trails shorter.
-   * @default 0.2
+   * @default 0
    */
   erosion?: number;
   /**
@@ -23,14 +23,14 @@ export type TrailsParams = {
   tailColor?: [number, number, number, number];
   /**
    * How quickly the original color fades to the tail color.
-   * @default 0.1
+   * @default 0
    */
   tailColorFalloff?: number;
 };
 
 export function trails(params?: TrailsParams) {
-  const { fadeout = 0.2, tailColor = [1, 1, 1, 1], tailColorFalloff = 0 } = params || {};
-  let erosion = params?.erosion ?? 0.05;
+  const { fadeout = 0.25, tailColor = [1, 1, 1, 1], tailColorFalloff = 0 } = params || {};
+  let erosion = Math.pow(params?.erosion ?? 0, 2);
 
   let fboRead: RenderTarget;
   let fboWrite: RenderTarget;
@@ -41,19 +41,11 @@ export function trails(params?: TrailsParams) {
     fboWrite = temp;
   }
 
-  let isFirstRender = true;
-
   const trailPass = useEffectPass({
     fragment: trailsFragment,
     uniforms: {
       uRenderTexture: ({ inputPass }) => inputPass.target!.texture,
-      uPreviousTrailTexture: ({ inputPass }) => {
-        if (isFirstRender) {
-          isFirstRender = false;
-          return inputPass.target!.texture;
-        }
-        return fboRead.texture;
-      },
+      uPreviousTrailTexture: () => fboRead.texture,
       uKernelSize: [0, 0],
       uTailColor: tailColor,
       uTailColorFalloff: tailColorFalloff,
@@ -74,11 +66,8 @@ export function trails(params?: TrailsParams) {
       return erosion;
     },
     set uErosion(value: number) {
-      erosion = value;
-      trailPass.uniforms.uKernelSize = [
-        Math.sqrt(erosion) / fboRead.width,
-        Math.sqrt(erosion) / fboRead.height,
-      ];
+      erosion = Math.pow(value, 2);
+      trailPass.uniforms.uKernelSize = [erosion / fboRead.width, erosion / fboRead.height];
     },
     get uFadeout() {
       return trailPass.uniforms.uFadeout;
@@ -102,19 +91,15 @@ export function trails(params?: TrailsParams) {
 
   const trailsPass = useCompositeEffectPass([trailPass, outputPass], uniforms);
 
-  trailsPass.onResize((width, height) => {
-    fboRead.setSize(width, height);
-    fboWrite.setSize(width, height);
-
-    trailPass.uniforms.uKernelSize = [
-      Math.sqrt(erosion) / fboRead.width,
-      Math.sqrt(erosion) / fboRead.height,
-    ];
-  });
-
   trailsPass.onInit((gl) => {
     fboRead = createRenderTarget(gl, floatTargetConfig);
     fboWrite = createRenderTarget(gl, floatTargetConfig);
+  });
+
+  trailsPass.onResize((width, height) => {
+    fboRead.setSize(width, height);
+    fboWrite.setSize(width, height);
+    trailPass.uniforms.uKernelSize = [erosion / fboRead.width, erosion / fboRead.height];
   });
 
   trailsPass.onBeforeRender(() => {

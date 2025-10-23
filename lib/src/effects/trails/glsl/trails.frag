@@ -8,32 +8,30 @@ uniform float uTailColorFalloff;
 uniform float uFadeout;
 uniform vec2 uKernelSize;
 
-const vec3 luminanceWeights = vec3(0.2126, 0.7152, 0.0722);
-
 void main() {
   vec4 renderColor = texture2D(uRenderTexture, vUv);
   vec4 previousColor = texture2D(uPreviousTrailTexture, vUv);
 
-  vec4 localMinimum = previousColor;
+  vec4 trailColor = previousColor;
+
+  // erosion
   if (uKernelSize.x > 0.0 || uKernelSize.y > 0.0) {
-    localMinimum = min(localMinimum, texture2D(uPreviousTrailTexture, vUv + vec2(0.0, uKernelSize.y)));
-    localMinimum = min(localMinimum, texture2D(uPreviousTrailTexture, vUv + vec2(uKernelSize.x, uKernelSize.y)));
-    localMinimum = min(localMinimum, texture2D(uPreviousTrailTexture, vUv + vec2(uKernelSize.x, 0.0)));
-    localMinimum = min(localMinimum, texture2D(uPreviousTrailTexture, vUv + vec2(uKernelSize.x, -uKernelSize.y)));
-    localMinimum = min(localMinimum, texture2D(uPreviousTrailTexture, vUv + vec2(0.0, -uKernelSize.y)));
-    localMinimum = min(localMinimum, texture2D(uPreviousTrailTexture, vUv + vec2(-uKernelSize.x, -uKernelSize.y)));
-    localMinimum = min(localMinimum, texture2D(uPreviousTrailTexture, vUv + vec2(-uKernelSize.x, 0.0)));
-    localMinimum = min(localMinimum, texture2D(uPreviousTrailTexture, vUv + vec2(-uKernelSize.x, uKernelSize.y)));
+    trailColor = min(trailColor, texture2D(uPreviousTrailTexture, vUv + vec2(0.0, uKernelSize.y)));
+    trailColor = min(trailColor, texture2D(uPreviousTrailTexture, vUv + vec2(uKernelSize.x, 0.0)));
+    trailColor = min(trailColor, texture2D(uPreviousTrailTexture, vUv + vec2(0.0, -uKernelSize.y)));
+    trailColor = min(trailColor, texture2D(uPreviousTrailTexture, vUv + vec2(-uKernelSize.x, 0.0)));
   }
 
-  float minimumLuminance = dot(localMinimum.rgb, luminanceWeights);
-  vec4 trailColor = previousColor * .999;// mix(localMinimum, uTailColor, uTailColorFalloff * minimumLuminance);
-  // trailColor.a *= 0.;
-  // trailColor = vec4(1., 0., 0., 0.1);
+  // blend with a tail color
+  if (uTailColorFalloff > 0.) {
+    float blending = pow(uTailColorFalloff, 3.) * trailColor.a;
+    blending *= smoothstep(0., 1., distance(previousColor.rgb, renderColor.rgb));
+    trailColor.rgb = mix(trailColor.rgb, uTailColor.rgb, blending);
+  }
 
-  // alpha over
-  gl_FragColor.a = renderColor.a + trailColor.a * (1.0 - renderColor.a);
-  gl_FragColor.rgb = (renderColor.rgb * renderColor.a + trailColor.rgb * trailColor.a * (1.0 - renderColor.a));
+  // fadeout
+  trailColor *= (1. - pow(uFadeout, 2.));
 
-  // gl_FragColor = mix(renderColor, max(renderColor, trailColor * (1.0 - uFadeout)), 1.);
+  // lighten blend
+  gl_FragColor = max(renderColor, trailColor);
 }
