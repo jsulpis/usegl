@@ -16,13 +16,16 @@ const expectedRendersByDemo = {
   sepia: /1|2/,
   alpha: "2",
   blending: "2",
+  trails: "90",
 };
 
 for (const { section, route } of routesToTest) {
   test(route, async ({ page, baseURL }) => {
     await page.goto(`${baseURL}/${section}/${route}`);
 
-    await expect(page.locator("#renders strong")).toHaveText(expectedRendersByDemo[route] || "1");
+    await expect(page.locator("#renders strong")).toHaveText(expectedRendersByDemo[route] || "1", {
+      timeout: 10_000,
+    });
     await expect(page.locator("main")).toHaveScreenshot();
   });
 }
