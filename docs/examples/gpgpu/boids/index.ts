@@ -64,7 +64,7 @@ const renderPass = useWebGLCanvas({
   attributes: {
     aCoords: positions.coords,
   },
-  transparent: true,
+  blending: "normal",
 });
 
 useLoop(({ deltaTime }) => {

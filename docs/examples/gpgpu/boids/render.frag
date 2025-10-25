@@ -23,6 +23,7 @@ void main() {
 
   vec4 color = vColor;
   color.a *= 1. - step(0., capsuleDist);
+  color.rgb *= color.a;
 
   gl_FragColor = color;
 }
