@@ -23,7 +23,7 @@ void main() {
     vec2 predatorPosition = texture2D(tPositions, vec2(0)).xy;
     float distance = length(position - predatorPosition);
     vColor = mix(vec4(1, .5, 0, 1), vec4(0, .8, 1, 1), smoothstep(0.2, .8, distance));
-    vColor = mix(vColor, vec4(0), smoothstep(.6, 2., distance));
+    vColor.rgb = mix(vColor.rgb, vec3(0), smoothstep(.6, 2., distance));
     gl_PointSize = 30.0;
   }
 

@@ -37,8 +37,8 @@ const fragment = /* glsl */ `
 
   void main() {
     vec2 uv = gl_PointCoord.xy;
-    gl_FragColor.rgb = vColor.rgb;
     gl_FragColor.a = vColor.a * smoothstep(0.5, 0.4, length(uv - 0.5));
+    gl_FragColor.rgb = vColor.rgb * gl_FragColor.a; // alpha must be premultiplied
   }
 `;
 
@@ -54,7 +54,5 @@ const { gl } = useWebGLCanvas({
       size: 3,
     },
   },
+  blending: "normal",
 });
-
-gl.enable(gl.BLEND);
-gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);

@@ -74,7 +74,8 @@ const renderPass = useWebGLCanvas({
 
     void main() {
       vec2 uv = gl_PointCoord.xy;
-      outColor = vec4(0, 1, .5, smoothstep(0.5, 0.4, length(uv - 0.5)));
+      outColor.a = smoothstep(0.5, 0.4, length(uv - 0.5));
+      outColor.rgb = vec3(0, 1, .5) * outColor.a; // alpha must be premultiplied
     }
   `,
   uniforms: {
@@ -83,7 +84,7 @@ const renderPass = useWebGLCanvas({
   attributes: {
     aCoords: positions.coords,
   },
-  transparent: true,
+  blending: "normal",
 });
 
 useLoop(({ deltaTime }) => {
