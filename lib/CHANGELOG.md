@@ -1,5 +1,34 @@
 # Changelog
 
+## v0.9.0
+
+[compare changes](https://github.com/jsulpis/usegl/compare/v0.8.0...v0.9.0)
+
+### 🚀 Enhancements
+
+- **postprocessing:** Add a trails effect ([eb218e7](https://github.com/jsulpis/usegl/commit/eb218e7))
+- Add hooks for initialize and resize ([8e0d56f](https://github.com/jsulpis/usegl/commit/8e0d56f))
+- Allow to render without clearing the canvas ([4c23a83](https://github.com/jsulpis/usegl/commit/4c23a83))
+- Add a blending option and assume premultiplied alpha everywhere ([4c81351](https://github.com/jsulpis/usegl/commit/4c81351))
+
+### 🩹 Fixes
+
+- Don't resize the canvas if it has width and height attributes ([b1c6b77](https://github.com/jsulpis/usegl/commit/b1c6b77))
+- Wrong before/after hooks in useWebGLCanvas ([9753b7d](https://github.com/jsulpis/usegl/commit/9753b7d))
+
+### 💅 Refactors
+
+- Simplify the use of callback functions ([4f5f4fb](https://github.com/jsulpis/usegl/commit/4f5f4fb))
+
+### 📖 Documentation
+
+- Add tone mapping in the bloom example ([7c3b3b4](https://github.com/jsulpis/usegl/commit/7c3b3b4))
+
+### 🏡 Chore
+
+- Setup analytics ([e82387a](https://github.com/jsulpis/usegl/commit/e82387a))
+- Add a test for premultiplied alpha ([bc5a05e](https://github.com/jsulpis/usegl/commit/bc5a05e))
+
 ## v0.8.0
 
 [compare changes](https://github.com/jsulpis/usegl/compare/v0.7.0...v0.8.0)
