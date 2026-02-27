@@ -23,7 +23,7 @@ export function useCompositor(
   const [onAfterRender, executeAfterRenderCallbacks] = useHook();
 
   if (effects.length > 0 && renderPass.target === null) {
-    renderPass.setTarget(createRenderTarget(gl, floatTargetConfig));
+    renderPass.setTarget(createRenderTarget(gl, { ...floatTargetConfig, depthBuffer: true }));
   }
 
   let previousPass = renderPass;
