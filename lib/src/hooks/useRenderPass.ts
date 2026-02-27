@@ -20,6 +20,7 @@ export type RenderPassOptions<U extends Uniforms = Record<string, never>> = {
   attributes?: Record<string, Attribute>;
   uniforms?: U;
   blending?: "none" | "normal" | "additive";
+  depthTest?: boolean;
   drawMode?: DrawMode;
   transformFeedbackVaryings?: string[];
   resolutionScale?: number;
@@ -34,6 +35,7 @@ export function useRenderPass<U extends Uniforms>(
     attributes = {},
     uniforms: userUniforms = {} as U,
     blending = "none",
+    depthTest = false,
     drawMode: userDrawMode,
     transformFeedbackVaryings,
     resolutionScale = 1,
@@ -128,6 +130,7 @@ export function useRenderPass<U extends Uniforms>(
     bindVAO();
     setUniforms();
     setBlending(_gl, blending);
+    setDepthTest(_gl, depthTest);
 
     executeBeforeRenderCallbacks({ uniforms: getUniformsSnapshot() });
 
@@ -174,5 +177,13 @@ function setBlending(gl: WebGL2RenderingContext, blending: "none" | "normal" | "
     case "additive": {
       return gl.blendFunc(gl.ONE, gl.ONE);
     }
+  }
+}
+
+function setDepthTest(gl: WebGL2RenderingContext, depthTest: boolean) {
+  if (depthTest) {
+    gl.enable(gl.DEPTH_TEST);
+  } else {
+    gl.disable(gl.DEPTH_TEST);
   }
 }

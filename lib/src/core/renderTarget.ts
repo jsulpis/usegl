@@ -2,7 +2,9 @@ import type { RenderTarget } from "../types";
 import type { DataTextureParams } from "./texture";
 import { fillTexture } from "./texture";
 
-export type RenderTargetParams = Partial<Omit<DataTextureParams, "data">>;
+export type RenderTargetParams = Partial<Omit<DataTextureParams, "data">> & {
+  depthBuffer?: boolean;
+};
 
 export function createRenderTarget(
   gl: WebGL2RenderingContext,
@@ -24,6 +26,16 @@ export function createRenderTarget(
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
   gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, _texture, 0);
+
+  let renderbuffer: WebGLRenderbuffer | null = null;
+  if (params?.depthBuffer) {
+    renderbuffer = gl.createRenderbuffer();
+    gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer);
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, _width, _height);
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, renderbuffer);
+    gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+  }
+
   gl.bindTexture(gl.TEXTURE_2D, null);
 
   function setSize(width: number, height: number) {
@@ -41,6 +53,12 @@ export function createRenderTarget(
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, newTexture, 0);
+
+    if (renderbuffer) {
+      gl.bindRenderbuffer(gl.RENDERBUFFER, renderbuffer);
+      gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, _width, _height);
+      gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+    }
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.bindTexture(gl.TEXTURE_2D, null);
