@@ -69,7 +69,7 @@ export function useUniforms<U extends Uniforms>(uniforms: U) {
       return _gl.uniform1i(uniformLocation, index);
     }
 
-    if (Array.isArray(value)) {
+    if (Array.isArray(value) || (ArrayBuffer.isView(value) && !(value instanceof DataView))) {
       switch (value.length) {
         case 2: {
           return _gl.uniform2fv(uniformLocation, value);
@@ -80,10 +80,16 @@ export function useUniforms<U extends Uniforms>(uniforms: U) {
         case 4: {
           return _gl.uniform4fv(uniformLocation, value);
         }
+        case 9: {
+          return _gl.uniformMatrix3fv(uniformLocation, false, value);
+        }
+        case 16: {
+          return _gl.uniformMatrix4fv(uniformLocation, false, value);
+        }
       }
     }
 
-    if ((value as ImageTextureParams).src || (value as DataTextureParams).data) {
+    if (isTextureParams(value)) {
       if (!textureUnits.has(name)) {
         const texture = _gl.createTexture();
         textureUnits.set(name, { index: textureUnitIndex++, texture });
@@ -111,4 +117,12 @@ export function useUniforms<U extends Uniforms>(uniforms: U) {
 
 function getSnapshot<Obj extends Record<string, unknown>>(object: Obj): Obj {
   return Object.freeze({ ...object });
+}
+
+function isTextureParams(value: unknown): value is ImageTextureParams | DataTextureParams {
+  if (value == null || typeof value !== "object") return false;
+  return (
+    (value as ImageTextureParams).src !== undefined ||
+    (value as DataTextureParams).data !== undefined
+  );
 }

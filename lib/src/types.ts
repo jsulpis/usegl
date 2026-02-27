@@ -4,8 +4,20 @@ export type VectorUniform =
   | [number, number]
   | [number, number, number]
   | [number, number, number, number];
+
+// prettier-ignore
+export type MatrixUniform =
+  | [number, number, number,
+     number, number, number,
+     number, number, number]
+  | [number, number, number, number,
+     number, number, number, number,
+     number, number, number, number,
+     number, number, number, number];
+
 export type TextureUniform = TextureParams | WebGLTexture;
-export type UniformValue = number | VectorUniform | TextureUniform;
+
+export type UniformValue = number | VectorUniform | MatrixUniform | Float32Array | TextureUniform;
 export type Uniforms = Record<string, UniformValue>;
 export type EffectUniforms = Record<
   string,
