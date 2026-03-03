@@ -1,6 +1,6 @@
 # AGENTS.md — lib
 
-The library package (`usegl`). Built with **tsdown**, dev playground via **Astro**, tests via **Playwright**.
+The library package (`@radiance/gl`). Built with **tsdown**, dev playground via **Astro**, tests via **Playwright**.
 
 ## Conventions
 
