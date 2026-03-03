@@ -1,12 +1,11 @@
-import { onResize } from "./onResize";
+import { onResize, loop } from "@radiance/helpers";
+import type { UseLoopOptions } from "@radiance/helpers";
 import type { CompositeEffectPass, EffectPass, Uniforms } from "../types";
 import { glContext } from "./glContext";
 import type { QuadPassOptions } from "./quadRenderPass";
 import { quadRenderPass } from "./quadRenderPass";
 import { compositor } from "./compositor";
 import { findUniformName } from "../internal/findName";
-import type { UseLoopOptions } from "./loop";
-import { loop } from "./loop";
 import { isHTMLImageTexture, isHTMLVideoTexture } from "../core/texture";
 import { createHook } from "../internal/createHook";
 
