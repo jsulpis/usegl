@@ -1,5 +1,5 @@
-import { compositeEffectPass } from "../../hooks/compositeEffectPass";
-import { floatTargetConfig, effectPass } from "../../hooks/effectPass";
+import { compositeEffectPass } from "../../passes/compositeEffectPass";
+import { floatTargetConfig, effectPass } from "../../passes/effectPass";
 import type { EffectPass } from "../../types";
 import downSampleFragment from "./glsl/downsample.frag";
 import combineFragment from "./glsl/combine.frag";
