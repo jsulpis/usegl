@@ -31,6 +31,9 @@
     "test:update": "docker compose run --build --rm test sh -c 'xvfb-run pnpm run test -u'",
     "typecheck": "tsc --noEmit && astro check --tsconfig playground/tsconfig.json"
   },
+  "dependencies": {
+    "@radiance/helpers": "workspace:*"
+  },
   "devDependencies": {
     "@astrojs/check": "0.9.4",
     "@playwright/test": "1.49.1",
