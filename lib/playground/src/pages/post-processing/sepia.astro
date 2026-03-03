@@ -3,7 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { effectPass, glCanvas, loadTexture } from "usegl";
+  import { effectPass, glCanvas, loadTexture } from "@radiance/gl";
   import { incrementRenderCount } from "../../components/renderCount";
 
   const vignetteEffect = effectPass({

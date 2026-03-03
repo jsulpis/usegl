@@ -9,7 +9,7 @@ import Layout from "../../layouts/Layout.astro";
     pingPongFBO,
     glCanvas,
     createFloatDataTexture,
-  } from "usegl";
+  } from "@radiance/gl";
   import { incrementRenderCount } from "../../components/renderCount";
 
   const { gl, canvas } = glContext("#glCanvas");

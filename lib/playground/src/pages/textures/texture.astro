@@ -3,7 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { glCanvas, loadTexture } from "usegl";
+  import { glCanvas, loadTexture } from "@radiance/gl";
   import { incrementRenderCount } from "../../components/renderCount";
 
   const texture = loadTexture("https://picsum.photos/id/669/600/400", {

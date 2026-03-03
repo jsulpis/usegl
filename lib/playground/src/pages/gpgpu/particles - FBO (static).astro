@@ -4,7 +4,7 @@ import Layout from "../../layouts/Layout.astro";
 
 <!-- Static sample made for visual regression testing  -->
 <script>
-  import { glContext, pingPongFBO, glCanvas, createFloatDataTexture } from "usegl";
+  import { glContext, pingPongFBO, glCanvas, createFloatDataTexture } from "@radiance/gl";
   import { incrementRenderCount } from "../../components/renderCount";
 
   const { gl, canvas } = glContext("#glCanvas");

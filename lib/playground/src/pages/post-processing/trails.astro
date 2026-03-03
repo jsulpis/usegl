@@ -3,7 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { glCanvas, linearToneMapping, trails, bloom, loop } from "usegl";
+  import { glCanvas, linearToneMapping, trails, bloom, loop } from "@radiance/gl";
   import { incrementRenderCount } from "../../components/renderCount";
 
   ["#glCanvas", "#glCanvas2", "#glCanvas3"].forEach((selector, i) => {
