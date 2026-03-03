@@ -1,6 +1,6 @@
 import { createRenderTarget } from "../../core/renderTarget";
-import { compositeEffectPass } from "../../hooks/compositeEffectPass";
-import { floatTargetConfig, effectPass } from "../../hooks/effectPass";
+import { compositeEffectPass } from "../../passes/compositeEffectPass";
+import { floatTargetConfig, effectPass } from "../../passes/effectPass";
 import type { RenderTarget } from "../../types";
 import trailsFragment from "./glsl/trails.frag";
 import outputFragment from "./glsl/output.frag";

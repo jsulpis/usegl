@@ -1,4 +1,4 @@
-import { effectPass } from "../../hooks/effectPass";
+import { effectPass } from "../../passes/effectPass";
 
 import linearFragment from "./glsl/linear.frag";
 import acesFragment from "./glsl/aces.frag";
