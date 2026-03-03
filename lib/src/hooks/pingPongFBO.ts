@@ -1,7 +1,7 @@
 import { createRenderTarget } from "../core/renderTarget";
 import { createFloatDataTexture, type DataTextureParams } from "../core/texture";
 import type { Attribute, RenderPass, Uniforms } from "../types";
-import { useQuadRenderPass } from "./useQuadRenderPass";
+import { quadRenderPass } from "./quadRenderPass";
 
 export type PingPongFBOOptions<U extends Uniforms = Record<string, never>> = {
   uniforms?: U;
@@ -17,7 +17,7 @@ interface PingPongFBOPass<U extends Uniforms = Record<string, never>> extends Re
   coords: Attribute;
 }
 
-export function usePingPongFBO<U extends Uniforms>(
+export function pingPongFBO<U extends Uniforms>(
   gl: WebGL2RenderingContext,
   { uniforms = {} as U, dataTexture, fragment }: PingPongFBOOptions<U>,
 ) {
@@ -37,7 +37,7 @@ export function usePingPongFBO<U extends Uniforms>(
     coords.set([u, v], i * 2);
   }
 
-  const fboPass = useQuadRenderPass(gl, {
+  const fboPass = quadRenderPass(gl, {
     fragment,
     uniforms: Object.assign(uniforms, {
       [dataTextureName]: initialDataTexture,

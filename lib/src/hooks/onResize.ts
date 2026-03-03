@@ -1,7 +1,7 @@
 /**
  * Listen for changes to the size of an element.
  */
-export function useResizeObserver(
+export function onResize(
   target: HTMLElement,
   callback: (args: {
     /**

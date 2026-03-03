@@ -1,4 +1,4 @@
-import { useResizeObserver } from "./useResizeObserver";
+import { onResize } from "./onResize";
 
 export interface UseBoundingRectOptions {
   /**
@@ -29,7 +29,7 @@ export interface BoundingRect {
 /**
  * Dynamically get the bounding rectangle of an HTML element
  */
-export function useBoundingRect(target: HTMLElement, options: UseBoundingRectOptions = {}) {
+export function watchBoundingRect(target: HTMLElement, options: UseBoundingRectOptions = {}) {
   /* eslint-disable unicorn/prefer-global-this */
   const {
     windowResize = typeof window !== "undefined",
@@ -61,7 +61,7 @@ export function useBoundingRect(target: HTMLElement, options: UseBoundingRectOpt
     center.y = (rect.top + rect.bottom) / 2;
   }
 
-  useResizeObserver(target, update);
+  onResize(target, update);
 
   if (windowScroll) window.addEventListener("scroll", update, { capture: true, passive: true });
   if (windowResize) window.addEventListener("resize", update, { passive: true });

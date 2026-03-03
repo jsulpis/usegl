@@ -3,7 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { useWebGLContext, useLoop, usePingPongFBO, useWebGLCanvas } from "usegl";
+  import { glContext, loop, pingPongFBO, glCanvas } from "usegl";
   import { incrementRenderCount } from "../../components/renderCount";
   import {
     boidsPositions,
@@ -12,11 +12,11 @@ import Layout from "../../layouts/Layout.astro";
     renderPassFragment,
   } from "../../shaders/boids";
 
-  const { gl, canvas } = useWebGLContext("#glCanvas");
+  const { gl, canvas } = glContext("#glCanvas");
 
   const numParticles = 300;
 
-  const velocities = usePingPongFBO(gl, {
+  const velocities = pingPongFBO(gl, {
     fragment: boidsVelocities,
     uniforms: {
       uDeltaTime: 0,
@@ -40,7 +40,7 @@ import Layout from "../../layouts/Layout.astro";
     },
   });
 
-  const positions = usePingPongFBO(gl, {
+  const positions = pingPongFBO(gl, {
     fragment: boidsPositions,
     uniforms: {
       uDeltaTime: 0,
@@ -57,7 +57,7 @@ import Layout from "../../layouts/Layout.astro";
     },
   });
 
-  const renderPass = useWebGLCanvas({
+  const renderPass = glCanvas({
     canvas,
     vertex: renderPassVertex,
     fragment: renderPassFragment,
@@ -72,7 +72,7 @@ import Layout from "../../layouts/Layout.astro";
 
   renderPass.onAfterRender(incrementRenderCount);
 
-  useLoop(({ deltaTime }) => {
+  loop(({ deltaTime }) => {
     velocities.uniforms.uDeltaTime = deltaTime / 500;
     velocities.render();
 

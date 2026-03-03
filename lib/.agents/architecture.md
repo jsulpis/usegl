@@ -20,7 +20,7 @@ src/
 
 | Kind | Convention | Example |
 |------|-----------|---------|
-| Hook / factory functions | `camelCase` | `useRenderPass`, `createProgram` |
+| Hook / factory functions | `camelCase` | `renderPass`, `createProgram` |
 | Types / Interfaces | `PascalCase` | `RenderPass<U>`, `TextureParams` |
 | Private closure variables | `_camelCase` (underscore prefix) | `_gl`, `_program`, `_target` |
 | Module-level constants | `camelCase` for objects/arrays | `quadVertexPositions` |
@@ -29,15 +29,15 @@ src/
 | GLSL attributes | `a` prefix | `aPosition` |
 | GLSL varyings | `v` prefix | `vUv` |
 | Effect factory functions | `camelCase` | `bloom()`, `trails()` |
-| Hook files | `use<PascalCase>.ts` | `useRenderPass.ts` |
+| Hook files | `use<PascalCase>.ts` | `renderPass.ts` |
 | Core utility files | `<noun>.ts` | `program.ts`, `texture.ts` |
 
 ## Architecture Patterns
 
 - **Closure-based hooks** — no classes. Every `use*` function closes over private mutable state (prefixed `_`) and returns a plain object API with getter properties.
-- **`useHook<C>()`** is the internal pub/sub primitive — returns `[register, execute]` tuples used for lifecycle callbacks: `onInit`, `onResize`, `onBeforeRender`, `onAfterRender`, `onUpdated`.
+- **`hook<C>()`** is the internal pub/sub primitive — returns `[register, execute]` tuples used for lifecycle callbacks: `onInit`, `onResize`, `onBeforeRender`, `onAfterRender`, `onUpdated`.
 - **Lazy initialization** — passes accept `gl: WebGL2RenderingContext | undefined` and initialize later via `pass.initialize(gl)`.
-- **Proxy-based reactivity** — `useUniforms` wraps the uniforms object in a `Proxy` to detect mutations and fire `onUpdated` callbacks (the render-on-demand system).
+- **Proxy-based reactivity** — `setupUniforms` wraps the uniforms object in a `Proxy` to detect mutations and fire `onUpdated` callbacks (the render-on-demand system).
 - **Getter properties** expose private mutable state: `get target() { return _target; }`.
 - **Composition over inheritance** — complex passes are built by composing simpler ones.
 - **No side effects at module load time** — all initialization is deferred to function calls.

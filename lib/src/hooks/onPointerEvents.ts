@@ -1,5 +1,5 @@
-import type { BoundingRect } from "./useBoundingRect";
-import { useBoundingRect } from "./useBoundingRect";
+import type { BoundingRect } from "./watchBoundingRect";
+import { watchBoundingRect } from "./watchBoundingRect";
 
 type HandlerArgs = {
   pointer: {
@@ -24,8 +24,8 @@ type PointerEventsHandlers = {
 /**
  * Listen to common pointer events and provide additional infos about the canvas
  */
-export function usePointerEvents(canvas: HTMLCanvasElement, handlers: PointerEventsHandlers) {
-  const { rect: canvasRect, center: canvasCenter } = useBoundingRect(canvas);
+export function onPointerEvents(canvas: HTMLCanvasElement, handlers: PointerEventsHandlers) {
+  const { rect: canvasRect, center: canvasCenter } = watchBoundingRect(canvas);
 
   const activeHandlers = Object.fromEntries(
     Object.entries(handlers)

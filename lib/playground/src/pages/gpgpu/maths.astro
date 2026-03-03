@@ -3,10 +3,10 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { useWebGLContext, useTransformFeedback } from "usegl";
+  import { glContext, transformFeedback } from "usegl";
   import { incrementRenderCount } from "../../components/renderCount";
 
-  const { gl } = useWebGLContext("#glCanvas");
+  const { gl } = glContext("#glCanvas");
 
   function printData(selector: string, data: number[] | Float32Array) {
     document.querySelector(selector)!.textContent = data.join(", ");
@@ -18,7 +18,7 @@ import Layout from "../../layouts/Layout.astro";
   printData("#a", a);
   printData("#b", b);
 
-  const { render, onAfterRender, getOutputData } = useTransformFeedback(gl, {
+  const { render, onAfterRender, getOutputData } = transformFeedback(gl, {
     vertex: /* glsl */ `
       in float a;
       in float b;

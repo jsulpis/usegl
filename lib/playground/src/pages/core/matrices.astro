@@ -4,7 +4,7 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { useLoop, useWebGLCanvas } from "usegl";
+  import { loop, glCanvas } from "usegl";
   import { incrementRenderCount } from "../../components/renderCount";
   import { mat4 } from "gl-matrix";
 
@@ -25,7 +25,7 @@ import Layout from "../../layouts/Layout.astro";
     return projectionMatrix;
   }
 
-  const { onAfterRender, uniforms } = useWebGLCanvas({
+  const { onAfterRender, uniforms } = glCanvas({
     canvas: "#glCanvas",
     depthTest: true,
     uniforms: {
@@ -172,7 +172,7 @@ import Layout from "../../layouts/Layout.astro";
     },
   });
 
-  useLoop(
+  loop(
     ({ time }) => {
       const modelMatrix = mat4.create();
       mat4.rotateX(modelMatrix, modelMatrix, time * 0.001);

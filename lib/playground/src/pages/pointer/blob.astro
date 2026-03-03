@@ -4,13 +4,13 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { usePointerEvents, useLoop, useWebGLCanvas } from "usegl";
+  import { onPointerEvents, loop, glCanvas } from "usegl";
   import { fragment, vertex } from "../../shaders/blob";
   import { incrementRenderCount } from "../../components/renderCount";
 
   const canvas = document.querySelector("canvas")!;
 
-  const { uniforms, onAfterRender } = useWebGLCanvas({
+  const { uniforms, onAfterRender } = glCanvas({
     canvas,
     fragment,
     vertex,
@@ -22,7 +22,7 @@ import Layout from "../../layouts/Layout.astro";
 
   const targetPointer = { x: 0, y: 0 };
 
-  usePointerEvents(canvas, {
+  onPointerEvents(canvas, {
     move: ({ pointer, canvasRect, canvasCenter }) => {
       targetPointer.x = (pointer.x - canvasCenter.x) / (canvasRect.width / 2);
       targetPointer.y = (canvasCenter.y - pointer.y) / (canvasRect.height / 2);
@@ -32,7 +32,7 @@ import Layout from "../../layouts/Layout.astro";
     },
   });
 
-  useLoop(
+  loop(
     () => {
       const currentPointerCoord = { x: uniforms.uPointer[0], y: uniforms.uPointer[1] };
 

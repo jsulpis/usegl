@@ -4,10 +4,10 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { useWebGLCanvas, useLoop, pauseAllLoops, playAllLoops } from "usegl";
+  import { glCanvas, loop, pauseAllLoops, playAllLoops } from "usegl";
   import { incrementRenderCount } from "../../components/renderCount";
 
-  const { onAfterRender, uniforms } = useWebGLCanvas({
+  const { onAfterRender, uniforms } = glCanvas({
     canvas: "#glCanvas",
     fragment: /* glsl */ `
 			varying vec2 vUv;
@@ -52,21 +52,21 @@ import Layout from "../../layouts/Layout.astro";
     },
   });
 
-  const { play: play1, pause: pause1 } = useLoop(
+  const { play: play1, pause: pause1 } = loop(
     ({ deltaTime }) => {
       uniforms.uTime1 += deltaTime;
     },
     { immediate: false }
   );
 
-  const { play: play2, pause: pause2 } = useLoop(
+  const { play: play2, pause: pause2 } = loop(
     ({ time }) => {
       uniforms.uTime2 = time;
     },
     { immediate: false }
   );
 
-  const { play: play3, pause: pause3 } = useLoop(
+  const { play: play3, pause: pause3 } = loop(
     ({ elapsedTime }) => {
       uniforms.uTime3 = elapsedTime;
     },

@@ -2,7 +2,7 @@ export type WebGLContextOptions = WebGLContextAttributes & {
   colorSpace?: PredefinedColorSpace;
 };
 
-export function useWebGLContext<T extends HTMLCanvasElement | OffscreenCanvas | string>(
+export function glContext<T extends HTMLCanvasElement | OffscreenCanvas | string>(
   canvas: T,
   options?: WebGLContextOptions,
 ) {

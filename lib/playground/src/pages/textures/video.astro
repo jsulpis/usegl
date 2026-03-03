@@ -3,7 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { useWebGLCanvas, loadVideoTexture } from "usegl";
+  import { glCanvas, loadVideoTexture } from "usegl";
   import { incrementRenderCount } from "../../components/renderCount";
 
   const texture = loadVideoTexture(
@@ -11,7 +11,7 @@ import Layout from "../../layouts/Layout.astro";
     { startTime: 3 }
   );
 
-  const { onAfterRender, render } = useWebGLCanvas({
+  const { onAfterRender, render } = glCanvas({
     canvas: "#glCanvas",
     fragment: /* glsl */ `
       in vec2 vUv;

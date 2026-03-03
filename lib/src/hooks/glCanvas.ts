@@ -1,14 +1,14 @@
-import { useResizeObserver } from "./useResizeObserver";
+import { onResize } from "./onResize";
 import type { CompositeEffectPass, EffectPass, Uniforms } from "../types";
-import { useWebGLContext } from "./useWebGLContext";
-import type { QuadPassOptions } from "./useQuadRenderPass";
-import { useQuadRenderPass } from "./useQuadRenderPass";
-import { useCompositor } from "./useCompositor";
+import { glContext } from "./glContext";
+import type { QuadPassOptions } from "./quadRenderPass";
+import { quadRenderPass } from "./quadRenderPass";
+import { compositor } from "./compositor";
 import { findUniformName } from "../internal/findName";
-import type { UseLoopOptions } from "./useLoop";
-import { useLoop } from "./useLoop";
+import type { UseLoopOptions } from "./loop";
+import { loop } from "./loop";
 import { isHTMLImageTexture, isHTMLVideoTexture } from "../core/texture";
-import { useHook } from "../internal/useHook";
+import { createHook } from "../internal/createHook";
 
 interface Props<U extends Uniforms> extends UseLoopOptions, QuadPassOptions<U> {
   canvas: HTMLCanvasElement | OffscreenCanvas | string;
@@ -19,7 +19,7 @@ interface Props<U extends Uniforms> extends UseLoopOptions, QuadPassOptions<U> {
   colorSpace?: PredefinedColorSpace;
 }
 
-export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
+export const glCanvas = <U extends Uniforms>(props: Props<U>) => {
   const {
     canvas: canvasProp,
     fragment,
@@ -36,17 +36,17 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
     gl,
     canvas,
     setSize: setCanvasSize,
-  } = useWebGLContext(canvasProp, { ...webglOptions, colorSpace });
+  } = glContext(canvasProp, { ...webglOptions, colorSpace });
 
-  const renderPass = useQuadRenderPass(gl, props);
-  const compositor = useCompositor(gl, renderPass, postEffects);
+  const renderPass = quadRenderPass(gl, props);
+  const mainCompositor = compositor(gl, renderPass, postEffects);
 
   // don't render before the first resize of the canvas to avoid a glitch
   let isCanvasResized = false;
 
   function render() {
     if (isCanvasResized) {
-      compositor.render();
+      mainCompositor.render();
     }
   }
 
@@ -67,7 +67,7 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
     });
   }
 
-  for (const pass of compositor.allPasses) {
+  for (const pass of mainCompositor.allPasses) {
     pass.onUpdated(requestRender);
 
     if (!("uniforms" in pass) || renderMode === "manual") continue;
@@ -87,7 +87,7 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
 
   function setSize({ width, height }: { width: number; height: number }) {
     setCanvasSize(width, height);
-    compositor.setSize({ width, height });
+    mainCompositor.setSize({ width, height });
     requestRender();
   }
 
@@ -101,7 +101,7 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
       (renderPass.uniforms as Record<string, number>)[timeUniformName] = 0;
     });
 
-    ({ play, pause } = useLoop(
+    ({ play, pause } = loop(
       ({ deltaTime }) => {
         (renderPass.uniforms as Record<string, number>)[timeUniformName] += deltaTime / 500;
       },
@@ -109,9 +109,9 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
     ));
   }
 
-  let resizeObserver: ReturnType<typeof useResizeObserver> | null = null;
+  let resizeObserver: ReturnType<typeof onResize> | null = null;
 
-  const [onCanvasReady, executeCanvasReadyCallbacks] = useHook();
+  const [onCanvasReady, executeCanvasReadyCallbacks] = createHook();
 
   function resizeCanvas(width: number, height: number, dpr: number) {
     setSize({ width: width * dpr, height: height * dpr });
@@ -128,7 +128,7 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
     }
     // don't automatically resize if the renderMode is manual, because the call to gl.viewport() will break the canvas
     else if (renderMode === "auto") {
-      resizeObserver = useResizeObserver(canvas, ({ size }) => {
+      resizeObserver = onResize(canvas, ({ size }) => {
         resizeCanvas(size.width, size.height, dpr);
       });
     } else {
@@ -150,8 +150,8 @@ export const useWebGLCanvas = <U extends Uniforms>(props: Props<U>) => {
     dpr,
     uniforms: renderPass.uniforms,
     onUpdated: renderPass.onUpdated,
-    onBeforeRender: compositor.onBeforeRender,
-    onAfterRender: compositor.onAfterRender,
+    onBeforeRender: mainCompositor.onBeforeRender,
+    onAfterRender: mainCompositor.onAfterRender,
     resizeObserver,
   };
 };

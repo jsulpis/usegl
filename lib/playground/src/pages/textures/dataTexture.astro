@@ -3,10 +3,10 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { useWebGLCanvas } from "usegl";
+  import { glCanvas } from "usegl";
   import { incrementRenderCount } from "../../components/renderCount";
 
-  const { onAfterRender } = useWebGLCanvas({
+  const { onAfterRender } = glCanvas({
     canvas: "#glCanvas",
     fragment: /* glsl */ `
 			in vec2 vUv;

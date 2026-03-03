@@ -6,17 +6,17 @@ import Layout from "../../layouts/Layout.astro";
   import {
     createRenderTarget,
     linearToneMapping,
-    useCompositor,
-    useQuadRenderPass,
-    useWebGLCanvas,
-    useWebGLContext,
+    compositor,
+    quadRenderPass,
+    glCanvas,
+    glContext,
   } from "usegl";
   import { incrementRenderCount } from "../../components/renderCount";
 
-  const ctx = useWebGLContext("#glCanvas");
+  const ctx = glContext("#glCanvas");
   const target = createRenderTarget(ctx.gl);
 
-  const glCanvas = useWebGLCanvas({
+  const canvas = glCanvas({
     canvas: "#glCanvas",
     target,
     fragment: /* glsl */ `
@@ -34,9 +34,9 @@ import Layout from "../../layouts/Layout.astro";
       }
     `,
   });
-  glCanvas.onAfterRender(incrementRenderCount);
+  canvas.onAfterRender(incrementRenderCount);
 
-  const bluePass = useQuadRenderPass(glCanvas.gl, {
+  const bluePass = quadRenderPass(canvas.gl, {
     target,
     fragment: /* glsl */ `
       varying vec2 vUv;
@@ -50,16 +50,16 @@ import Layout from "../../layouts/Layout.astro";
       }
     `,
     uniforms: {
-      uResolution: () => glCanvas.uniforms.uResolution,
+      uResolution: () => canvas.uniforms.uResolution,
     },
     blending: "additive",
   });
   bluePass.onAfterRender(incrementRenderCount);
 
-  const compositor = useCompositor(glCanvas.gl, bluePass, [linearToneMapping()]);
+  const mainCompositor = compositor(canvas.gl, bluePass, [linearToneMapping()]);
 
-  glCanvas.onAfterRender(() => {
-    compositor.render({ clear: false });
+  canvas.onAfterRender(() => {
+    mainCompositor.render({ clear: false });
   });
 </script>
 

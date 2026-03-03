@@ -3,10 +3,10 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { useWebGLCanvas } from "usegl";
+  import { glCanvas } from "usegl";
   import { incrementRenderCount } from "../../components/renderCount";
 
-  const glCanvas = useWebGLCanvas({
+  const canvas1 = glCanvas({
     canvas: "#glCanvas",
     fragment: /* glsl */ `
     varying vec2 uv;
@@ -17,9 +17,9 @@ import Layout from "../../layouts/Layout.astro";
     `,
     webglOptions: { premultipliedAlpha: false },
   });
-  glCanvas.onAfterRender(incrementRenderCount);
+  canvas1.onAfterRender(incrementRenderCount);
 
-  const glCanvas2 = useWebGLCanvas({
+  const canvas2 = glCanvas({
     canvas: "#glCanvas2",
     fragment: /* glsl */ `
     varying vec2 uv;
@@ -30,7 +30,7 @@ import Layout from "../../layouts/Layout.astro";
     `,
     // webglOptions: { premultipliedAlpha: true }, // default
   });
-  glCanvas2.onAfterRender(incrementRenderCount);
+  canvas2.onAfterRender(incrementRenderCount);
 </script>
 
 <Layout title="Alpha">

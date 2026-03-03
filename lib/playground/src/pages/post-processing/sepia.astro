@@ -3,10 +3,10 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { useEffectPass, useWebGLCanvas, loadTexture } from "usegl";
+  import { effectPass, glCanvas, loadTexture } from "usegl";
   import { incrementRenderCount } from "../../components/renderCount";
 
-  const vignetteEffect = useEffectPass({
+  const vignetteEffect = effectPass({
     fragment: /* glsl */ `
 			uniform sampler2D uTexture;
 			varying vec2 vUv;
@@ -32,7 +32,7 @@ import Layout from "../../layouts/Layout.astro";
 		`,
   });
 
-  const sepiaEffect = useEffectPass({
+  const sepiaEffect = effectPass({
     fragment: /* glsl */ `
 			uniform sampler2D uTexture;
 			varying vec2 vUv;
@@ -56,7 +56,7 @@ import Layout from "../../layouts/Layout.astro";
 		`,
   });
 
-  const { onAfterRender } = useWebGLCanvas({
+  const { onAfterRender } = glCanvas({
     canvas: "#glCanvas",
     fragment: /* glsl */ `
       in vec2 vUv;
