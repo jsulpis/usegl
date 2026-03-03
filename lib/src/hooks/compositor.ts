@@ -1,8 +1,8 @@
 import { createRenderTarget } from "../core/renderTarget";
 import { findUniformName } from "../internal/findName";
-import { useHook } from "../internal/useHook";
+import { createHook } from "../internal/createHook";
 import type { CompositeEffectPass, EffectPass, RenderPass } from "../types";
-import { floatTargetConfig } from "./useEffectPass";
+import { floatTargetConfig } from "./effectPass";
 
 /**
  * The compositor handles the combination of the render pass and the effects:
@@ -11,7 +11,7 @@ import { floatTargetConfig } from "./useEffectPass";
  * - detect the first texture uniform of each effect and, if it has no value provided, fill it with the previous pass
  * - render all passes in the correct order
  */
-export function useCompositor(
+export function compositor(
   gl: WebGL2RenderingContext,
   renderPass: RenderPass<any>,
   effects: Array<EffectPass<any> | CompositeEffectPass<any>>,
@@ -19,8 +19,8 @@ export function useCompositor(
   // add the ability to render to floating-point buffers
   gl.getExtension("EXT_color_buffer_float");
 
-  const [onBeforeRender, executeBeforeRenderCallbacks] = useHook();
-  const [onAfterRender, executeAfterRenderCallbacks] = useHook();
+  const [onBeforeRender, executeBeforeRenderCallbacks] = createHook();
+  const [onAfterRender, executeAfterRenderCallbacks] = createHook();
 
   if (effects.length > 0 && renderPass.target === null) {
     renderPass.setTarget(createRenderTarget(gl, { ...floatTargetConfig, depthBuffer: true }));

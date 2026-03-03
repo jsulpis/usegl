@@ -40,7 +40,7 @@ const allLoops: Array<LoopObj> = [];
  * @param options Options for the loop.
  * @returns  An object with `play` and `pause` methods to control the animation loop.
  */
-export function useLoop(
+export function loop(
   callback: ({ time, deltaTime }: LoopData) => void,
   options?: UseLoopOptions,
 ) {
@@ -100,7 +100,7 @@ export function useLoop(
 }
 
 /**
- * Play all loops that have been registered with `useLoop`.
+ * Play all loops that have been registered with `loop`.
  */
 export function playAllLoops() {
   for (const loop of allLoops) {
@@ -109,7 +109,7 @@ export function playAllLoops() {
 }
 
 /**
- * Pause all loops that have been registered with `useLoop`.
+ * Pause all loops that have been registered with `loop`.
  */
 export function pauseAllLoops() {
   for (const loop of allLoops) {

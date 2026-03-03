@@ -1,6 +1,6 @@
 import { createAndBindBuffer } from "../core/buffer";
 import type { Attribute, RenderPass, Uniforms } from "../types";
-import { useRenderPass } from "./useRenderPass";
+import { renderPass } from "./renderPass";
 
 interface TransformFeedbackOptions<O extends string, U extends Uniforms = Record<string, never>> {
   vertex: string;
@@ -18,7 +18,7 @@ interface TransformFeedbackPass<O extends string, U extends Uniforms = Record<st
   outputBuffers: Record<O, WebGLBuffer>;
 }
 
-export function useTransformFeedback<O extends string, U extends Uniforms>(
+export function transformFeedback<O extends string, U extends Uniforms>(
   gl: WebGL2RenderingContext,
   { vertex, attributes = {}, uniforms = {} as U, outputs }: TransformFeedbackOptions<O, U>,
 ) {
@@ -32,7 +32,7 @@ export function useTransformFeedback<O extends string, U extends Uniforms>(
     ]),
   ) as Record<O, WebGLBuffer>;
 
-  const renderPass = useRenderPass(gl, {
+  const mainPass = renderPass(gl, {
     fragment: `void main() { gl_FragColor = vec4(0.0); }`,
     vertex,
     attributes,
@@ -48,19 +48,19 @@ export function useTransformFeedback<O extends string, U extends Uniforms>(
     gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, index, buffer as WebGLBuffer);
   }
 
-  renderPass.onBeforeRender(() => {
+  mainPass.onBeforeRender(() => {
     gl.enable(gl.RASTERIZER_DISCARD);
     gl.bindTransformFeedback(gl.TRANSFORM_FEEDBACK, tf);
     gl.beginTransformFeedback(gl.POINTS);
   });
 
-  renderPass.onAfterRender(() => {
+  mainPass.onAfterRender(() => {
     gl.endTransformFeedback();
     gl.bindTransformFeedback(gl.TRANSFORM_FEEDBACK, null);
     gl.disable(gl.RASTERIZER_DISCARD);
   });
 
-  const tfRenderPass: TransformFeedbackPass<O, U> = Object.assign(renderPass, {
+  const tfRenderPass: TransformFeedbackPass<O, U> = Object.assign(mainPass, {
     getOutputData: function (bufferName: O) {
       const output = new Float32Array(vertexCount * outputs[bufferName].size);
       const buffer = outputBuffers[bufferName];

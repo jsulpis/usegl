@@ -1,5 +1,5 @@
-import { useCompositeEffectPass } from "../../hooks/useCompositeEffectPass";
-import { floatTargetConfig, useEffectPass } from "../../hooks/useEffectPass";
+import { compositeEffectPass } from "../../hooks/compositeEffectPass";
+import { floatTargetConfig, effectPass } from "../../hooks/effectPass";
 import type { EffectPass } from "../../types";
 import downSampleFragment from "./glsl/downsample.frag";
 import combineFragment from "./glsl/combine.frag";
@@ -19,7 +19,7 @@ export function bloom(params: BloomParams = {}) {
 
   // --- Downsample pyramid (progressively half resolution) ---
   for (let level = 1; level <= levels; level++) {
-    const pass = useEffectPass({
+    const pass = effectPass({
       fragment: downSampleFragment,
       target: floatTargetConfig,
       vertex: sampleVertex,
@@ -35,7 +35,7 @@ export function bloom(params: BloomParams = {}) {
   const upsamplePasses: EffectPass<any>[] = [];
 
   for (let level = levels - 1; level >= 1; level--) {
-    const pass = useEffectPass({
+    const pass = effectPass({
       fragment: upsampleFragment,
       target: floatTargetConfig,
       vertex: sampleVertex,
@@ -54,7 +54,7 @@ export function bloom(params: BloomParams = {}) {
   }
 
   // --- Combine original + bloom ---
-  const combine = useEffectPass({
+  const combine = effectPass({
     fragment: combineFragment,
     target: floatTargetConfig,
     uniforms: {
@@ -83,5 +83,5 @@ export function bloom(params: BloomParams = {}) {
     },
   };
 
-  return useCompositeEffectPass(bloomPasses, bloomUniforms);
+  return compositeEffectPass(bloomPasses, bloomUniforms);
 }

@@ -9,9 +9,9 @@ import type {
 import { createProgram } from "../core/program";
 import { setRenderTarget } from "../core/renderTarget";
 import { findUniformName } from "../internal/findName";
-import { useUniforms } from "../internal/useUniforms";
-import { useAttributes } from "../internal/useAttributes";
-import { useHook } from "../internal/useHook";
+import { setupUniforms } from "../internal/setupUniforms";
+import { setupAttributes } from "../internal/setupAttributes";
+import { createHook } from "../internal/createHook";
 
 export type RenderPassOptions<U extends Uniforms = Record<string, never>> = {
   target?: RenderTarget | null;
@@ -26,7 +26,7 @@ export type RenderPassOptions<U extends Uniforms = Record<string, never>> = {
   resolutionScale?: number;
 };
 
-export function useRenderPass<U extends Uniforms>(
+export function renderPass<U extends Uniforms>(
   gl: WebGL2RenderingContext | undefined,
   {
     target = null,
@@ -55,16 +55,16 @@ export function useRenderPass<U extends Uniforms>(
     setUniforms,
     getUniformsSnapshot,
     uniformsProxy,
-  } = useUniforms(userUniforms);
+  } = setupUniforms(userUniforms);
   const {
     initialize: initializeAttributes,
     getVertexCount,
     bindVAO,
     hasIndices,
     indexType,
-  } = useAttributes(attributes);
+  } = setupAttributes(attributes);
 
-  const [onInit, executeInitCallbacks] = useHook<(gl: WebGL2RenderingContext) => void>();
+  const [onInit, executeInitCallbacks] = createHook<(gl: WebGL2RenderingContext) => void>();
 
   function initialize(gl: WebGL2RenderingContext) {
     _gl = gl;
@@ -91,7 +91,7 @@ export function useRenderPass<U extends Uniforms>(
 
   const resolutionUniformName = findUniformName(fragment + vertex, "resolution");
 
-  const [onResize, executeResizeCallbacks] = useHook<(width: number, height: number) => void>();
+  const [onResize, executeResizeCallbacks] = createHook<(width: number, height: number) => void>();
 
   function setSize(size: { width: number; height: number }) {
     const width = size.width * resolutionScale;
@@ -116,8 +116,8 @@ export function useRenderPass<U extends Uniforms>(
 
   const drawMode = userDrawMode || (vertex.includes("gl_PointSize") ? "POINTS" : "TRIANGLES");
 
-  const [onBeforeRender, executeBeforeRenderCallbacks] = useHook<RenderCallback<U>>();
-  const [onAfterRender, executeAfterRenderCallbacks] = useHook<RenderCallback<U>>();
+  const [onBeforeRender, executeBeforeRenderCallbacks] = createHook<RenderCallback<U>>();
+  const [onAfterRender, executeAfterRenderCallbacks] = createHook<RenderCallback<U>>();
 
   function render({ target, clear }: { target?: RenderTarget | null; clear?: boolean } = {}) {
     if (_gl == undefined) {

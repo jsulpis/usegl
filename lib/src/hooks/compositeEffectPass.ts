@@ -1,4 +1,4 @@
-import { useHook } from "../internal/useHook";
+import { createHook } from "../internal/createHook";
 import type {
   CompositeEffectPass,
   EffectPass,
@@ -8,17 +8,17 @@ import type {
   UpdatedCallback,
 } from "../types";
 
-export function useCompositeEffectPass<U extends Uniforms = Record<string, never>>(
+export function compositeEffectPass<U extends Uniforms = Record<string, never>>(
   passes: EffectPass<Uniforms>[],
   uniforms: U = {} as U,
 ): CompositeEffectPass<U> {
   const outputPass = passes.at(-1)!;
 
-  const [onBeforeRender, executeBeforeRenderCallbacks] = useHook<RenderCallback<any>>();
-  const [onAfterRender, executeAfterRenderCallbacks] = useHook<RenderCallback<any>>();
-  const [onUpdated, executeUpdateCallbacks] = useHook<UpdatedCallback<any>>();
-  const [onResize, executeResizeCallbacks] = useHook<(width: number, height: number) => void>();
-  const [onInit, executeInitCallbacks] = useHook<(gl: WebGL2RenderingContext) => void>();
+  const [onBeforeRender, executeBeforeRenderCallbacks] = createHook<RenderCallback<any>>();
+  const [onAfterRender, executeAfterRenderCallbacks] = createHook<RenderCallback<any>>();
+  const [onUpdated, executeUpdateCallbacks] = createHook<UpdatedCallback<any>>();
+  const [onResize, executeResizeCallbacks] = createHook<(width: number, height: number) => void>();
+  const [onInit, executeInitCallbacks] = createHook<(gl: WebGL2RenderingContext) => void>();
 
   function render() {
     executeBeforeRenderCallbacks({ uniforms });

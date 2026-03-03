@@ -1,5 +1,5 @@
 import type { Uniforms } from "../types";
-import { useRenderPass, type RenderPassOptions } from "./useRenderPass";
+import { renderPass, type RenderPassOptions } from "./renderPass";
 import { findAttributeName, findVaryingName } from "../internal/findName";
 
 export type QuadPassOptions<U extends Uniforms = Record<string, never>> = Omit<
@@ -7,7 +7,7 @@ export type QuadPassOptions<U extends Uniforms = Record<string, never>> = Omit<
   "vertex"
 > & { vertex?: string };
 
-export function useQuadRenderPass<U extends Uniforms>(
+export function quadRenderPass<U extends Uniforms>(
   gl: WebGL2RenderingContext | undefined,
   { attributes = {}, fragment, vertex, ...renderPassOptions }: QuadPassOptions<U>,
 ) {
@@ -33,7 +33,7 @@ export function useQuadRenderPass<U extends Uniforms>(
     }
   }
 
-  return useRenderPass(gl, {
+  return renderPass(gl, {
     ...renderPassOptions,
     attributes,
     fragment,

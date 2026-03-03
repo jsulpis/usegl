@@ -4,7 +4,7 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { useLoop, useWebGLCanvas } from "usegl";
+  import { loop, glCanvas } from "usegl";
   import { incrementRenderCount } from "../../components/renderCount";
 
   // Set up geometry
@@ -30,7 +30,7 @@ import Layout from "../../layouts/Layout.astro";
     indices.push(i);
   }
 
-  const { uniforms, onAfterRender } = useWebGLCanvas({
+  const { uniforms, onAfterRender } = glCanvas({
     canvas: "#glCanvas",
     fragment: /* glsl */ `
 			varying vec4 vColor;
@@ -78,7 +78,7 @@ import Layout from "../../layouts/Layout.astro";
 
   let direction = 1;
 
-  useLoop(
+  loop(
     () => {
       uniforms.uThreshold += (count * direction) / 500;
 

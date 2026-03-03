@@ -1,4 +1,4 @@
-export function useHook<C extends (...args: any[]) => any = () => void>() {
+export function createHook<C extends (...args: any[]) => any = () => void>() {
   const callbacks: C[] = [];
 
   function registerCallback(callback: C) {

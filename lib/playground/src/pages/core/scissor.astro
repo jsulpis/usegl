@@ -3,12 +3,12 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { useQuadRenderPass, useWebGLCanvas } from "usegl";
+  import { quadRenderPass, glCanvas } from "usegl";
   import { incrementRenderCount } from "../../components/renderCount";
 
   const canvas = document.querySelector("canvas")!;
 
-  const leftShader = useWebGLCanvas({
+  const leftShader = glCanvas({
     canvas,
     fragment: /* glsl */ `
 			void main() {
@@ -18,7 +18,7 @@ import Layout from "../../layouts/Layout.astro";
     renderMode: "manual",
   });
 
-  const rightShader = useQuadRenderPass(leftShader.gl, {
+  const rightShader = quadRenderPass(leftShader.gl, {
     fragment: /* glsl */ `
 			void main() {
 				gl_FragColor = vec4(0, 1, 0, 1);

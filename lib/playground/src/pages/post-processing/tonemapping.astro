@@ -4,8 +4,8 @@ import Layout from "../../layouts/Layout.astro";
 
 <script>
   import {
-    useEffectPass,
-    useWebGLCanvas,
+    effectPass,
+    glCanvas,
     loadTexture,
     acesToneMapping,
     reinhardToneMapping,
@@ -61,7 +61,7 @@ void main() {
 }
 `;
 
-  const { onAfterRender } = useWebGLCanvas({
+  const { onAfterRender } = glCanvas({
     canvas: "#glCanvas",
     fragment: testShader,
     uniforms: {

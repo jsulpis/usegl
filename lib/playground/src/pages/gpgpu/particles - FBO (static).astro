@@ -4,10 +4,10 @@ import Layout from "../../layouts/Layout.astro";
 
 <!-- Static sample made for visual regression testing  -->
 <script>
-  import { useWebGLContext, usePingPongFBO, useWebGLCanvas, createFloatDataTexture } from "usegl";
+  import { glContext, pingPongFBO, glCanvas, createFloatDataTexture } from "usegl";
   import { incrementRenderCount } from "../../components/renderCount";
 
-  const { gl, canvas } = useWebGLContext("#glCanvas");
+  const { gl, canvas } = glContext("#glCanvas");
 
   const positionsFragment = /* glsl */ `
     uniform float uDeltaTime;
@@ -31,7 +31,7 @@ import Layout from "../../layouts/Layout.astro";
     }
   `;
 
-  const positions = usePingPongFBO(gl, {
+  const positions = pingPongFBO(gl, {
     fragment: positionsFragment,
     uniforms: {
       uDeltaTime: 0,
@@ -55,7 +55,7 @@ import Layout from "../../layouts/Layout.astro";
     },
   });
 
-  const renderPass = useWebGLCanvas({
+  const renderPass = glCanvas({
     canvas,
     vertex: `
       uniform sampler2D uPositions;

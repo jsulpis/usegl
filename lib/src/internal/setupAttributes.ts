@@ -4,7 +4,7 @@ import type { Attribute } from "../types";
 const UNSIGNED_INT = WebGL2RenderingContext.UNSIGNED_INT;
 const UNSIGNED_SHORT = WebGL2RenderingContext.UNSIGNED_SHORT;
 
-export function useAttributes(attributes: Record<string, Attribute>) {
+export function setupAttributes(attributes: Record<string, Attribute>) {
   let _gl: WebGL2RenderingContext;
   let _vao: WebGLVertexArrayObject | null;
 

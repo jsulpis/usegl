@@ -5,7 +5,7 @@
 - Prefer **`interface`** for object shapes with public contracts (`RenderPass`, `RenderTarget`).
 - Prefer **`type`** for unions, function signatures, and derived types.
 - Use **generic constraints** for hook type parameters: `<U extends Uniforms>`, `<O extends string>`.
-- Return `as const` tuples from `useHook`: `return [register, execute] as const`.
+- Return `as const` tuples from `hook`: `return [register, execute] as const`.
 - Use **`Readonly<T>`** on callback arguments to prevent mutation.
 - Use **`Omit<>` / `Partial<>`** for derived option types rather than duplicating shapes.
 - Avoid `any` in public API surface — `any` is only acceptable in internal code where generic inference is impractical (e.g. `EffectPass<any>[]`).

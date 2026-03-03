@@ -1,4 +1,4 @@
-import { useEffectPass } from "../../hooks/useEffectPass";
+import { effectPass } from "../../hooks/effectPass";
 
 import linearFragment from "./glsl/linear.frag";
 import acesFragment from "./glsl/aces.frag";
@@ -23,7 +23,7 @@ export type ToneMappingParams = {
 
 function createToneMappingPass(fragment: string, params: ToneMappingParams = {}) {
   const { exposure = 1, outputColorSpace = "sRGB" } = params;
-  return useEffectPass({
+  return effectPass({
     fragment,
     uniforms: {
       uExposure: exposure,
@@ -44,7 +44,7 @@ type ReinhardToneMappingParams = ToneMappingParams & {
 
 export function reinhardToneMapping(params: ReinhardToneMappingParams = {}) {
   const { exposure = 1, outputColorSpace = "sRGB", whitePoint = 1 } = params;
-  return useEffectPass({
+  return effectPass({
     fragment: reinhardFragment,
     uniforms: {
       uExposure: exposure,

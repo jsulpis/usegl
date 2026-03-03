@@ -3,11 +3,11 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { useWebGLCanvas, linearToneMapping, trails, bloom, useLoop } from "usegl";
+  import { glCanvas, linearToneMapping, trails, bloom, loop } from "usegl";
   import { incrementRenderCount } from "../../components/renderCount";
 
   ["#glCanvas", "#glCanvas2", "#glCanvas3"].forEach((selector, i) => {
-    const { render, uniforms } = useWebGLCanvas({
+    const { render, uniforms } = glCanvas({
       canvas: selector,
       fragment: /* glsl */ `
       varying vec2 vUv;
@@ -68,7 +68,7 @@ import Layout from "../../layouts/Layout.astro";
 
     let framesRendered = 0;
 
-    const { pause } = useLoop(({}) => {
+    const { pause } = loop(({}) => {
       if (++framesRendered > 30) {
         pause();
         return;

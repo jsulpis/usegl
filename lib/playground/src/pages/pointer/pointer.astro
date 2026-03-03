@@ -3,12 +3,12 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { usePointerEvents, useWebGLCanvas } from "usegl";
+  import { onPointerEvents, glCanvas } from "usegl";
   import { incrementRenderCount } from "../../components/renderCount";
 
   const canvas = document.querySelector("canvas")!;
 
-  const { uniforms, onAfterRender } = useWebGLCanvas({
+  const { uniforms, onAfterRender } = glCanvas({
     canvas,
     fragment: /* glsl */ `
 			varying vec2 vUv;
@@ -30,7 +30,7 @@ import Layout from "../../layouts/Layout.astro";
     },
   });
 
-  usePointerEvents(canvas, {
+  onPointerEvents(canvas, {
     move: ({ pointer, canvasCenter, canvasRect }) => {
       uniforms.uPointerPosition = [
         (pointer.x - canvasCenter.x) / Math.min(canvasRect.width, canvasRect.height),

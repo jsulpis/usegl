@@ -1,6 +1,6 @@
 import { createRenderTarget } from "../../core/renderTarget";
-import { useCompositeEffectPass } from "../../hooks/useCompositeEffectPass";
-import { floatTargetConfig, useEffectPass } from "../../hooks/useEffectPass";
+import { compositeEffectPass } from "../../hooks/compositeEffectPass";
+import { floatTargetConfig, effectPass } from "../../hooks/effectPass";
 import type { RenderTarget } from "../../types";
 import trailsFragment from "./glsl/trails.frag";
 import outputFragment from "./glsl/output.frag";
@@ -41,7 +41,7 @@ export function trails(params?: TrailsParams) {
     fboWrite = temp;
   }
 
-  const trailPass = useEffectPass({
+    const trailPass = effectPass({
     fragment: trailsFragment,
     uniforms: {
       uRenderTexture: ({ inputPass }) => inputPass.target!.texture,
@@ -53,7 +53,7 @@ export function trails(params?: TrailsParams) {
     },
   });
 
-  const outputPass = useEffectPass({
+  const outputPass = effectPass({
     fragment: outputFragment,
     uniforms: {
       uRenderTexture: ({ inputPass }) => inputPass.target!.texture,
@@ -89,7 +89,7 @@ export function trails(params?: TrailsParams) {
     },
   };
 
-  const trailsPass = useCompositeEffectPass([trailPass, outputPass], uniforms);
+  const trailsPass = compositeEffectPass([trailPass, outputPass], uniforms);
 
   trailsPass.onInit((gl) => {
     fboRead = createRenderTarget(gl, floatTargetConfig);

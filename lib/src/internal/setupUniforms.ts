@@ -1,9 +1,9 @@
 import type { DataTextureParams, ImageTextureParams } from "../core/texture";
 import { fillTexture } from "../core/texture";
 import type { Uniforms, UniformValue, UpdatedCallback } from "../types";
-import { useHook } from "./useHook";
+import { createHook } from "./createHook";
 
-export function useUniforms<U extends Uniforms>(uniforms: U) {
+export function setupUniforms<U extends Uniforms>(uniforms: U) {
   type UniformName = Extract<keyof U, string>;
 
   let textureUnitIndex = 0;
@@ -12,7 +12,7 @@ export function useUniforms<U extends Uniforms>(uniforms: U) {
   let _gl: WebGL2RenderingContext;
   let _program: WebGLProgram;
 
-  const [onUpdated, executeUpdateCallbacks] = useHook<UpdatedCallback<U>>();
+  const [onUpdated, executeUpdateCallbacks] = createHook<UpdatedCallback<U>>();
 
   const uniformsLocations = new Map<UniformName, WebGLUniformLocation>();
 
