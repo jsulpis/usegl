@@ -4,7 +4,6 @@ import { onResize } from "./onResize";
  * Watch the bounding rect of an element and update it on resize and scroll events.
  */
 export function watchBoundingRect(target: HTMLElement, params: UseBoundingRectParams = {}) {
-  /* eslint-disable unicorn/prefer-global-this */
   const {
     windowResize = typeof window !== "undefined",
     windowScroll = typeof window !== "undefined",

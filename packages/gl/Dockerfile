@@ -4,13 +4,17 @@ RUN corepack enable
 
 WORKDIR /app
 
-COPY package.json ./
+COPY pnpm-lock.yaml pnpm-workspace.yaml ./
+
+COPY packages/gl/package.json ./packages/gl/
+COPY packages/helpers/package.json ./packages/helpers/
+
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
 
-COPY playwright.config.ts astro.config.mjs tsconfig.json ./
-COPY tests ./tests
-COPY playground ./playground
-COPY src ./src
+COPY packages/gl ./packages/gl
+COPY packages/helpers ./packages/helpers
+
+WORKDIR /app/packages/gl
 
 EXPOSE 9323
 
