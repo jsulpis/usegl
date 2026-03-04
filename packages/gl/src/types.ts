@@ -1,10 +1,16 @@
 import type { TextureParams } from "./core/texture";
 
+/**
+ * A vector uniform value, representing a vec2, vec3, or vec4.
+ */
 export type VectorUniform =
   | [number, number]
   | [number, number, number]
   | [number, number, number, number];
 
+/**
+ * A matrix uniform value, representing a mat3 or mat4.
+ */
 // prettier-ignore
 export type MatrixUniform =
   | [number, number, number,
@@ -15,67 +21,48 @@ export type MatrixUniform =
      number, number, number, number,
      number, number, number, number];
 
+/**
+ * A texture uniform value, which can be either a {@link TextureParams}
+ * or a raw {@link WebGLTexture}.
+ */
 export type TextureUniform = TextureParams | WebGLTexture;
 
+/**
+ * All valid types for a uniform variable in a shader.
+ */
 export type UniformValue = number | VectorUniform | MatrixUniform | Float32Array | TextureUniform;
-export type Uniforms = Record<string, UniformValue>;
-export type EffectUniforms = Record<
-  string,
-  | UniformValue
-  | ((passes: {
-      /**
-       * - in an effect with only one pass, the inputPass is the pass rendered  before this effect
-       * - in an effect with multiple passes, the inputPass is the pass rendered before the first pass of the effect
-       */
-      inputPass: RenderPass;
-      /**
-       * pass rendered immediately before this effect
-       */
-      previousPass: RenderPass;
-    }) => UniformValue)
->;
 
+/**
+ * A collection of uniform variables.
+ */
+export type Uniforms = Record<string, UniformValue>;
+
+/**
+ * A TypedArray (e.g., Float32Array, Uint16Array) used for buffer data.
+ */
 export type TypedArray = ArrayBufferView & { length: number };
 
+/**
+ * Defines a vertex attribute for a shader.
+ */
 export interface Attribute {
+  /** The number of components per vertex attribute (e.g., 2 for vec2). */
   size: number;
+  /** The data for the attribute. */
   data: TypedArray | number[];
+  /** The GL data type (e.g., gl.FLOAT). Defaults to gl.FLOAT. */
   type?: GLenum;
+  /** Whether fixed-point data should be normalized. */
   normalize?: boolean;
+  /** The byte distance between consecutive attributes. */
   stride?: number;
+  /** The offset of the first component in the buffer. */
   offset?: number;
 }
 
-export interface RenderTarget {
-  framebuffer: WebGLFramebuffer;
-  texture: WebGLTexture;
-  width: number;
-  height: number;
-  setSize: (width: number, height: number) => void;
-}
-
-export interface RenderPass<U extends Uniforms = Record<string, never>> extends Resizable {
-  render: (opts?: { target?: RenderTarget | null; clear?: boolean }) => void;
-  target: RenderTarget | null;
-  setTarget: (target: RenderTarget | null) => void;
-  uniforms: U;
-  vertex: string;
-  fragment: string;
-  onUpdated: (callback: UpdatedCallback<U>) => void;
-  onBeforeRender: (callback: RenderCallback<U>) => void;
-  onAfterRender: (callback: RenderCallback<U>) => void;
-  onInit: (callback: (gl: WebGL2RenderingContext) => void) => void;
-  onResize: (callback: (width: number, height: number) => void) => void;
-  initialize: (gl: WebGL2RenderingContext) => void;
-}
-
-export type EffectPass<U extends Uniforms = Record<string, never>> = RenderPass<U>;
-
-export interface CompositeEffectPass<U extends Uniforms = Record<string, never>>
-  extends Omit<EffectPass<U>, "fragment" | "vertex"> {
-  passes: EffectPass<Uniforms>[];
-}
-
+/**
+ * Valid WebGL draw modes.
+ */
 export type DrawMode =
   | "POINTS"
   | "LINES"
@@ -84,16 +71,3 @@ export type DrawMode =
   | "TRIANGLES"
   | "TRIANGLE_STRIP"
   | "TRIANGLE_FAN";
-
-export interface Resizable {
-  setSize: ({ width, height }: { width: number; height: number }) => void;
-}
-
-export type RenderCallback<U extends Uniforms = Record<string, never>> = (
-  args: Readonly<{ uniforms: U }>,
-) => void;
-
-export type UpdatedCallback<U extends Uniforms = Record<string, never>> = (
-  uniforms: Readonly<U>,
-  oldUniforms: Readonly<U>,
-) => void;

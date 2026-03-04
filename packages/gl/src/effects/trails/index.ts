@@ -1,33 +1,19 @@
 import { createRenderTarget } from "../../core/renderTarget";
+import type { RenderTarget } from "../../core/renderTarget";
 import { compositeEffectPass } from "../../passes/compositeEffectPass";
 import { floatTargetConfig, effectPass } from "../../passes/effectPass";
-import type { RenderTarget } from "../../types";
 import trailsFragment from "./glsl/trails.frag";
 import outputFragment from "./glsl/output.frag";
 
-export type TrailsParams = {
-  /**
-   * Intensity of the erosion effect that makes the trails shorter.
-   * @default 0
-   */
-  erosion?: number;
-  /**
-   * Intensity of the trails fadeout. Higher values make the trails fade out faster.
-   * @default 0.25
-   */
-  fadeout?: number;
-  /**
-   * Color of the tail of the trails as [r, g, b, a], each component between 0 and 1.
-   * @default [1, 1, 1, 1]
-   */
-  tailColor?: [number, number, number, number];
-  /**
-   * How quickly the original color fades to the tail color.
-   * @default 0
-   */
-  tailColorFalloff?: number;
-};
-
+/**
+ * Creates a trails / persistence effect.
+ *
+ * This effect uses double buffering (ping-pong FBO) to accumulate colors over time,
+ * creating a trailing effect behind moving objects.
+ *
+ * @param params - Configuration for the trails effect.
+ * @returns A composite effect pass.
+ */
 export function trails(params?: TrailsParams) {
   const { fadeout = 0.25, tailColor = [1, 1, 1, 1], tailColorFalloff = 0 } = params || {};
   let erosion = Math.pow(params?.erosion ?? 0, 2);
@@ -41,7 +27,7 @@ export function trails(params?: TrailsParams) {
     fboWrite = temp;
   }
 
-    const trailPass = effectPass({
+  const trailPass = effectPass({
     fragment: trailsFragment,
     uniforms: {
       uRenderTexture: ({ inputPass }) => inputPass.target!.texture,
@@ -110,3 +96,29 @@ export function trails(params?: TrailsParams) {
 
   return trailsPass;
 }
+
+/**
+ * Parameters for the {@link trails} effect.
+ */
+export type TrailsParams = {
+  /**
+   * Intensity of the erosion effect that makes the trails shorter.
+   * @default 0
+   */
+  erosion?: number;
+  /**
+   * Intensity of the trails fadeout. Higher values make the trails fade out faster.
+   * @default 0.25
+   */
+  fadeout?: number;
+  /**
+   * Color of the tail of the trails as [r, g, b, a], each component between 0 and 1.
+   * @default [1, 1, 1, 1]
+   */
+  tailColor?: [number, number, number, number];
+  /**
+   * How quickly the original color fades to the tail color.
+   * @default 0
+   */
+  tailColorFalloff?: number;
+};

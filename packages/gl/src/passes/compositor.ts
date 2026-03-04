@@ -1,21 +1,31 @@
 import { createRenderTarget } from "../core/renderTarget";
 import { findUniformName } from "../internal/findName";
 import { createHook } from "../internal/createHook";
-import type { CompositeEffectPass, EffectPass, RenderPass } from "../types";
+import type { CompositeEffectPass } from "./compositeEffectPass";
+import type { EffectPass } from "./effectPass";
+import type { RenderPass } from "./renderPass";
 import { floatTargetConfig } from "./effectPass";
 
 /**
- * The compositor handles the combination of the render pass and the effects:
- * - initialize the gl context and create render targets for all effects
- * - provide each effect with its previousPass and inputPass to use in uniforms
- * - detect the first texture uniform of each effect and, if it has no value provided, fill it with the previous pass
- * - render all passes in the correct order
+ * The compositor handles the combination of the main render pass and the subsequent effects.
+ *
+ * It manages:
+ * - Initialization of the WebGL context for all effects.
+ * - Automatic creation of intermediate floating-point render targets.
+ * - Injecting `previousPass` and `inputPass` references into effect uniforms.
+ * - Automatic linking of the previous pass's texture to the next effect's input.
+ * - Rendering all passes in the correct order.
+ *
+ * @param gl - The WebGL2 context.
+ * @param renderPass - The main scene render pass.
+ * @param effects - An array of post-processing effects to apply.
+ * @returns A {@link Compositor} object.
  */
 export function compositor(
   gl: WebGL2RenderingContext,
   renderPass: RenderPass<any>,
   effects: Array<EffectPass<any> | CompositeEffectPass<any>>,
-) {
+): Compositor {
   // add the ability to render to floating-point buffers
   gl.getExtension("EXT_color_buffer_float");
 
@@ -64,7 +74,13 @@ export function compositor(
     }
   }
 
-  return { render, setSize, allPasses, onBeforeRender, onAfterRender };
+  return {
+    render,
+    setSize,
+    allPasses,
+    onBeforeRender,
+    onAfterRender,
+  };
 }
 
 function isCompositeEffectPass(
@@ -95,4 +111,20 @@ function setupEffectPass(
   if (textureUniformName && effect.uniforms[textureUniformName] === undefined) {
     effect.uniforms[textureUniformName] = () => previousPass.target?.texture;
   }
+}
+
+/**
+ * The object returned by the {@link compositor} function.
+ */
+export interface Compositor {
+  /** Renders the entire chain: the main pass followed by all effects. */
+  render: (opts?: { clear?: boolean }) => void;
+  /** Resizes all passes and their respective render targets. */
+  setSize: (size: { width: number; height: number }) => void;
+  /** Flat array of all passes managed by this compositor (main pass + all effects). */
+  allPasses: Array<RenderPass<any> | CompositeEffectPass<any>>;
+  /** Registers a callback called before the whole rendering pipeline starts. */
+  onBeforeRender: (callback: () => void) => void;
+  /** Registers a callback called after the whole rendering pipeline finishes. */
+  onAfterRender: (callback: () => void) => void;
 }

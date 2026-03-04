@@ -1,40 +1,14 @@
 import { onResize } from "./onResize";
 
-export interface UseBoundingRectOptions {
-  /**
-   * Listen to window resize event
-   *
-   * @default true
-   */
-  windowResize?: boolean;
-  /**
-   * Listen to window scroll event
-   *
-   * @default true
-   */
-  windowScroll?: boolean;
-}
-
-export interface BoundingRect {
-  width: number;
-  height: number;
-  top: number;
-  right: number;
-  bottom: number;
-  left: number;
-  x: number;
-  y: number;
-}
-
 /**
- * Dynamically get the bounding rectangle of an HTML element
+ * Watch the bounding rect of an element and update it on resize and scroll events.
  */
-export function watchBoundingRect(target: HTMLElement, options: UseBoundingRectOptions = {}) {
+export function watchBoundingRect(target: HTMLElement, params: UseBoundingRectParams = {}) {
   /* eslint-disable unicorn/prefer-global-this */
   const {
     windowResize = typeof window !== "undefined",
     windowScroll = typeof window !== "undefined",
-  } = options;
+  } = params;
 
   const rect: BoundingRect = {
     width: 0,
@@ -70,4 +44,30 @@ export function watchBoundingRect(target: HTMLElement, options: UseBoundingRectO
     rect: rect as Readonly<typeof rect>,
     center: center as Readonly<typeof center>,
   };
+}
+
+export interface UseBoundingRectParams {
+  /**
+   * Listen to window resize event
+   *
+   * @default true
+   */
+  windowResize?: boolean;
+  /**
+   * Listen to window scroll event
+   *
+   * @default true
+   */
+  windowScroll?: boolean;
+}
+
+export interface BoundingRect {
+  width: number;
+  height: number;
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+  x: number;
+  y: number;
 }

@@ -1,28 +1,8 @@
 import type { BoundingRect } from "./watchBoundingRect";
 import { watchBoundingRect } from "./watchBoundingRect";
 
-type HandlerArgs = {
-  pointer: {
-    x: number;
-    y: number;
-  };
-  canvasRect: BoundingRect;
-  canvasCenter: {
-    x: number;
-    y: number;
-  };
-};
-
-type PointerEventsHandlers = {
-  enter?: ({ pointer, canvasRect, canvasCenter }: HandlerArgs) => void;
-  move?: ({ pointer, canvasRect, canvasCenter }: HandlerArgs) => void;
-  leave?: ({ pointer, canvasRect, canvasCenter }: HandlerArgs) => void;
-  down?: ({ pointer, canvasRect, canvasCenter }: HandlerArgs) => void;
-  up?: ({ pointer, canvasRect, canvasCenter }: HandlerArgs) => void;
-};
-
 /**
- * Listen to common pointer events and provide additional infos about the canvas
+ * Listen to pointer events on a canvas and provide the pointer position, canvas bounding rect and center to the handlers.
  */
 export function onPointerEvents(canvas: HTMLCanvasElement, handlers: PointerEventsHandlers) {
   const { rect: canvasRect, center: canvasCenter } = watchBoundingRect(canvas);
@@ -60,3 +40,23 @@ export function onPointerEvents(canvas: HTMLCanvasElement, handlers: PointerEven
 
   return { stop, listen };
 }
+
+type PointerEventsHandlers = {
+  enter?: ({ pointer, canvasRect, canvasCenter }: HandlerArgs) => void;
+  move?: ({ pointer, canvasRect, canvasCenter }: HandlerArgs) => void;
+  leave?: ({ pointer, canvasRect, canvasCenter }: HandlerArgs) => void;
+  down?: ({ pointer, canvasRect, canvasCenter }: HandlerArgs) => void;
+  up?: ({ pointer, canvasRect, canvasCenter }: HandlerArgs) => void;
+};
+
+type HandlerArgs = {
+  pointer: {
+    x: number;
+    y: number;
+  };
+  canvasRect: BoundingRect;
+  canvasCenter: {
+    x: number;
+    y: number;
+  };
+};

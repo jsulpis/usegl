@@ -1,24 +1,27 @@
 import { onResize, loop } from "@radiance/helpers";
-import type { UseLoopOptions } from "@radiance/helpers";
-import type { CompositeEffectPass, EffectPass, Uniforms } from "../types";
+import type { LoopParams } from "@radiance/helpers";
+import type { Uniforms } from "../types";
+import type { CompositeEffectPass } from "../passes/compositeEffectPass";
+import type { EffectPass } from "../passes/effectPass";
+import type { UpdatedCallback } from "../passes/renderPass";
 import { glContext } from "./glContext";
-import type { QuadPassOptions } from "../passes/quadRenderPass";
+import type { QuadPassParams } from "../passes/quadRenderPass";
 import { quadRenderPass } from "../passes/quadRenderPass";
 import { compositor } from "../passes/compositor";
 import { findUniformName } from "../internal/findName";
 import { isHTMLImageTexture, isHTMLVideoTexture } from "../core/texture";
 import { createHook } from "../internal/createHook";
 
-interface Props<U extends Uniforms> extends UseLoopOptions, QuadPassOptions<U> {
-  canvas: HTMLCanvasElement | OffscreenCanvas | string;
-  webglOptions?: WebGLContextAttributes;
-  dpr?: number;
-  postEffects?: Array<EffectPass<any> | CompositeEffectPass<any>>;
-  renderMode?: "manual" | "auto";
-  colorSpace?: PredefinedColorSpace;
-}
-
-export const glCanvas = <U extends Uniforms>(props: Props<U>) => {
+/**
+ * The main high-level function to manage a WebGL canvas.
+ *
+ * It combines context creation, a full-screen quad render pass, a post-processing compositor,
+ * and automatic rendering/resizing logic.
+ *
+ * @param params - Configuration params.
+ * @returns A {@link GLCanvas} object.
+ */
+export const glCanvas = <U extends Uniforms>(params: GLCanvasParams<U>): GLCanvas<U> => {
   const {
     canvas: canvasProp,
     fragment,
@@ -28,16 +31,16 @@ export const glCanvas = <U extends Uniforms>(props: Props<U>) => {
     immediate,
     renderMode = "auto",
     colorSpace,
-    webglOptions,
-  } = props;
+    webglAttributes,
+  } = params;
 
   const {
     gl,
     canvas,
     setSize: setCanvasSize,
-  } = glContext(canvasProp, { ...webglOptions, colorSpace });
+  } = glContext(canvasProp, { ...webglAttributes, colorSpace });
 
-  const renderPass = quadRenderPass(gl, props);
+  const renderPass = quadRenderPass(gl, params);
   const mainCompositor = compositor(gl, renderPass, postEffects);
 
   // don't render before the first resize of the canvas to avoid a glitch
@@ -138,9 +141,6 @@ export const glCanvas = <U extends Uniforms>(props: Props<U>) => {
   return {
     gl,
     render,
-    /**
-     * Register a callback to execute after the initial resizing of the canvas.
-     */
     onCanvasReady,
     canvas,
     setSize,
@@ -154,3 +154,67 @@ export const glCanvas = <U extends Uniforms>(props: Props<U>) => {
     resizeObserver,
   };
 };
+
+/**
+ * Configuration params for the {@link glCanvas} function.
+ */
+export interface GLCanvasParams<U extends Uniforms> extends LoopParams, QuadPassParams<U> {
+  /**
+   * The canvas element or selector to use.
+   */
+  canvas: HTMLCanvasElement | OffscreenCanvas | string;
+  /**
+   * Optional WebGL context attributes.
+   */
+  webglAttributes?: WebGLContextAttributes;
+  /**
+   * Device Pixel Ratio for the canvas.
+   * @default window.devicePixelRatio
+   */
+  dpr?: number;
+  /**
+   * An array of post-processing effects to apply.
+   */
+  postEffects?: Array<EffectPass<any> | CompositeEffectPass<any>>;
+  /**
+   * Whether to render automatically on frame changes or manually.
+   * @default "auto"
+   */
+  renderMode?: "manual" | "auto";
+  /**
+   * Target color space for the drawing buffer.
+   */
+  colorSpace?: PredefinedColorSpace;
+}
+
+/**
+ * The object returned by the {@link glCanvas} function.
+ */
+export interface GLCanvas<U extends Uniforms> {
+  /** The WebGL2 rendering context. */
+  gl: WebGL2RenderingContext;
+  /** Executes a single render of the entire pipeline. */
+  render: () => void;
+  /** Register a callback to execute after the initial resizing of the canvas. */
+  onCanvasReady: (callback: () => void) => void;
+  /** The HTMLCanvasElement or OffscreenCanvas being used. */
+  canvas: HTMLCanvasElement | OffscreenCanvas;
+  /** Resizes the canvas and all render targets in the pipeline. */
+  setSize: (size: { width: number; height: number }) => void;
+  /** Resumes the internal animation loop (if a 'time' uniform is detected). */
+  play: () => void;
+  /** Pauses the internal animation loop. */
+  pause: () => void;
+  /** The Device Pixel Ratio being used. */
+  dpr: number;
+  /** Reactive proxy of the main render pass's uniforms. */
+  uniforms: U;
+  /** Registers a callback called whenever a uniform of the main render pass is updated. */
+  onUpdated: (callback: UpdatedCallback<U>) => void;
+  /** Registers a callback called just before the main render pass is rendered. */
+  onBeforeRender: (callback: () => void) => void;
+  /** Registers a callback called after the last post-processing effect is rendered. */
+  onAfterRender: (callback: () => void) => void;
+  /** The resize observer managing the canvas resizing. */
+  resizeObserver: ReturnType<typeof onResize> | null;
+}

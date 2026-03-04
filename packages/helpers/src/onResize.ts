@@ -1,5 +1,5 @@
 /**
- * Listen for changes to the size of an element.
+ * Dynamically get the size of an HTML element in CSS pixels and device pixels, and update it on resize events.
  */
 export function onResize(
   target: HTMLElement,
@@ -44,10 +44,13 @@ export function onResize(
   observer.observe(target);
 
   return {
+    /** Disconnect the resize observer. */
     disconnect: observer.disconnect,
+    /** Start observing the target element. */
     observe: () => {
       observer.observe(target);
     },
+    /** Stop observing the target element. */
     unobserve: () => {
       observer.unobserve(target);
     },

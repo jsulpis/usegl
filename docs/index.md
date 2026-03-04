@@ -3,7 +3,7 @@
 layout: home
 
 hero:
-  name: useGL
+  name: Radiance
   text: Lightweight, reactive WebGL library
   tagline: for working with shaders
   actions:
@@ -26,5 +26,5 @@ features:
     details: "Autocompletion and type-safety for everything, including uniforms"
   - title: Developer friendly
     icon: 🤝
-    details: Modern hooks style syntax, time and resolution uniforms automatically provided and updated
+    details: Modern syntax, time and resolution uniforms automatically provided and updated
 ---

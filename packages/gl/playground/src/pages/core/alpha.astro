@@ -15,7 +15,7 @@ import Layout from "../../layouts/Layout.astro";
       gl_FragColor = vec4(vec3(0,0,1), circle);
     }
     `,
-    webglOptions: { premultipliedAlpha: false },
+    webglAttributes: { premultipliedAlpha: false },
   });
   canvas1.onAfterRender(incrementRenderCount);
 

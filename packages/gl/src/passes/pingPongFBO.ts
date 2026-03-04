@@ -1,25 +1,22 @@
 import { createRenderTarget } from "../core/renderTarget";
 import { createFloatDataTexture, type DataTextureParams } from "../core/texture";
-import type { Attribute, RenderPass, Uniforms } from "../types";
+import type { Attribute, Uniforms } from "../types";
 import { quadRenderPass } from "./quadRenderPass";
+import type { RenderPass } from "./renderPass";
 
-export type PingPongFBOOptions<U extends Uniforms = Record<string, never>> = {
-  uniforms?: U;
-  fragment: string;
-  dataTexture: {
-    name?: string;
-    initialData: Float32Array | number[];
-  };
-};
-
-interface PingPongFBOPass<U extends Uniforms = Record<string, never>> extends RenderPass<U> {
-  texture: DataTextureParams | WebGLTexture;
-  coords: Attribute;
-}
-
+/**
+ * Creates a ping-pong Framebuffer Object (FBO) pass for GPGPU calculations.
+ *
+ * This pattern uses two textures (read and write) that are swapped at each render call.
+ * It is commonly used for particle simulations, fluid dynamics, or any iterative process.
+ *
+ * @param gl - The WebGL2 context.
+ * @param params - Configuration for the ping-pong pass.
+ * @returns A {@link RenderPass} object specialized for double-buffering.
+ */
 export function pingPongFBO<U extends Uniforms>(
   gl: WebGL2RenderingContext,
-  { uniforms = {} as U, dataTexture, fragment }: PingPongFBOOptions<U>,
+  { uniforms = {} as U, dataTexture, fragment }: PingPongFBOParams<U>,
 ) {
   // add the ability to render to 32-bit floating-point buffers
   gl.getExtension("EXT_color_buffer_float");
@@ -74,3 +71,30 @@ export function pingPongFBO<U extends Uniforms>(
 
   return pingPongFBOPass;
 }
+
+/**
+ * Interface for a PingPongFBO pass.
+ */
+export interface PingPongFBOPass<U extends Uniforms = Record<string, never>> extends RenderPass<U> {
+  /** The current output texture after a render. */
+  texture: DataTextureParams | WebGLTexture;
+  /** Pre-calculated UV coordinates for sampling data from the texture. */
+  coords: Attribute;
+}
+
+/**
+ * Params for the ping-pong FBO pattern.
+ */
+export type PingPongFBOParams<U extends Uniforms = Record<string, never>> = {
+  /** Reactive uniforms for the pass. */
+  uniforms?: U;
+  /** Fragment shader source. Should read from `dataTexture.name`. */
+  fragment: string;
+  /** Initial data and uniform name for the double-buffered texture. */
+  dataTexture: {
+    /** The name of the sampler2D uniform in the fragment shader. Defaults to "tData". */
+    name?: string;
+    /** The raw numerical data to seed the initial texture state. */
+    initialData: Float32Array | number[];
+  };
+};
