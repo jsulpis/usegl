@@ -1,15 +1,18 @@
 import type { Uniforms } from "../types";
-import { renderPass, type RenderPassOptions } from "./renderPass";
+import { renderPass, type RenderPassParams } from "./renderPass";
 import { findAttributeName, findVaryingName } from "../internal/findName";
 
-export type QuadPassOptions<U extends Uniforms = Record<string, never>> = Omit<
-  RenderPassOptions<U>,
-  "vertex"
-> & { vertex?: string };
-
+/**
+ * Creates a render pass that renders a full-screen quad (actually a single large triangle).
+ * This is optimized for post-processing and full-screen effects.
+ *
+ * @param gl - The WebGL2 context.
+ * @param params - Configuration for the quad render pass.
+ * @returns A {@link RenderPass} object.
+ */
 export function quadRenderPass<U extends Uniforms>(
   gl: WebGL2RenderingContext | undefined,
-  { attributes = {}, fragment, vertex, ...renderPassOptions }: QuadPassOptions<U>,
+  { attributes = {}, fragment, vertex, ...renderPassParams }: QuadPassParams<U>,
 ) {
   const uvVaryingName = findVaryingName(fragment, "uv");
 
@@ -34,7 +37,7 @@ export function quadRenderPass<U extends Uniforms>(
   }
 
   return renderPass(gl, {
-    ...renderPassOptions,
+    ...renderPassParams,
     attributes,
     fragment,
     vertex: vertexShader,
@@ -57,3 +60,17 @@ void main() {
  * @see https://michaldrobot.com/2014/04/01/gcn-execution-patterns-in-full-screen-passes/
  */
 const quadVertexPositions = [-1, -1, 3, -1, -1, 3];
+
+/**
+ * Parameters for creating a {@link quadRenderPass}.
+ * Inherits from {@link RenderPassParams} but makes the vertex shader optional.
+ */
+export type QuadPassParams<U extends Uniforms = Record<string, never>> = Omit<
+  RenderPassParams<U>,
+  "vertex"
+> & {
+  /**
+   * Optional vertex shader. If not provided, a default full-screen quad vertex shader is used.
+   */
+  vertex?: string;
+};

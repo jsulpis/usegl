@@ -1,5 +1,13 @@
 import type { TypedArray } from "../types";
 
+/**
+ * Creates, binds, and fills a WebGL buffer with data.
+ *
+ * @param gl - The WebGL2 context.
+ * @param target - The buffer target (e.g., gl.ARRAY_BUFFER or gl.ELEMENT_ARRAY_BUFFER).
+ * @param data - The data to fill the buffer with.
+ * @returns The created WebGLBuffer.
+ */
 export function createAndBindBuffer(
   gl: WebGL2RenderingContext,
   target: GLenum,
@@ -13,6 +21,13 @@ export function createAndBindBuffer(
   return buffer;
 }
 
+/**
+ * Converts raw numerical data or TypedArrays into a suitable TypedArray for WebGL buffers.
+ *
+ * @param data - The raw data.
+ * @param isIndex - Whether the data is for an index buffer.
+ * @returns A TypedArray representation of the data.
+ */
 export function getBufferData(data: TypedArray | number[], isIndex?: boolean) {
   if (ArrayBuffer.isView(data)) {
     return data;

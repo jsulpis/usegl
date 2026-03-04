@@ -1,6 +1,18 @@
 import type { Attribute } from "../types";
 import { createAndBindBuffer, getBufferData } from "./buffer";
 
+/**
+ * Sets up a vertex attribute for a given shader program.
+ *
+ * This function handles buffer creation, binding, and attribute pointer configuration.
+ * It also supports special handling for the "index" attribute (ELEMENT_ARRAY_BUFFER).
+ *
+ * @param gl - The WebGL2 context.
+ * @param program - The WebGL program containing the attribute.
+ * @param name - The name of the attribute in the shader.
+ * @param attribute - The attribute data and configuration.
+ * @returns An object containing the attribute location and computed vertex count.
+ */
 export function setAttribute(
   gl: WebGL2RenderingContext,
   program: WebGLProgram,

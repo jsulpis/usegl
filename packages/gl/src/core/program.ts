@@ -1,5 +1,16 @@
 import { createShader } from "./shader";
 
+/**
+ * Creates and links a WebGL program with vertex and fragment shaders.
+ *
+ * This function also handles transform feedback configuration if requested.
+ *
+ * @param gl - The WebGL2 context.
+ * @param fragment - Fragment shader source string or pre-compiled WebGLShader.
+ * @param vertex - Vertex shader source string or pre-compiled WebGLShader.
+ * @param transformFeedbackVaryings - Optional array of varying names for Transform Feedback.
+ * @returns The linked WebGLProgram, or null if creation or linking failed.
+ */
 export function createProgram(
   gl: WebGL2RenderingContext,
   fragment: string | WebGLShader,

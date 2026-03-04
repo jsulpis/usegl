@@ -1,17 +1,17 @@
 import { compositeEffectPass } from "../../passes/compositeEffectPass";
+import type { EffectPass } from "../../passes/effectPass";
 import { floatTargetConfig, effectPass } from "../../passes/effectPass";
-import type { EffectPass } from "../../types";
 import downSampleFragment from "./glsl/downsample.frag";
 import combineFragment from "./glsl/combine.frag";
 import sampleVertex from "./glsl/sample.vert";
 import upsampleFragment from "./glsl/upsample.frag";
 
-export type BloomParams = {
-  levels?: number;
-  radius?: number;
-  mix?: number;
-};
-
+/**
+ * Creates a Bloom effect using a downsampling/upsampling pyramid.
+ *
+ * @param params - Bloom configuration.
+ * @returns A composite effect pass.
+ */
 export function bloom(params: BloomParams = {}) {
   const { levels = 8, radius = 0.65, mix = 0.5 } = params;
 
@@ -85,3 +85,24 @@ export function bloom(params: BloomParams = {}) {
 
   return compositeEffectPass(bloomPasses, bloomUniforms);
 }
+
+/**
+ * Parameters for the {@link bloom} effect.
+ */
+export type BloomParams = {
+  /**
+   * Number of mip levels for the bloom pyramid.
+   * @default 8
+   */
+  levels?: number;
+  /**
+   * Blur radius for the upsampling stages.
+   * @default 0.65
+   */
+  radius?: number;
+  /**
+   * Bloom intensity / mix factor.
+   * @default 0.5
+   */
+  mix?: number;
+};

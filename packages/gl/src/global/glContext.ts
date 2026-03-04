@@ -1,10 +1,14 @@
-export type WebGLContextOptions = WebGLContextAttributes & {
-  colorSpace?: PredefinedColorSpace;
-};
-
+/**
+ * Initializes a WebGL2 rendering context for a given canvas.
+ *
+ * @param canvas - The canvas element, offscreen canvas, or a CSS selector.
+ * @param params - WebGL2 context attributes and color space configuration.
+ * @returns A gl context object with a setSize method and the canvas/gl handles.
+ * @throws Error if the canvas or WebGL2 context could not be created.
+ */
 export function glContext<T extends HTMLCanvasElement | OffscreenCanvas | string>(
   canvas: T,
-  options?: WebGLContextOptions,
+  params?: WebGLContextParams,
 ) {
   const canvasElement: HTMLCanvasElement | OffscreenCanvas | null =
     typeof canvas === "string" ? document.querySelector<HTMLCanvasElement>(canvas) : canvas;
@@ -13,13 +17,13 @@ export function glContext<T extends HTMLCanvasElement | OffscreenCanvas | string
     throw new Error("Canvas element not found.");
   }
 
-  const gl = canvasElement.getContext("webgl2", options) as WebGL2RenderingContext;
+  const gl = canvasElement.getContext("webgl2", params) as WebGL2RenderingContext;
   if (!gl) {
     throw new Error("No WebGL2 context available.");
   }
 
-  if ("drawingBufferColorSpace" in gl && options?.colorSpace != undefined) {
-    gl.drawingBufferColorSpace = options.colorSpace;
+  if ("drawingBufferColorSpace" in gl && params?.colorSpace != undefined) {
+    gl.drawingBufferColorSpace = params.colorSpace;
   }
 
   function setSize(width: number, height: number) {
@@ -34,3 +38,13 @@ export function glContext<T extends HTMLCanvasElement | OffscreenCanvas | string
     setSize,
   };
 }
+
+/**
+ * Configuration params for the WebGL2 context.
+ */
+export type WebGLContextParams = WebGLContextAttributes & {
+  /**
+   * The color space to use for the drawing buffer.
+   */
+  colorSpace?: PredefinedColorSpace;
+};

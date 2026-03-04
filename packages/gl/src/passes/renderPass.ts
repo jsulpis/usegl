@@ -1,31 +1,22 @@
-import type {
-  Attribute,
-  DrawMode,
-  RenderCallback,
-  RenderPass,
-  RenderTarget,
-  Uniforms,
-} from "../types";
+import type { Attribute, DrawMode, Uniforms } from "../types";
 import { createProgram } from "../core/program";
 import { setRenderTarget } from "../core/renderTarget";
+import type { RenderTarget } from "../core/renderTarget";
 import { findUniformName } from "../internal/findName";
 import { setupUniforms } from "../internal/setupUniforms";
 import { setupAttributes } from "../internal/setupAttributes";
 import { createHook } from "../internal/createHook";
 
-export type RenderPassOptions<U extends Uniforms = Record<string, never>> = {
-  target?: RenderTarget | null;
-  fragment: string;
-  vertex: string;
-  attributes?: Record<string, Attribute>;
-  uniforms?: U;
-  blending?: "none" | "normal" | "additive";
-  depthTest?: boolean;
-  drawMode?: DrawMode;
-  transformFeedbackVaryings?: string[];
-  resolutionScale?: number;
-};
-
+/**
+ * Creates a generic rendering pass.
+ *
+ * This is the core primitive for rendering anything to the screen or a texture.
+ * It handles program creation, uniform management, attribute setup, and resizing.
+ *
+ * @param gl - The WebGL2 context. Can be undefined if you intend to initialize the pass later.
+ * @param params - Configuration for the render pass.
+ * @returns A {@link RenderPass} object.
+ */
 export function renderPass<U extends Uniforms>(
   gl: WebGL2RenderingContext | undefined,
   {
@@ -39,7 +30,7 @@ export function renderPass<U extends Uniforms>(
     drawMode: userDrawMode,
     transformFeedbackVaryings,
     resolutionScale = 1,
-  }: RenderPassOptions<U>,
+  }: RenderPassParams<U>,
 ): RenderPass<U> {
   /*
    * INIT
@@ -187,3 +178,104 @@ function setDepthTest(gl: WebGL2RenderingContext, depthTest: boolean) {
     gl.disable(gl.DEPTH_TEST);
   }
 }
+
+/**
+ * Parameters for creating a {@link RenderPass}.
+ */
+export type RenderPassParams<U extends Uniforms = Record<string, never>> = {
+  /**
+   * Optional initial render target for the pass.
+   * If not provided, it will render directly to the canvas or can be set later.
+   */
+  target?: RenderTarget | null;
+  /**
+   * Fragment shader source code.
+   */
+  fragment: string;
+  /**
+   * Vertex shader source code.
+   */
+  vertex: string;
+  /**
+   * Mapping of attribute names to their data and configuration.
+   */
+  attributes?: Record<string, Attribute>;
+  /**
+   * Initial uniform values. These will be wrapped in a reactive proxy.
+   */
+  uniforms?: U;
+  /**
+   * Blending mode to use for this pass.
+   * @default "none"
+   */
+  blending?: "none" | "normal" | "additive";
+  /**
+   * Whether to enable depth testing.
+   * @default false
+   */
+  depthTest?: boolean;
+  /**
+   * WebGL draw mode. Defaults to "POINTS" if `gl_PointSize` is found in the vertex shader,
+   * otherwise "TRIANGLES".
+   */
+  drawMode?: DrawMode;
+  /**
+   * Array of varying names for Transform Feedback.
+   */
+  transformFeedbackVaryings?: string[];
+  /**
+   * Scaling factor applied to the resolution when the pass is resized.
+   * @default 1
+   */
+  resolutionScale?: number;
+};
+
+/**
+ * A generic rendering pass that encapsulates shaders, uniforms, and attributes.
+ */
+export interface RenderPass<U extends Uniforms = Record<string, never>> {
+  /**
+   * Executes the render pass.
+   * @param opts - Rendering params.
+   */
+  render: (opts?: { target?: RenderTarget | null; clear?: boolean }) => void;
+  /** The default render target for this pass. */
+  target: RenderTarget | null;
+  /** Updates the default render target. */
+  setTarget: (target: RenderTarget | null) => void;
+  /** Resizes the render target associated with this pass. */
+  setSize: ({ width, height }: { width: number; height: number }) => void;
+  /** The reactive uniforms proxy for this pass. */
+  uniforms: U;
+  /** The vertex shader source. */
+  vertex: string;
+  /** The fragment shader source. */
+  fragment: string;
+  /** Registers a callback called whenever uniforms are updated. */
+  onUpdated: (callback: UpdatedCallback<U>) => void;
+  /** Registers a callback called just before rendering. */
+  onBeforeRender: (callback: RenderCallback<U>) => void;
+  /** Registers a callback called just after rendering. */
+  onAfterRender: (callback: RenderCallback<U>) => void;
+  /** Registers a callback called when the pass is initialized with a GL context. */
+  onInit: (callback: (gl: WebGL2RenderingContext) => void) => void;
+  /** Registers a callback called when the pass is resized. */
+  onResize: (callback: (width: number, height: number) => void) => void;
+  /** Initializes the pass with a WebGL2 context. */
+  initialize: (gl: WebGL2RenderingContext) => void;
+}
+
+/**
+ * Callback function executed during the render cycle.
+ */
+export type RenderCallback<U extends Uniforms = Record<string, never>> = (
+  args: Readonly<{ uniforms: U }>,
+) => void;
+
+/**
+ * Callback function executed when uniforms change.
+ */
+export type UpdatedCallback<U extends Uniforms = Record<string, never>> = (
+  uniforms: Readonly<U>,
+  oldUniforms: Readonly<U>,
+) => void;

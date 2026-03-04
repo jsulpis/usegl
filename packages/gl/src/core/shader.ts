@@ -1,3 +1,14 @@
+/**
+ * Creates, compiles, and returns a WebGL shader.
+ *
+ * It automatically handles conversion of the source code to GLSL 3.00 ES
+ * (e.g., adding `#version 300 es`, handling `texture2D` vs `texture`, etc.).
+ *
+ * @param gl - The WebGL2 context.
+ * @param source - Shader source string.
+ * @param type - Shader type (gl.VERTEX_SHADER or gl.FRAGMENT_SHADER).
+ * @returns The compiled WebGLShader, or null if creation or compilation failed.
+ */
 export function createShader(gl: WebGL2RenderingContext, source: string, type: GLenum) {
   const shader = gl.createShader(type);
   if (shader == null) {
@@ -15,6 +26,17 @@ export function createShader(gl: WebGL2RenderingContext, source: string, type: G
   return shader;
 }
 
+/**
+ * Automatically converts GLSL 1.00 ES shader code into GLSL 3.00 ES.
+ *
+ * This includes:
+ * - Adding the `#version 300 es` directive.
+ * - Replacing `attribute` with `in`.
+ * - Replacing `varying` with `in` (fragment) or `out` (vertex).
+ * - Replacing `texture2D` with `texture`.
+ * - Replacing `gl_FragColor` with a custom `out vec4 fragColor`.
+ * - Ensuring a default precision of `highp float`.
+ */
 function convertToGLSL300(shader: string): string {
   let glsl300Shader = shader.replace(/\battribute\b/g, "in").replace(/\btexture2D\b/g, "texture");
 
