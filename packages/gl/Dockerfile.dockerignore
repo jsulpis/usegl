@@ -1,0 +1,12 @@
+node_modules
+dist
+.astro
+.env
+playwright-report
+test-results
+**/node_modules
+**/dist
+**/.astro
+**/.env
+**/.git
+**/.DS_Store

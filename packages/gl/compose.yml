@@ -1,8 +1,10 @@
 services:
   test:
-    build: .
+    build:
+      context: ../..
+      dockerfile: packages/gl/Dockerfile
     ports:
       - "9323:9323"
     volumes:
-      - ./test-results:/app/test-results
-      - ./tests/__screenshots__:/app/tests/__screenshots__
+      - ./test-results:/app/packages/gl/test-results
+      - ./tests/__screenshots__:/app/packages/gl/tests/__screenshots__

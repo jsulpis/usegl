@@ -3,18 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import {
-    effectPass,
-    glCanvas,
-    loadTexture,
-    acesToneMapping,
-    reinhardToneMapping,
-    hableToneMapping,
-    neutralToneMapping,
-    agxToneMapping,
-    cineonToneMapping,
-    linearToneMapping,
-  } from "@radiance/gl";
+  import { glCanvas, hableToneMapping } from "@radiance/gl";
   import { incrementRenderCount } from "../../components/renderCount";
 
   const testShader = /* glsl */ `
@@ -67,15 +56,7 @@ void main() {
     uniforms: {
       uExposure: 1.5,
     },
-    postEffects: [
-      // linearToneMapping(),
-      // reinhardToneMapping(),
-      // acesToneMapping(),
-      // cineonToneMapping(),
-      // neutralToneMapping(),
-      // agxToneMapping(),
-      hableToneMapping(),
-    ],
+    postEffects: [hableToneMapping()],
   });
 
   onAfterRender(incrementRenderCount);

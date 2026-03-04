@@ -1,6 +1,5 @@
 {
   "name": "@radiance/helpers",
-  "version": "0.1.0",
   "private": true,
   "description": "Utility functions for DOM, timing, and pointer events",
   "repository": "jsulpis/usegl",
@@ -9,29 +8,23 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    ".": "./dist/index.js",
+    ".": "./src/index.ts",
     "./package.json": "./package.json"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "types": "./src/index.ts",
   "scripts": {
-    "build": "tsdown",
     "format": "prettier src --check",
-    "format:fix": "prettier src --write",
     "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
-    "prepack": "pnpm build",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@eslint/js": "9.32.0",
     "@types/node": "22.16.5",
     "eslint": "9.32.0",
+    "globals": "17.4.0",
     "prettier": "3.6.2",
     "tsdown": "0.14.1",
-    "typescript": "5.8.3"
+    "typescript": "5.8.3",
+    "typescript-eslint": "8.56.1"
   }
 }

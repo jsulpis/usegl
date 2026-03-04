@@ -1,4 +1,6 @@
 name: CI
+permissions:
+  contents: read
 
 on:
   push:
@@ -7,7 +9,7 @@ on:
     branches: [main]
 
 env:
-  PNPM_VERSION: 9
+  PNPM_VERSION: 10
   NODE_VERSION: lts/*
 
 jobs:
@@ -24,8 +26,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
-      - run: pnpm --filter="./lib" install
-      - run: pnpm --filter="./lib" build
+      - run: pnpm --filter="./packages/*" install
+      - run: pnpm --filter="./packages/*" build
 
   static:
     name: "static checks"
@@ -64,8 +66,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
-      - run: pnpm --filter="./lib" install
-      - run: xvfb-run pnpm --filter="./lib" exec playwright test
+      - run: pnpm --filter="./packages/gl" install
+      - run: xvfb-run pnpm --filter="./packages/gl" exec playwright test
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
