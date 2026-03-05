@@ -92,11 +92,13 @@ export interface TransformFeedbackParams<
 /**
  * Specialized render pass for Transform Feedback.
  */
-export interface TransformFeedbackPass<O extends string, U extends Uniforms = Record<string, never>>
-  extends Omit<
-    RenderPass<U>,
-    "initialize" | "target" | "setTarget" | "setSize" | "vertex" | "fragment"
-  > {
+export interface TransformFeedbackPass<
+  O extends string,
+  U extends Uniforms = Record<string, never>,
+> extends Omit<
+  RenderPass<U>,
+  "initialize" | "target" | "setTarget" | "setSize" | "vertex" | "fragment"
+> {
   /** Retrieves data from a specific output buffer. */
   getOutputData: (bufferName: O) => Float32Array;
   /** Raw WebGLBuffer handles for each output varying. */
