@@ -72,8 +72,10 @@ export function compositeEffectPass<U extends Uniforms = Record<string, never>>(
 /**
  * An effect pass composed of multiple sub-passes.
  */
-export interface CompositeEffectPass<U extends Uniforms = Record<string, never>>
-  extends Omit<EffectPass<U>, "fragment" | "vertex"> {
+export interface CompositeEffectPass<U extends Uniforms = Record<string, never>> extends Omit<
+  EffectPass<U>,
+  "fragment" | "vertex"
+> {
   /** The sequence of sub-passes executed by this composite effect. */
   passes: EffectPass<Uniforms>[];
 }
