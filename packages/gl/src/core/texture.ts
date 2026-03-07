@@ -92,13 +92,13 @@ export function fillTexture(
 export function isHTMLImageTexture(
   params: unknown,
 ): params is ImageTextureParams & { src: HTMLImageElement } {
-  return (params as ImageTextureParams).src instanceof HTMLImageElement;
+  return typeof HTMLImageElement !== "undefined" && (params as ImageTextureParams).src instanceof HTMLImageElement;
 }
 
 export function isHTMLVideoTexture(
   params: unknown,
 ): params is ImageTextureParams & { src: HTMLVideoElement } {
-  return (params as ImageTextureParams).src instanceof HTMLVideoElement;
+  return typeof HTMLVideoElement !== "undefined" && (params as ImageTextureParams).src instanceof HTMLVideoElement;
 }
 
 /**
@@ -107,6 +107,10 @@ export function isHTMLVideoTexture(
  * @param params - Additional texture parameters.
  */
 export function loadTexture<P extends Omit<ImageTextureParams, "src">>(src: string, params?: P) {
+  if (typeof document === "undefined") {
+    throw new Error("loadTexture requires a document context.");
+  }
+
   const img = document.createElement("img");
 
   if (src.startsWith("http") && new URL(src).origin !== globalThis.location.origin) {
@@ -135,6 +139,10 @@ export function loadTexture<P extends Omit<ImageTextureParams, "src">>(src: stri
  * @param params - Additional video loading options.
  */
 export function loadVideoTexture<P extends LoadVideoParams>(src: string, params?: P) {
+  if (typeof document === "undefined") {
+    throw new Error("loadVideoTexture requires a document context.");
+  }
+
   const video = document.createElement("video");
 
   video.loop = true;
