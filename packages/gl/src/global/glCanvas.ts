@@ -26,7 +26,7 @@ export const glCanvas = <U extends Uniforms>(params: GLCanvasParams<U>): GLCanva
     canvas: canvasProp,
     fragment,
     vertex,
-    dpr = window.devicePixelRatio,
+    dpr = globalThis.devicePixelRatio || 1,
     postEffects = [],
     immediate,
     renderMode = "auto",
@@ -43,7 +43,7 @@ export const glCanvas = <U extends Uniforms>(params: GLCanvasParams<U>): GLCanva
   const renderPass = quadRenderPass(gl, params);
   const mainCompositor = compositor(gl, renderPass, postEffects);
 
-  // don't render before the first resize of the canvas to avoid a glitch
+  // flag to not render before the first resize of the canvas to avoid a glitch
   let isCanvasResized = false;
 
   function render() {
@@ -87,10 +87,17 @@ export const glCanvas = <U extends Uniforms>(params: GLCanvasParams<U>): GLCanva
     }
   }
 
+  const [onCanvasReady, executeCanvasReadyCallbacks] = createHook();
+
   function setSize({ width, height }: { width: number; height: number }) {
     setCanvasSize(width, height);
     mainCompositor.setSize({ width, height });
     requestRender();
+
+    if (!isCanvasResized) {
+      executeCanvasReadyCallbacks();
+      isCanvasResized = true;
+    }
   }
 
   const timeUniformName = findUniformName(fragment + vertex, "time");
@@ -113,29 +120,14 @@ export const glCanvas = <U extends Uniforms>(params: GLCanvasParams<U>): GLCanva
 
   let resizeObserver: ReturnType<typeof onResize> | null = null;
 
-  const [onCanvasReady, executeCanvasReadyCallbacks] = createHook();
-
-  function resizeCanvas(width: number, height: number, dpr: number) {
-    setSize({ width: width * dpr, height: height * dpr });
-    if (!isCanvasResized) {
-      executeCanvasReadyCallbacks();
-      isCanvasResized = true;
-    }
-  }
-
-  // resize only if HTMLCanvasElement, because we can't know the size of an OffscreenCanvas
-  if (canvas instanceof HTMLCanvasElement) {
-    if (canvas.getAttribute("width") && canvas.getAttribute("height")) {
-      resizeCanvas(canvas.width, canvas.height, 1);
-    }
-    // don't automatically resize if the renderMode is manual, because the call to gl.viewport() will break the canvas
-    else if (renderMode === "auto") {
-      resizeObserver = onResize(canvas, ({ size }) => {
-        resizeCanvas(size.width, size.height, dpr);
-      });
-    } else {
-      resizeCanvas(canvas.clientWidth, canvas.clientHeight, dpr);
-    }
+  if (isOffscreen(canvas) || (canvas.getAttribute("width") && canvas.getAttribute("height"))) {
+    setSize({ width: canvas.width, height: canvas.height });
+  } else if (renderMode === "manual") {
+    setSize({ width: canvas.clientWidth * dpr, height: canvas.clientHeight * dpr });
+  } else {
+    resizeObserver = onResize(canvas, ({ size }) => {
+      setSize({ width: size.width * dpr, height: size.height * dpr });
+    });
   }
 
   return {
@@ -154,6 +146,10 @@ export const glCanvas = <U extends Uniforms>(params: GLCanvasParams<U>): GLCanva
     resizeObserver,
   };
 };
+
+function isOffscreen(canvas: HTMLCanvasElement | OffscreenCanvas): canvas is OffscreenCanvas {
+  return typeof OffscreenCanvas !== "undefined" && canvas instanceof OffscreenCanvas;
+}
 
 /**
  * Configuration params for the {@link glCanvas} function.
@@ -190,12 +186,12 @@ export interface GLCanvasParams<U extends Uniforms> extends LoopParams, QuadPass
 /**
  * The object returned by the {@link glCanvas} function.
  */
-export interface GLCanvas<U extends Uniforms> {
+export interface GLCanvas<U extends Uniforms = Record<string, never>> {
   /** The WebGL2 rendering context. */
   gl: WebGL2RenderingContext;
   /** Executes a single render of the entire pipeline. */
   render: () => void;
-  /** Register a callback to execute after the initial resizing of the canvas. */
+  /** Register a callback to execute after the first resizing of the canvas. */
   onCanvasReady: (callback: () => void) => void;
   /** The HTMLCanvasElement or OffscreenCanvas being used. */
   canvas: HTMLCanvasElement | OffscreenCanvas;

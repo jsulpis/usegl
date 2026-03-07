@@ -11,7 +11,11 @@ export function glContext<T extends HTMLCanvasElement | OffscreenCanvas | string
   params?: WebGLContextParams,
 ) {
   const canvasElement: HTMLCanvasElement | OffscreenCanvas | null =
-    typeof canvas === "string" ? document.querySelector<HTMLCanvasElement>(canvas) : canvas;
+    typeof canvas === "string"
+      ? typeof document === "undefined"
+        ? null
+        : document.querySelector<HTMLCanvasElement>(canvas)
+      : canvas;
 
   if (canvasElement == null) {
     throw new Error("Canvas element not found.");

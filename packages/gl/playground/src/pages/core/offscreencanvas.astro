@@ -1,0 +1,33 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<script>
+  import { onResize } from "@radiance/helpers";
+  import { incrementRenderCount } from "../../components/renderCount";
+
+  const canvas = document.querySelector("canvas")!;
+  const offscreenCanvas = canvas.transferControlToOffscreen();
+
+  const worker = new Worker(new URL("../../workers/offscreenGradient.worker.ts", import.meta.url), {
+    type: "module",
+  });
+
+  worker.addEventListener("message", incrementRenderCount);
+
+  worker.postMessage({ type: "init", canvas: offscreenCanvas }, [offscreenCanvas]);
+
+  onResize(canvas, ({ devicePixelSize }) => {
+    worker.postMessage({ type: "resize", size: devicePixelSize });
+  });
+</script>
+
+<Layout title="Offscreen gradient">
+  <canvas></canvas>
+</Layout>
+
+<style>
+  canvas {
+    aspect-ratio: 3 / 2;
+  }
+</style>
