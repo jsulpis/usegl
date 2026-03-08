@@ -273,7 +273,7 @@ export type RenderCallback<U extends Uniforms = Record<string, never>> = (
 ) => void;
 
 /**
- * Callback function executed when a uniform change.
+ * Callback function executed when a uniform changes.
  */
 export type UpdatedCallback<U extends Uniforms = Record<string, never>> = (
   /** The name of the uniform that changed. */

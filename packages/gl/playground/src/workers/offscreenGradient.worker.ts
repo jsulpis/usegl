@@ -30,7 +30,7 @@ addEventListener("message", (event: MessageEvent<WorkerMessage>) => {
 
 let scene: GLCanvas;
 
-async function init(message: InitMessage) {
+function init(message: InitMessage) {
   scene = glCanvas({
     canvas: message.canvas,
     fragment: /* glsl */ `
