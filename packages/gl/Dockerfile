@@ -1,5 +1,5 @@
 FROM mcr.microsoft.com/playwright:v1.49.1
-RUN npm install -g corepack@latest
+RUN npm install -g pnpm@10
 
 WORKDIR /app
 
@@ -14,9 +14,6 @@ COPY . ./packages/gl
 COPY --from=helpers . ./packages/helpers
 
 WORKDIR /app/packages/gl
-
-RUN corepack enable
-RUN corepack prepare --activate
 
 EXPOSE 9323
 
