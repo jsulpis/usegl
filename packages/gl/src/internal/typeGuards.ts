@@ -1,0 +1,31 @@
+import type { ImageTextureParams } from "../core/texture";
+
+export function isHTMLImageTexture(params: any): params is ImageTextureParams<HTMLImageElement> {
+  return (
+    typeof HTMLImageElement !== "undefined" &&
+    isObjectWithProperty(params, "src") &&
+    params.src instanceof HTMLImageElement
+  );
+}
+
+export function isHTMLVideoTexture(params: any): params is ImageTextureParams<HTMLVideoElement> {
+  return (
+    typeof HTMLVideoElement !== "undefined" &&
+    isObjectWithProperty(params, "src") &&
+    params.src instanceof HTMLVideoElement
+  );
+}
+
+export function isOffscreen(
+  canvas: HTMLCanvasElement | OffscreenCanvas,
+): canvas is OffscreenCanvas {
+  return typeof OffscreenCanvas !== "undefined" && canvas instanceof OffscreenCanvas;
+}
+
+export function isPromiseLike(value: any): value is PromiseLike<unknown> & object {
+  return isObjectWithProperty(value, "then") && typeof value.then === "function";
+}
+
+export function isObjectWithProperty(obj: unknown, key: string) {
+  return obj != null && typeof obj === "object" && key in obj;
+}
