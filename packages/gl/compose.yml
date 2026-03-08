@@ -1,8 +1,11 @@
 services:
   test:
     build:
-      context: ../..
-      dockerfile: packages/gl/Dockerfile
+      context: .
+      dockerfile: Dockerfile
+      additional_contexts:
+        workspace: ../..
+        helpers: ../helpers
     ports:
       - "9323:9323"
     volumes:

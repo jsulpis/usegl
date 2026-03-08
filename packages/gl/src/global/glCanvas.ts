@@ -171,12 +171,12 @@ function isOffscreen(canvas: HTMLCanvasElement | OffscreenCanvas): canvas is Off
   return typeof OffscreenCanvas !== "undefined" && canvas instanceof OffscreenCanvas;
 }
 
-function isPromiseLike(value: unknown): value is PromiseLike<unknown> & object {
+function isPromiseLike(value: any): value is PromiseLike<unknown> & object {
   return (
     value != null &&
     typeof value === "object" &&
     "then" in value &&
-    typeof (value as PromiseLike<unknown>).then === "function"
+    typeof value.then === "function"
   );
 }
 

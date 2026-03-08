@@ -13,6 +13,7 @@ const expectedRendersByDemo = {
   "boids (static)": "3",
   mipmap: /[1-3]/,
   texture: /1|2/,
+  offscreencanvas: "2",
   sepia: /1|2/,
   alpha: "2",
   blending: "2",
