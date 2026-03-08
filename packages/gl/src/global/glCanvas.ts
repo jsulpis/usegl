@@ -73,12 +73,9 @@ export const glCanvas = <U extends Uniforms>(params: GLCanvasParams<U>): GLCanva
     for (const pass of mainCompositor.allPasses) {
       if (!("uniforms" in pass)) continue;
 
-      pass.onUpdated((uniforms) => {
+      pass.onUpdated((name, value) => {
         requestRender();
-
-        for (const [name, value] of Object.entries(uniforms)) {
-          watchUniformValue(name, value, pass);
-        }
+        watchUniformValue(name, value, pass);
       });
 
       for (const [name, value] of Object.entries(pass.uniforms)) {

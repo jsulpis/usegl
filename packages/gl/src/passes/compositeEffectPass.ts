@@ -33,8 +33,8 @@ export function compositeEffectPass<U extends Uniforms = Record<string, never>>(
   function initialize(gl: WebGL2RenderingContext) {
     for (const pass of passes) {
       pass.initialize(gl);
-      pass.onUpdated((newUniforms, oldUniforms) => {
-        executeUpdateCallbacks(newUniforms, oldUniforms);
+      pass.onUpdated((...args) => {
+        executeUpdateCallbacks(...args);
       });
     }
     executeInitCallbacks(gl);
