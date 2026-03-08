@@ -19,10 +19,9 @@ const wrapMap: Record<WrappingMode, number> = {
 /**
  * Given a WebGL2RenderingContext and a WebGLTexture, fill the texture with the given parameters.
  *
- * - if no src is provided, the data parameter will be used
- * - if a src is provided:
- *   - if it is an image that is loaded, or if it is a video that can start playing, they will be used to fill the texture
- *   - else, the placeholder parameter will be used, or a single black pixel will be used if no placeholder is specified
+ * - if a src is provided with a loaded media, it will be uploaded directly
+ * - if the src is an HTMLImageElement or HTMLVideoElement which is not loaded yet, a single black pixel is uploaded
+ * - if no src is provided, the data parameter will be used (with default to a single black pixel)
  *
  * @param gl - The WebGL2 context.
  * @param texture - The WebGL texture to fill.
@@ -53,7 +52,7 @@ export function fillTexture(
     magFilter = "linear",
     wrapS = "clamp-to-edge",
     wrapT = "clamp-to-edge",
-  } = (isLoadingMedia ? params.placeholder : params) || {};
+  } = params;
 
   gl.bindTexture(gl.TEXTURE_2D, texture);
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flipY);
@@ -61,7 +60,7 @@ export function fillTexture(
   if (isLoadedMedia) {
     gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, format, type, params.src);
   } else {
-    const dataTexture = ((isLoadingMedia ? params.placeholder : params) || {}) as DataTextureParams;
+    const dataTexture = (params || {}) as DataTextureParams;
     const { data = new Uint8Array([0, 0, 0, 255]), width = 1, height = 1 } = dataTexture;
     gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, 0, format, type, data);
   }
@@ -89,48 +88,33 @@ export function fillTexture(
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrapMap[wrapT]);
 }
 
-export function isHTMLImageTexture(
-  params: unknown,
-): params is ImageTextureParams & { src: HTMLImageElement } {
-  return typeof HTMLImageElement !== "undefined" && (params as ImageTextureParams).src instanceof HTMLImageElement;
+export function isHTMLImageTexture(params: any): params is ImageTextureParams<HTMLImageElement> {
+  return typeof HTMLImageElement !== "undefined" && params.src instanceof HTMLImageElement;
 }
 
-export function isHTMLVideoTexture(
-  params: unknown,
-): params is ImageTextureParams & { src: HTMLVideoElement } {
-  return typeof HTMLVideoElement !== "undefined" && (params as ImageTextureParams).src instanceof HTMLVideoElement;
+export function isHTMLVideoTexture(params: any): params is ImageTextureParams<HTMLVideoElement> {
+  return typeof HTMLVideoElement !== "undefined" && params.src instanceof HTMLVideoElement;
 }
 
 /**
- * Loads an image from a URL and returns {@link ImageTextureParams}.
+ * Loads an image from a URL and returns a Promise resolving to {@link ImageTextureParams}.
  * @param src - URL of the image.
  * @param params - Additional texture parameters.
  */
-export function loadTexture<P extends Omit<ImageTextureParams, "src">>(src: string, params?: P) {
-  if (typeof document === "undefined") {
-    throw new Error("loadTexture requires a document context.");
+export async function loadTexture<P extends BaseTextureParams>(
+  src: string,
+  params?: P,
+): Promise<ImageTextureParams<ImageBitmap>> {
+  const response = await fetch(src);
+  if (!response.ok) {
+    throw new Error(`Failed to load texture: ${src}`);
   }
+  const blob = await response.blob();
+  const bitmap = await createImageBitmap(blob, {
+    imageOrientation: params?.flipY === false ? "none" : "flipY",
+  });
 
-  const img = document.createElement("img");
-
-  if (src.startsWith("http") && new URL(src).origin !== globalThis.location.origin) {
-    img.crossOrigin = "anonymous";
-  }
-
-  const onload = () => {
-    img.removeEventListener("error", onerror);
-  };
-  const onerror = () => {
-    console.error(`Failed to load texture: ${src}`);
-    img.removeEventListener("load", onload);
-  };
-
-  img.addEventListener("load", onload, { once: true });
-  img.addEventListener("error", onerror, { once: true });
-
-  img.src = src;
-
-  return { ...(params as P), src: img };
+  return { ...params, src: bitmap };
 }
 
 /**
@@ -138,9 +122,12 @@ export function loadTexture<P extends Omit<ImageTextureParams, "src">>(src: stri
  * @param src - URL of the video.
  * @param params - Additional video loading options.
  */
-export function loadVideoTexture<P extends LoadVideoParams>(src: string, params?: P) {
+export function loadVideoTexture<P extends LoadVideoParams>(
+  src: string,
+  params?: P,
+): ImageTextureParams<HTMLVideoElement> {
   if (typeof document === "undefined") {
-    throw new Error("loadVideoTexture requires a document context.");
+    throw new TypeError("loadVideoTexture requires a document context.");
   }
 
   const video = document.createElement("video");
@@ -184,7 +171,7 @@ export function loadVideoTexture<P extends LoadVideoParams>(src: string, params?
   video.src = src;
   video.load();
 
-  return { ...(params as P), src: video };
+  return { ...params, src: video };
 }
 
 /**
@@ -313,15 +300,11 @@ export type DataTextureParams = BaseTextureParams & {
 /**
  * Parameters for creating a texture from an external source (Image, Video, etc.).
  */
-export type ImageTextureParams = BaseTextureParams & {
+export type ImageTextureParams<S extends TexImageSource = TexImageSource> = BaseTextureParams & {
   /**
    * A source of texture: image, video, canvas, etc.
    */
-  src: TexImageSource;
-  /**
-   * Placeholder data to use while the source is loading.
-   */
-  placeholder?: DataTextureParams;
+  src: S;
 };
 
 /**
@@ -332,7 +315,7 @@ export type TextureParams = DataTextureParams | ImageTextureParams;
 /**
  * Parameters for loading a video texture.
  */
-export interface LoadVideoParams extends Omit<ImageTextureParams, "src"> {
+export interface LoadVideoParams extends BaseTextureParams {
   /**
    * Timecode in seconds from which to start the video.
    * @default 0

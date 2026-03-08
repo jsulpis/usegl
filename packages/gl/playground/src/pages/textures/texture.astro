@@ -5,26 +5,9 @@ import Layout from "../../layouts/Layout.astro";
 <script>
   import { glCanvas, loadTexture } from "@radiance/gl";
   import { incrementRenderCount } from "../../components/renderCount";
+  import type { TextureParams } from "@radiance/gl";
 
-  const texture = loadTexture("https://picsum.photos/id/669/600/400", {
-    placeholder: {
-      magFilter: "nearest",
-      data: new Uint8Array(
-        [
-          [255, 255, 255, 255],
-          [255, 255, 255, 255],
-          [255, 255, 255, 255],
-          [255, 255, 255, 255],
-          [99, 46, 22, 255],
-          [255, 255, 255, 255],
-        ].flat()
-      ),
-      width: 3,
-      height: 2,
-    },
-  });
-
-  const { onAfterRender } = glCanvas({
+  const { onAfterRender, uniforms } = glCanvas({
     canvas: "#glCanvas",
     fragment: /* glsl */ `
       in vec2 vUv;
@@ -57,8 +40,25 @@ import Layout from "../../layouts/Layout.astro";
       }
     `,
     uniforms: {
-      uTexture: texture,
+      uTexture: {
+        data: new Uint8Array(
+          [
+            [255, 255, 255, 255],
+            [255, 255, 255, 255],
+            [255, 255, 255, 255],
+            [255, 255, 255, 255],
+            [99, 46, 22, 255],
+            [255, 255, 255, 255],
+          ].flat(),
+        ),
+        width: 3,
+        height: 2,
+      } as TextureParams,
     },
+  });
+
+  loadTexture("https://picsum.photos/id/669/600/400").then((texture) => {
+    uniforms.uTexture = texture;
   });
 
   onAfterRender(incrementRenderCount);

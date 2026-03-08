@@ -52,7 +52,9 @@ export default defineConfig({
     {
       name: "safari",
       use: { ...devices["Desktop Safari"], viewport: desktopViewport },
-      grepInvert: /video/, // the video does not work in the docker image used for the CI, maybe due to a codec issue
+      // - the video does not work in the docker image used for the CI, maybe due to a codec issue
+      // - issues with offscreen canvas and WebGL in Safari < 17
+      grepInvert: /video|offscreencanvas/,
     },
     {
       name: "android",
@@ -67,7 +69,9 @@ export default defineConfig({
     {
       name: "iphone",
       use: { ...devices["iPhone 12"], viewport: mobileViewport },
-      grepInvert: /video/, // the video does not work in the docker image used for the CI, maybe due to a codec issue
+      // - the video does not work in the docker image used for the CI, maybe due to a codec issue
+      // - issues with offscreen canvas and WebGL in Safari < 17
+      grepInvert: /video|offscreencanvas/,
     },
   ],
   webServer: {

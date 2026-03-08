@@ -1,4 +1,4 @@
-import { glCanvas, type GLCanvas } from "@radiance/gl";
+import { glCanvas, loadTexture, type GLCanvas } from "@radiance/gl";
 
 type InitMessage = {
   type: "init";
@@ -17,37 +17,59 @@ type WorkerMessage = InitMessage | ResizeMessage;
 
 addEventListener("message", (event: MessageEvent<WorkerMessage>) => {
   switch (event.data.type) {
-    case "init":
+    case "init": {
       init(event.data);
       break;
-    case "resize":
+    }
+    case "resize": {
       resize(event.data);
       break;
+    }
   }
 });
 
 let scene: GLCanvas;
 
-function init(message: InitMessage) {
+async function init(message: InitMessage) {
   scene = glCanvas({
     canvas: message.canvas,
     fragment: /* glsl */ `
-      varying vec2 uv;
-			uniform vec2 resolution;
+      in vec2 vUv;
+      uniform sampler2D uTexture;
+      uniform vec2 uResolution;
+      out vec4 fragColor;
 
-			void main() {
-				vec2 center = resolution / 2.;
-				float dist = distance(uv * resolution, center);
-				float radius = min(resolution.x, resolution.y) / 3.;
-				float circle = 1. - smoothstep(radius * .99, radius * 1.01, dist);
-				gl_FragColor = vec4(vec3(circle), 1.);
-			}
+      #define CONTAIN 1
+      #define COVER 2
+      #define OBJECT_FIT CONTAIN
+
+      void main() {
+        vec2 textureResolution = vec2(textureSize(uTexture, 0));
+        float canvasRatio = uResolution.x / uResolution.y;
+        float textureRatio = textureResolution.x / textureResolution.y;
+
+        vec2 uv = vUv - 0.5;
+        if (OBJECT_FIT == CONTAIN ? canvasRatio > textureRatio : canvasRatio < textureRatio) {
+          uv.x *= canvasRatio / textureRatio;
+        } else {
+          uv.y *= textureRatio / canvasRatio;
+        }
+        uv += 0.5;
+
+        vec3 color = texture(uTexture, uv).rgb;
+        color *= step(0., uv.x) * (1. - step(1., uv.x));
+        color *= step(0., uv.y) * (1. - step(1., uv.y));
+
+        fragColor = vec4(color, 1.);
+      }
     `,
   });
 
   scene.onAfterRender(() => {
     postMessage({ type: "rendered" });
   });
+
+  scene.uniforms.uTexture = loadTexture("https://picsum.photos/id/669/600/400");
 }
 
 function resize(message: ResizeMessage) {
