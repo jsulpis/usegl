@@ -69,20 +69,20 @@ export const glCanvas = <U extends Uniforms>(params: GLCanvasParams<U>): GLCanva
     });
   }
 
-  for (const pass of mainCompositor.allPasses) {
-    pass.onUpdated(requestRender);
+  if (renderMode === "auto") {
+    for (const pass of mainCompositor.allPasses) {
+      if (!("uniforms" in pass)) continue;
 
-    if (!("uniforms" in pass) || renderMode === "manual") continue;
+      pass.onUpdated((uniforms) => {
+        requestRender();
 
-    // Request a render when an image is loaded or a video frame is rendered
-    for (const uniform of Object.values(pass.uniforms)) {
-      if (isHTMLImageTexture(uniform) && !uniform.src.complete) {
-        uniform.src.addEventListener("load", requestRender, { once: true });
-      } else if (isHTMLVideoTexture(uniform)) {
-        uniform.src.requestVideoFrameCallback(function onFramePlayed() {
-          requestRender();
-          uniform.src.requestVideoFrameCallback(onFramePlayed);
-        });
+        for (const [name, value] of Object.entries(uniforms)) {
+          watchUniformValue(name, value, pass);
+        }
+      });
+
+      for (const [name, value] of Object.entries(pass.uniforms)) {
+        watchUniformValue(name, value, pass);
       }
     }
   }
@@ -97,6 +97,26 @@ export const glCanvas = <U extends Uniforms>(params: GLCanvasParams<U>): GLCanva
     if (!isCanvasResized) {
       executeCanvasReadyCallbacks();
       isCanvasResized = true;
+    }
+  }
+
+  /**
+   * Watch a uniform value for changes that would require re-rendering, such as promises resolving or media loading.
+   */
+  function watchUniformValue(
+    name: string,
+    value: unknown,
+    pass: { uniforms: Record<string, unknown> },
+  ) {
+    if (isPromiseLike(value)) {
+      value.then((resolvedValue) => (pass.uniforms[name] = resolvedValue));
+    } else if (isHTMLImageTexture(value) && !value.src.complete) {
+      value.src.addEventListener("load", requestRender, { once: true });
+    } else if (isHTMLVideoTexture(value)) {
+      value.src.requestVideoFrameCallback(function onFramePlayed() {
+        requestRender();
+        value.src.requestVideoFrameCallback(onFramePlayed);
+      });
     }
   }
 
@@ -151,6 +171,15 @@ function isOffscreen(canvas: HTMLCanvasElement | OffscreenCanvas): canvas is Off
   return typeof OffscreenCanvas !== "undefined" && canvas instanceof OffscreenCanvas;
 }
 
+function isPromiseLike(value: unknown): value is PromiseLike<unknown> & object {
+  return (
+    value != null &&
+    typeof value === "object" &&
+    "then" in value &&
+    typeof (value as PromiseLike<unknown>).then === "function"
+  );
+}
+
 /**
  * Configuration params for the {@link glCanvas} function.
  */
@@ -186,7 +215,7 @@ export interface GLCanvasParams<U extends Uniforms> extends LoopParams, QuadPass
 /**
  * The object returned by the {@link glCanvas} function.
  */
-export interface GLCanvas<U extends Uniforms = Record<string, never>> {
+export interface GLCanvas<U extends Uniforms = Record<string, any>> {
   /** The WebGL2 rendering context. */
   gl: WebGL2RenderingContext;
   /** Executes a single render of the entire pipeline. */
@@ -204,7 +233,7 @@ export interface GLCanvas<U extends Uniforms = Record<string, never>> {
   /** The Device Pixel Ratio being used. */
   dpr: number;
   /** Reactive proxy of the main render pass's uniforms. */
-  uniforms: U;
+  uniforms: U & Record<string, unknown>;
   /** Registers a callback called whenever a uniform of the main render pass is updated. */
   onUpdated: (callback: UpdatedCallback<U>) => void;
   /** Registers a callback called just before the main render pass is rendered. */
