@@ -31,12 +31,11 @@ export function setupUniforms<U extends Uniforms>(uniforms: U) {
   const uniformsProxy = new Proxy(
     { ...uniforms },
     {
-      set(target, uniform: string, value) {
-        if (value !== target[uniform]) {
-          const oldTarget = getSnapshot(target);
-          target[uniform as keyof U] = value;
-          const newTarget = getSnapshot(target);
-          executeUpdateCallbacks(newTarget, oldTarget);
+      set(target, name: UniformName, value) {
+        if (value !== target[name]) {
+          const oldValue = target[name];
+          target[name] = value;
+          executeUpdateCallbacks(name, value, oldValue, getSnapshot(target));
         }
         return true;
       },
