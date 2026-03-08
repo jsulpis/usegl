@@ -9,8 +9,13 @@ import type { QuadPassParams } from "../passes/quadRenderPass";
 import { quadRenderPass } from "../passes/quadRenderPass";
 import { compositor } from "../passes/compositor";
 import { findUniformName } from "../internal/findName";
-import { isHTMLImageTexture, isHTMLVideoTexture } from "../core/texture";
 import { createHook } from "../internal/createHook";
+import {
+  isHTMLImageTexture,
+  isHTMLVideoTexture,
+  isOffscreen,
+  isPromiseLike,
+} from "../internal/typeGuards";
 
 /**
  * The main high-level function to manage a WebGL canvas.
@@ -163,19 +168,6 @@ export const glCanvas = <U extends Uniforms>(params: GLCanvasParams<U>): GLCanva
     resizeObserver,
   };
 };
-
-function isOffscreen(canvas: HTMLCanvasElement | OffscreenCanvas): canvas is OffscreenCanvas {
-  return typeof OffscreenCanvas !== "undefined" && canvas instanceof OffscreenCanvas;
-}
-
-function isPromiseLike(value: any): value is PromiseLike<unknown> & object {
-  return (
-    value != null &&
-    typeof value === "object" &&
-    "then" in value &&
-    typeof value.then === "function"
-  );
-}
 
 /**
  * Configuration params for the {@link glCanvas} function.

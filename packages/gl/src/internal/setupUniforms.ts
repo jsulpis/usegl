@@ -1,7 +1,7 @@
 import type { DataTextureParams, ImageTextureParams } from "../core/texture";
 import { fillTexture } from "../core/texture";
 import type { UpdatedCallback } from "../passes/renderPass";
-import type { Uniforms, UniformValue } from "../types";
+import type { Uniforms } from "../types";
 import { createHook } from "./createHook";
 
 export function setupUniforms<U extends Uniforms>(uniforms: U) {
@@ -51,7 +51,7 @@ export function setupUniforms<U extends Uniforms>(uniforms: U) {
     }
   }
 
-  function setUniform<Uname extends UniformName>(name: Uname, value: U[Uname] & UniformValue) {
+  function setUniform<Uname extends UniformName>(name: Uname, value: U[Uname]) {
     const uniformLocation = uniformsLocations.get(name) || -1;
     if (uniformLocation === -1) return -1;
 

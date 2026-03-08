@@ -35,7 +35,7 @@ export type UniformValue = number | VectorUniform | MatrixUniform | Float32Array
 /**
  * A collection of uniform variables.
  */
-export type Uniforms = Record<string, UniformValue>;
+export type Uniforms = Record<string, UniformValue | Promise<UniformValue>>;
 
 /**
  * A TypedArray (e.g., Float32Array, Uint16Array) used for buffer data.

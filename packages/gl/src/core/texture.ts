@@ -1,3 +1,5 @@
+import { isHTMLImageTexture, isHTMLVideoTexture } from "../internal/typeGuards";
+
 const minFilterMap: Record<MinFilter, number> = {
   linear: WebGL2RenderingContext.LINEAR,
   nearest: WebGL2RenderingContext.NEAREST,
@@ -86,14 +88,6 @@ export function fillTexture(
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, magFilterMap[magFilter]);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrapMap[wrapS]);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrapMap[wrapT]);
-}
-
-export function isHTMLImageTexture(params: any): params is ImageTextureParams<HTMLImageElement> {
-  return typeof HTMLImageElement !== "undefined" && params.src instanceof HTMLImageElement;
-}
-
-export function isHTMLVideoTexture(params: any): params is ImageTextureParams<HTMLVideoElement> {
-  return typeof HTMLVideoElement !== "undefined" && params.src instanceof HTMLVideoElement;
 }
 
 /**
