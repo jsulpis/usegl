@@ -3,10 +3,10 @@ import { onResize } from "./onResize";
 /**
  * Watch the bounding rect of an element and update it on resize and scroll events.
  */
-export function watchBoundingRect(target: HTMLElement, params: UseBoundingRectParams = {}) {
+export function watchBoundingRect(target: HTMLElement, params: WatchBoundingRectParams = {}) {
   const {
-    windowResize = typeof window !== "undefined",
-    windowScroll = typeof window !== "undefined",
+    windowResize = globalThis.window !== undefined,
+    windowScroll = globalThis.window !== undefined,
   } = params;
 
   const rect: BoundingRect = {
@@ -45,7 +45,7 @@ export function watchBoundingRect(target: HTMLElement, params: UseBoundingRectPa
   };
 }
 
-export interface UseBoundingRectParams {
+export interface WatchBoundingRectParams {
   /**
    * Listen to window resize event
    *

@@ -48,5 +48,9 @@ export {
 } from "./effects/toneMapping";
 export type { ToneMappingParams, ReinhardToneMappingParams } from "./effects/toneMapping";
 
+export { loop, playAllLoops, pauseAllLoops } from "./helpers/loop";
+export type { LoopParams } from "./helpers/loop";
+export { onResize } from "./helpers/onResize";
+export { onPointerEvents } from "./helpers/onPointerEvents";
+
 export * from "./types";
-export * from "@radiance/helpers";
