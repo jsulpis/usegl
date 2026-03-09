@@ -7,13 +7,13 @@ src/
 ├── core/             ← low-level WebGL2 primitives (program, shader, buffer, texture…)
 └── effects/          ← built-in post-processing effects (bloom, trails, toneMapping)
 ├── global/           ← entry points and state management (glCanvas, glContext)
+├── helpers/          ← utilities not related to WebGL (loop, pointer events etc)
 ├── internal/         ← private implementation helpers (not exported from index.ts)
 ├── passes/           ← rendering nodes and graphs (renderPass, compositor, pingPongFBO)
 ├── index.ts          ← public API barrel export (only file that re-exports)
 ├── types.ts          ← primitive shared types (UniformValue, Attribute, DrawMode)
 ```
 
-- New global managers → `global/`, new rendering passes → `passes/`, new internals → `internal/`, new effects → `effects/`.
 - **Colocation**: Component-specific types (e.g., `RenderTargetParams`, `BloomParams`) live in their respective source files.
 - `types.ts` contains only "primitive" shared types — avoid defining shared types inline.
 - `index.ts` is the only barrel; do not create barrel files within subdirectories.

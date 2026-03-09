@@ -26,8 +26,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
-      - run: pnpm --filter="./packages/*" install
-      - run: pnpm --filter="./packages/*" build
+      - run: pnpm --filter="./lib" install
+      - run: pnpm --filter="./lib" build
 
   static:
     name: "static checks"
@@ -66,8 +66,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
-      - run: pnpm --filter="./packages/gl" install
-      - run: xvfb-run pnpm --filter="./packages/gl" exec playwright test
+      - run: pnpm --filter="./lib" install
+      - run: xvfb-run pnpm --filter="./lib" exec playwright test
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}

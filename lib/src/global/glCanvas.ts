@@ -1,5 +1,5 @@
-import { onResize, loop } from "@radiance/helpers";
-import type { LoopParams } from "@radiance/helpers";
+import { onResize } from "../helpers/onResize";
+import { loop, type LoopParams } from "../helpers/loop";
 import type { Uniforms } from "../types";
 import type { CompositeEffectPass } from "../passes/compositeEffectPass";
 import type { EffectPass } from "../passes/effectPass";
