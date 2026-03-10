@@ -1,4 +1,4 @@
-import type { Attribute, DrawMode, Uniforms } from "../types";
+import type { Attribute, DrawMode, Uniforms } from "../types/types";
 import { createProgram } from "../core/program";
 import { setRenderTarget } from "../core/renderTarget";
 import type { RenderTarget } from "../core/renderTarget";
@@ -215,8 +215,8 @@ export type RenderPassParams<U extends Uniforms = Record<string, never>> = {
    */
   depthTest?: boolean;
   /**
-   * WebGL draw mode. Defaults to "POINTS" if `gl_PointSize` is found in the vertex shader,
-   * otherwise "TRIANGLES".
+   * WebGL draw mode.
+   * @default "POINTS" if `gl_PointSize` is found in the vertex shader, otherwise "TRIANGLES".
    */
   drawMode?: DrawMode;
   /**

@@ -1,5 +1,5 @@
 import { createAndBindBuffer } from "../core/buffer";
-import type { Attribute, Uniforms } from "../types";
+import type { Attribute, Uniforms } from "../types/types";
 import type { RenderPass } from "./renderPass";
 import { renderPass } from "./renderPass";
 

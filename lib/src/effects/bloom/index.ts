@@ -9,6 +9,8 @@ import upsampleFragment from "./glsl/upsample.frag";
 /**
  * Creates a Bloom effect using a downsampling/upsampling pyramid.
  *
+ * [Example: Bloom (builtin)](/examples/post-processing/builtin-bloom/)
+ *
  * @param params - Bloom configuration.
  * @returns A composite effect pass.
  */
@@ -88,6 +90,7 @@ export function bloom(params: BloomParams = {}) {
 
 /**
  * Parameters for the {@link bloom} effect.
+ * @inline
  */
 export type BloomParams = {
   /**

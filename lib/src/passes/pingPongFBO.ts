@@ -1,6 +1,6 @@
 import { createRenderTarget } from "../core/renderTarget";
 import { createFloatDataTexture, type DataTextureParams } from "../core/texture";
-import type { Attribute, Uniforms } from "../types";
+import type { Attribute, Uniforms } from "../types/types";
 import { quadRenderPass } from "./quadRenderPass";
 import type { RenderPass } from "./renderPass";
 

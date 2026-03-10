@@ -1,5 +1,5 @@
 import { setAttribute } from "../core/attribute";
-import type { Attribute } from "../types";
+import type { Attribute } from "../types/types";
 
 const UNSIGNED_INT = WebGL2RenderingContext.UNSIGNED_INT;
 const UNSIGNED_SHORT = WebGL2RenderingContext.UNSIGNED_SHORT;

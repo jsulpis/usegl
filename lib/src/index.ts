@@ -53,4 +53,4 @@ export type { LoopParams } from "./helpers/loop";
 export { onResize } from "./helpers/onResize";
 export { onPointerEvents } from "./helpers/onPointerEvents";
 
-export * from "./types";
+export * from "./types/types";

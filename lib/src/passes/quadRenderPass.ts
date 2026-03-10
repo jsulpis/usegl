@@ -1,4 +1,4 @@
-import type { Uniforms } from "../types";
+import type { Uniforms } from "../types/types";
 import { renderPass, type RenderPassParams } from "./renderPass";
 import { findAttributeName, findVaryingName } from "../internal/findName";
 
@@ -8,7 +8,7 @@ import { findAttributeName, findVaryingName } from "../internal/findName";
  *
  * @param gl - The WebGL2 context.
  * @param params - Configuration for the quad render pass.
- * @returns A {@link RenderPass} object.
+ * @returns A {@link renderPass | RenderPass} object.
  */
 export function quadRenderPass<U extends Uniforms>(
   gl: WebGL2RenderingContext | undefined,
@@ -63,7 +63,7 @@ const quadVertexPositions = [-1, -1, 3, -1, -1, 3];
 
 /**
  * Parameters for creating a {@link quadRenderPass}.
- * Inherits from {@link RenderPassParams} but makes the vertex shader optional.
+ * Inherits from {@link renderPass | RenderPassParams} but makes the vertex shader optional.
  */
 export type QuadPassParams<U extends Uniforms = Record<string, never>> = Omit<
   RenderPassParams<U>,

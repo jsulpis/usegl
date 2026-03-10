@@ -1,6 +1,6 @@
 import { onResize } from "../helpers/onResize";
 import { loop, type LoopParams } from "../helpers/loop";
-import type { Uniforms } from "../types";
+import type { Uniforms } from "../types/types";
 import type { CompositeEffectPass } from "../passes/compositeEffectPass";
 import type { EffectPass } from "../passes/effectPass";
 import type { UpdatedCallback } from "../passes/renderPass";
@@ -22,9 +22,6 @@ import {
  *
  * It combines context creation, a full-screen quad render pass, a post-processing compositor,
  * and automatic rendering/resizing logic.
- *
- * @param params - Configuration params.
- * @returns A {@link GLCanvas} object.
  */
 export const glCanvas = <U extends Uniforms>(params: GLCanvasParams<U>): GLCanvas<U> => {
   const {
@@ -170,7 +167,8 @@ export const glCanvas = <U extends Uniforms>(params: GLCanvasParams<U>): GLCanva
 };
 
 /**
- * Configuration params for the {@link glCanvas} function.
+ * @inline
+ * @internal
  */
 export interface GLCanvasParams<U extends Uniforms> extends LoopParams, QuadPassParams<U> {
   /**
