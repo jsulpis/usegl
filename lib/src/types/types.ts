@@ -1,4 +1,4 @@
-import type { TextureParams } from "./core/texture";
+import type { TextureParams } from "../core/texture";
 
 /**
  * A vector uniform value, representing a vec2, vec3, or vec4.
@@ -23,7 +23,7 @@ export type MatrixUniform =
 
 /**
  * A texture uniform value, which can be either a {@link TextureParams}
- * or a raw {@link WebGLTexture}.
+ * or a raw `WebGLTexture`.
  */
 export type TextureUniform = TextureParams | WebGLTexture;
 

@@ -1,4 +1,5 @@
 cache
+/api
 
 # build output
 dist/

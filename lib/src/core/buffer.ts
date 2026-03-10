@@ -1,4 +1,4 @@
-import type { TypedArray } from "../types";
+import type { TypedArray } from "../types/types";
 
 /**
  * Creates, binds, and fills a WebGL buffer with data.
@@ -24,6 +24,7 @@ export function createAndBindBuffer(
 /**
  * Converts raw numerical data or TypedArrays into a suitable TypedArray for WebGL buffers.
  *
+ * @internal
  * @param data - The raw data.
  * @param isIndex - Whether the data is for an index buffer.
  * @returns A TypedArray representation of the data.

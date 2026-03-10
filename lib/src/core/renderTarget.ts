@@ -93,7 +93,6 @@ export function createRenderTarget(
  * @param gl - The WebGL2 context.
  * @param target - The render target to bind. If null, binds the canvas (default framebuffer).
  * @param clear - Whether to clear the color and depth buffers after binding.
- * @default true
  */
 export function setRenderTarget(
   gl: WebGL2RenderingContext,

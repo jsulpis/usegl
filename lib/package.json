@@ -18,6 +18,7 @@
   "scripts": {
     "build": "tsdown",
     "dev": "astro dev --port 3000",
+    "docgen": "typedoc && cd src && find . -name '*.md' -exec rsync -R {} ../../docs/api/ ';' && prettier --write ../../docs/api --log-level warn --print-width 80",
     "format": "prettier src --check",
     "format:fix": "prettier src --write",
     "lint": "eslint src",
@@ -42,6 +43,9 @@
     "prettier": "3.8.1",
     "tsdown": "0.21.0",
     "tweakpane": "4.0.5",
+    "typedoc": "0.28.17",
+    "typedoc-plugin-markdown": "4.10.0",
+    "typedoc-vitepress-theme": "1.1.2",
     "typescript": "5.9.3",
     "vite-plugin-glsl": "1.5.5"
   },

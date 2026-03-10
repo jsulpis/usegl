@@ -1,5 +1,5 @@
 import { createHook } from "../internal/createHook";
-import type { Uniforms } from "../types";
+import type { Uniforms } from "../types/types";
 import type { RenderTarget } from "../core/renderTarget";
 import type { EffectPass } from "./effectPass";
 import type { RenderCallback, UpdatedCallback } from "./renderPass";

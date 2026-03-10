@@ -1,6 +1,6 @@
 import type { RenderTargetParams } from "../core/renderTarget";
 import { createRenderTarget } from "../core/renderTarget";
-import type { UniformValue, Uniforms } from "../types";
+import type { UniformValue, Uniforms } from "../types/types";
 import type { QuadPassParams } from "./quadRenderPass";
 import { quadRenderPass } from "./quadRenderPass";
 import type { RenderPass } from "./renderPass";

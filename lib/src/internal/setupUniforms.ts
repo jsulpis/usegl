@@ -1,7 +1,7 @@
 import type { DataTextureParams, ImageTextureParams } from "../core/texture";
 import { fillTexture } from "../core/texture";
 import type { UpdatedCallback } from "../passes/renderPass";
-import type { Uniforms } from "../types";
+import type { Uniforms } from "../types/types";
 import { createHook } from "./createHook";
 
 export function setupUniforms<U extends Uniforms>(uniforms: U) {

@@ -71,7 +71,7 @@ export function pauseAllLoops() {
   }
 }
 
-interface LoopData {
+export interface LoopData {
   /**
    * time elapsed in milliseconds since the loop started, excluding pauses.
    *
@@ -100,7 +100,7 @@ export interface LoopParams {
   immediate?: boolean;
 }
 
-interface LoopObj {
+export interface LoopObj {
   /** Play the animation loop. */
   play: () => void;
   /** Pause the animation loop. */

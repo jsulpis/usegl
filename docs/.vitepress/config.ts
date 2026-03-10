@@ -2,11 +2,8 @@ import { defineConfig, loadEnv } from "vitepress";
 import { groupIconMdPlugin, groupIconVitePlugin } from "vitepress-plugin-group-icons";
 import container from "markdown-it-container";
 import { renderSandbox } from "vitepress-plugin-sandpack";
-import { createRequire } from "node:module";
-import { examplesSidebar } from "./sidebars";
-
-const require = createRequire(import.meta.url);
-const pkg = require("../node_modules/@radiancejs/gl/package.json");
+import { apiSidebar, examplesSidebar } from "./sidebars";
+import pkg from "../../lib/package.json";
 
 const env = loadEnv(process.env.VERCEL_ENV || "development", process.cwd(), "");
 
@@ -28,6 +25,11 @@ export default defineConfig({
         activeMatch: "/examples/",
       },
       {
+        text: "API",
+        link: "/api/",
+        activeMatch: "/api/",
+      },
+      {
         text: `v${pkg.version}`,
         items: [
           {
@@ -47,6 +49,7 @@ export default defineConfig({
         },
       ],
       "/examples/": examplesSidebar,
+      "/api/": apiSidebar,
     },
 
     socialLinks: [
@@ -54,6 +57,10 @@ export default defineConfig({
       { icon: "bluesky", link: "https://bsky.app/profile/jsulpis.dev" },
       { icon: "x", link: "https://x.com/jsulpis" },
     ],
+
+    outline: {
+      level: "deep",
+    },
 
     search: {
       provider: "local",
@@ -80,7 +87,7 @@ export default defineConfig({
     config(md) {
       md.use(groupIconMdPlugin);
       md.use(container, "example-editor", {
-        render(tokens, idx) {
+        render(tokens: unknown[], idx: number) {
           return renderSandbox(tokens, idx, "example-editor");
         },
       });

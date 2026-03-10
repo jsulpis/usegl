@@ -1,4 +1,4 @@
-import type { Attribute } from "../types";
+import type { Attribute } from "../types/types";
 import { createAndBindBuffer, getBufferData } from "./buffer";
 
 /**

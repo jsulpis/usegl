@@ -202,10 +202,10 @@ export function createFloatDataTexture(data: number[] | Float32Array): DataTextu
 
 export type TextureData = ArrayBufferView | null;
 
-type MagFilter = "linear" | "nearest";
-type MinFilter = "linear" | "nearest" | "linear-mipmap-linear" | "nearest-mipmap-linear";
-type ColorSpace = "srgb" | "linear-rgb";
-type WrappingMode = "clamp-to-edge" | "repeat" | "mirrored-repeat";
+export type MagFilter = "linear" | "nearest";
+export type MinFilter = "linear" | "nearest" | "linear-mipmap-linear" | "nearest-mipmap-linear";
+export type ColorSpace = "srgb" | "linear-rgb";
+export type WrappingMode = "clamp-to-edge" | "repeat" | "mirrored-repeat";
 
 /**
  * Base parameters for configuring a WebGL texture.
