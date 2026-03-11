@@ -1,4 +1,4 @@
-import type { Attribute, DrawMode, Uniforms } from "../types/types";
+import type { Attribute, Uniforms } from "../types/types";
 import { createProgram } from "../core/program";
 import { setRenderTarget } from "../core/renderTarget";
 import type { RenderTarget } from "../core/renderTarget";
@@ -15,7 +15,6 @@ import { createHook } from "../internal/createHook";
  *
  * @param gl - The WebGL2 context. Can be undefined if you intend to initialize the pass later.
  * @param params - Configuration for the render pass.
- * @returns A {@link RenderPass} object.
  */
 export function renderPass<U extends Uniforms>(
   gl: WebGL2RenderingContext | undefined,
@@ -201,7 +200,7 @@ export type RenderPassParams<U extends Uniforms = Record<string, never>> = {
    */
   attributes?: Record<string, Attribute>;
   /**
-   * Initial uniform values. These will be wrapped in a reactive proxy.
+   * Initial uniform values. These will be wrapped in a reactive proxy to track changes.
    */
   uniforms?: U;
   /**
@@ -233,15 +232,15 @@ export type RenderPassParams<U extends Uniforms = Record<string, never>> = {
 /**
  * A generic rendering pass that encapsulates shaders, uniforms, and attributes.
  */
-export interface RenderPass<U extends Uniforms = Record<string, never>> {
+export type RenderPass<U extends Uniforms = Record<string, never>> = {
   /**
    * Executes the render pass.
    * @param opts - Rendering params.
    */
   render: (opts?: { target?: RenderTarget | null; clear?: boolean }) => void;
-  /** The default render target for this pass. */
+  /** The current render target for this pass. */
   target: RenderTarget | null;
-  /** Updates the default render target. */
+  /** Updates the current render target. */
   setTarget: (target: RenderTarget | null) => void;
   /** Resizes the render target associated with this pass. */
   setSize: ({ width, height }: { width: number; height: number }) => void;
@@ -263,10 +262,11 @@ export interface RenderPass<U extends Uniforms = Record<string, never>> {
   onResize: (callback: (width: number, height: number) => void) => void;
   /** Initializes the pass with a WebGL2 context. */
   initialize: (gl: WebGL2RenderingContext) => void;
-}
+};
 
 /**
  * Callback function executed during the render cycle.
+ * @param args - An object containing the uniforms used for the render.
  */
 export type RenderCallback<U extends Uniforms = Record<string, never>> = (
   args: Readonly<{ uniforms: U }>,
@@ -274,14 +274,27 @@ export type RenderCallback<U extends Uniforms = Record<string, never>> = (
 
 /**
  * Callback function executed when a uniform changes.
+ * @param name - The name of the uniform that changed.
+ * @param value - The new value of the uniform.
+ * @param oldValue - The previous value of the uniform.
+ * @param uniforms - A snapshot of all uniforms after the change.
  */
 export type UpdatedCallback<U extends Uniforms = Record<string, never>> = (
-  /** The name of the uniform that changed. */
   name: string,
-  /** The new value of the uniform. */
   value: unknown,
-  /** The previous value of the uniform. */
   oldValue: unknown,
-  /** A snapshot of all uniforms after the change. */
   uniforms: Readonly<U>,
 ) => void;
+
+/**
+ * Valid WebGL draw modes.
+ * @inline
+ */
+type DrawMode =
+  | "POINTS"
+  | "LINES"
+  | "LINE_STRIP"
+  | "LINE_LOOP"
+  | "TRIANGLES"
+  | "TRIANGLE_STRIP"
+  | "TRIANGLE_FAN";

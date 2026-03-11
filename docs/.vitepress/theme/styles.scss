@@ -133,3 +133,17 @@
     }
   }
 }
+
+.vp-doc {
+  :is(h2, h3, h4) + :is(p, div[class*="language-"]) {
+    margin-block: 0.25rem;
+
+    ~ :is(p, div[class*="language-"]) {
+      margin-block: 0.25rem;
+    }
+  }
+
+  h4 {
+    margin-top: 2rem;
+  }
+}

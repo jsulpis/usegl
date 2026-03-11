@@ -11,8 +11,9 @@ import outputFragment from "./glsl/output.frag";
  * This effect uses double buffering (ping-pong FBO) to accumulate colors over time,
  * creating a trailing effect behind moving objects.
  *
+ * [Example: Trails (builtin)](/examples/post-processing/builtin-trails/)
+ *
  * @param params - Configuration for the trails effect.
- * @returns A composite effect pass.
  */
 export function trails(params?: TrailsParams) {
   const { fadeout = 0.25, tailColor = [1, 1, 1, 1], tailColorFalloff = 0 } = params || {};
@@ -99,6 +100,8 @@ export function trails(params?: TrailsParams) {
 
 /**
  * Parameters for the {@link trails} effect.
+ * @inline
+ * @internal
  */
 export type TrailsParams = {
   /**

@@ -10,6 +10,10 @@ import type { RenderPass } from "./renderPass";
  * This pattern uses two textures (read and write) that are swapped at each render call.
  * It is commonly used for particle simulations, fluid dynamics, or any iterative process.
  *
+ * - [Example: Particles](/examples/gpgpu/particles/)
+ * - [Example: Boids](/examples/gpgpu/boids/)
+ * - [Example: Game of Life](/examples/gpgpu/game-of-life/)
+ *
  * @param gl - The WebGL2 context.
  * @param params - Configuration for the ping-pong pass.
  * @returns A {@link RenderPass} object specialized for double-buffering.
@@ -72,21 +76,20 @@ export function pingPongFBO<U extends Uniforms>(
   return pingPongFBOPass;
 }
 
-/**
- * Interface for a PingPongFBO pass.
- */
-export interface PingPongFBOPass<U extends Uniforms = Record<string, never>> extends RenderPass<U> {
+export type PingPongFBOPass<U extends Uniforms = Record<string, never>> = RenderPass<U> & {
   /** The current output texture after a render. */
   texture: DataTextureParams | WebGLTexture;
   /** Pre-calculated UV coordinates for sampling data from the texture. */
   coords: Attribute;
-}
+};
 
 /**
  * Params for the ping-pong FBO pattern.
+ * @inline
+ * @internal
  */
 export type PingPongFBOParams<U extends Uniforms = Record<string, never>> = {
-  /** Reactive uniforms for the pass. */
+  /** Uniforms for the pass. */
   uniforms?: U;
   /** Fragment shader source. Should read from `dataTexture.name`. */
   fragment: string;

@@ -1,4 +1,4 @@
-import type { DataTextureParams } from "./texture";
+import type { BaseTextureParams } from "./texture";
 import { fillTexture } from "./texture";
 
 /**
@@ -6,7 +6,6 @@ import { fillTexture } from "./texture";
  *
  * @param gl - The WebGL2 context.
  * @param params - Configuration parameters for the render target and its color texture.
- * @returns A new {@link RenderTarget} object.
  */
 export function createRenderTarget(
   gl: WebGL2RenderingContext,
@@ -112,8 +111,10 @@ export function setRenderTarget(
 
 /**
  * A render target (FrameBuffer Object) for offscreen rendering.
+ *
+ * Use it with any kind of render pass with `pass.setTarget(renderTarget)` or as a parameter of the render function, to render offscreen and use the resulting texture in subsequent passes or for readback.
  */
-export interface RenderTarget {
+export type RenderTarget = {
   /** The underlying WebGL framebuffer. */
   framebuffer: WebGLFramebuffer;
   /** The texture attached to the framebuffer. */
@@ -124,15 +125,33 @@ export interface RenderTarget {
   height: number;
   /** Resizes the render target. */
   setSize: (width: number, height: number) => void;
-}
+};
 
 /**
- * Parameters for creating a {@link RenderTarget}.
+ * @see {@link BaseTextureParams}
  */
-export type RenderTargetParams = Partial<Omit<DataTextureParams, "data">> & {
+export type RenderTargetParams = Partial<BaseTextureParams> & {
   /**
    * Whether to attach a depth buffer to the render target.
    * @default false
    */
   depthBuffer?: boolean;
+
+  /**
+   * The width of the texture in pixels.
+   * @default gl.canvas.width
+   */
+  width?: number;
+
+  /**
+   * The height of the texture in pixels.
+   * @default gl.canvas.height
+   */
+  height?: number;
+
+  /**
+   * Whether to automatically generate mipmaps for this texture.
+   * @default false
+   */
+  generateMipmaps?: boolean;
 };

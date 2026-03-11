@@ -14,7 +14,7 @@ import agxFragment from "./glsl/agx.frag";
  *
  * @param params - Configuration for the linear tone mapping.
  */
-export function linearToneMapping(params: ToneMappingParams = {}) {
+export function linearToneMapping(params?: ToneMappingParams) {
   return createToneMappingPass(linearFragment, params);
 }
 
@@ -24,7 +24,7 @@ export function linearToneMapping(params: ToneMappingParams = {}) {
  *
  * @param params - Configuration for the Hable tone mapping.
  */
-export function hableToneMapping(params: ToneMappingParams = {}) {
+export function hableToneMapping(params?: ToneMappingParams) {
   return createToneMappingPass(hableFragment, params);
 }
 
@@ -34,7 +34,7 @@ export function hableToneMapping(params: ToneMappingParams = {}) {
  *
  * @param params - Configuration for the ACES tone mapping.
  */
-export function acesToneMapping(params: ToneMappingParams = {}) {
+export function acesToneMapping(params?: ToneMappingParams) {
   return createToneMappingPass(acesFragment, params);
 }
 
@@ -44,7 +44,7 @@ export function acesToneMapping(params: ToneMappingParams = {}) {
  *
  * @param params - Configuration for the neutral tone mapping.
  */
-export function neutralToneMapping(params: ToneMappingParams = {}) {
+export function neutralToneMapping(params?: ToneMappingParams) {
   return createToneMappingPass(neutralFragment, params);
 }
 
@@ -54,7 +54,7 @@ export function neutralToneMapping(params: ToneMappingParams = {}) {
  *
  * @param params - Configuration for the Cineon tone mapping.
  */
-export function cineonToneMapping(params: ToneMappingParams = {}) {
+export function cineonToneMapping(params?: ToneMappingParams) {
   return createToneMappingPass(cineonFragment, params);
 }
 
@@ -64,7 +64,7 @@ export function cineonToneMapping(params: ToneMappingParams = {}) {
  *
  * @param params - Configuration for the AgX tone mapping.
  */
-export function agxToneMapping(params: ToneMappingParams = {}) {
+export function agxToneMapping(params?: ToneMappingParams) {
   return createToneMappingPass(agxFragment, params);
 }
 
@@ -74,8 +74,8 @@ export function agxToneMapping(params: ToneMappingParams = {}) {
  *
  * @param params - Configuration for the Reinhard tone mapping.
  */
-export function reinhardToneMapping(params: ReinhardToneMappingParams = {}) {
-  const { exposure = 1, outputColorSpace = "sRGB", whitePoint = 1 } = params;
+export function reinhardToneMapping(params?: ReinhardToneMappingParams) {
+  const { exposure = 1, outputColorSpace = "sRGB", whitePoint = 1 } = params || {};
   return effectPass({
     fragment: reinhardFragment,
     uniforms: {
@@ -88,8 +88,10 @@ export function reinhardToneMapping(params: ReinhardToneMappingParams = {}) {
 
 /**
  * Parameters for the Reinhard tone mapping effect.
+ * @inline
+ * @internal
  */
-export type ReinhardToneMappingParams = ToneMappingParams & {
+type ReinhardToneMappingParams = ToneMappingParams & {
   /**
    * The white point to use for extended Reinhard tone mapping.
    * A value of 1 disables the extended tone mapping.
@@ -99,8 +101,8 @@ export type ReinhardToneMappingParams = ToneMappingParams & {
   whitePoint?: number;
 };
 
-function createToneMappingPass(fragment: string, params: ToneMappingParams = {}) {
-  const { exposure = 1, outputColorSpace = "sRGB" } = params;
+function createToneMappingPass(fragment: string, params?: ToneMappingParams) {
+  const { exposure = 1, outputColorSpace = "sRGB" } = params || {};
   return effectPass({
     fragment,
     uniforms: {

@@ -1,6 +1,8 @@
 import type { RenderTargetParams } from "../core/renderTarget";
 import { createRenderTarget } from "../core/renderTarget";
+import { glCanvas as _glCanvas } from "../global/glCanvas";
 import type { UniformValue, Uniforms } from "../types/types";
+import { compositor as _compositor } from "./compositor";
 import type { QuadPassParams } from "./quadRenderPass";
 import { quadRenderPass } from "./quadRenderPass";
 import type { RenderPass } from "./renderPass";
@@ -8,8 +10,11 @@ import type { RenderPass } from "./renderPass";
 /**
  * Creates a post-processing effect pass that renders a full-screen quad.
  *
+ * Use with {@link _compositor | compositor()} or {@link _glCanvas | glCanvas()}.
+ *
+ * [Example: Single pass](/examples/post-processing/single-pass/)
+ *
  * @param params - Configuration for the effect pass.
- * @returns An {@link EffectPass} object.
  */
 export function effectPass<U extends EffectUniforms>(params: EffectPassParams<U>): EffectPass<U> {
   const { target = floatTargetConfig, resolutionScale = 1 } = params;
@@ -33,6 +38,8 @@ export function effectPass<U extends EffectUniforms>(params: EffectPassParams<U>
 /**
  * Default configuration for high-precision floating point render targets.
  * Useful for HDR and post-processing effects.
+ *
+ * Use it as a parameter for {@link createRenderTarget | createRenderTarget()}.
  */
 export const floatTargetConfig: RenderTargetParams = {
   internalFormat: WebGL2RenderingContext.RGBA16F,
@@ -47,6 +54,8 @@ export type EffectPass<U extends Uniforms = Record<string, never>> = RenderPass<
 /**
  * Uniforms specifically used in post-processing effects.
  * Supports functional values that receive information about the previous rendering passes.
+ *
+ * [Example: Multi pass](/examples/post-processing/multi-pass/)
  */
 export type EffectUniforms = Record<
   string,
@@ -66,6 +75,8 @@ export type EffectUniforms = Record<
 
 /**
  * Parameters for creating an {@link effectPass}.
+ * @inline
+ * @internal
  */
 export type EffectPassParams<U extends EffectUniforms> = Omit<QuadPassParams<U>, "target"> & {
   /**

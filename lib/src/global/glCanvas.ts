@@ -172,7 +172,7 @@ export const glCanvas = <U extends Uniforms>(params: GLCanvasParams<U>): GLCanva
  */
 export interface GLCanvasParams<U extends Uniforms> extends LoopParams, QuadPassParams<U> {
   /**
-   * The canvas element or selector to use.
+   * The canvas element to use or CSS selector to query it.
    */
   canvas: HTMLCanvasElement | OffscreenCanvas | string;
   /**
@@ -189,20 +189,20 @@ export interface GLCanvasParams<U extends Uniforms> extends LoopParams, QuadPass
    */
   postEffects?: Array<EffectPass<any> | CompositeEffectPass<any>>;
   /**
-   * Whether to render automatically on frame changes or manually.
+   * Whether to render automatically when needed (uniform updated, canvas resized, image texture loaded...) or manually.
    * @default "auto"
    */
   renderMode?: "manual" | "auto";
   /**
    * Target color space for the drawing buffer.
    */
-  colorSpace?: PredefinedColorSpace;
+  colorSpace?: "srgb" | "display-p3";
 }
 
 /**
  * The object returned by the {@link glCanvas} function.
  */
-export interface GLCanvas<U extends Uniforms = Record<string, any>> {
+export type GLCanvas<U extends Uniforms = Record<string, any>> = {
   /** The WebGL2 rendering context. */
   gl: WebGL2RenderingContext;
   /** Executes a single render of the entire pipeline. */
@@ -211,7 +211,7 @@ export interface GLCanvas<U extends Uniforms = Record<string, any>> {
   onCanvasReady: (callback: () => void) => void;
   /** The HTMLCanvasElement or OffscreenCanvas being used. */
   canvas: HTMLCanvasElement | OffscreenCanvas;
-  /** Resizes the canvas and all render targets in the pipeline. */
+  /** Resizes the canvas and all render targets in the postprocessing chain. */
   setSize: (size: { width: number; height: number }) => void;
   /** Resumes the internal animation loop (if a 'time' uniform is detected). */
   play: () => void;
@@ -229,4 +229,4 @@ export interface GLCanvas<U extends Uniforms = Record<string, any>> {
   onAfterRender: (callback: () => void) => void;
   /** The resize observer managing the canvas resizing. */
   resizeObserver: ReturnType<typeof onResize> | null;
-}
+};

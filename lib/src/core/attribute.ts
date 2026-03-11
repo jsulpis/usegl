@@ -1,5 +1,5 @@
 import type { Attribute } from "../types/types";
-import { createAndBindBuffer, getBufferData } from "./buffer";
+import { bindBuffer, getBufferData } from "./buffer";
 
 /**
  * Sets up a vertex attribute for a given shader program.
@@ -11,19 +11,18 @@ import { createAndBindBuffer, getBufferData } from "./buffer";
  * @param program - The WebGL program containing the attribute.
  * @param name - The name of the attribute in the shader.
  * @param attribute - The attribute data and configuration.
- * @returns An object containing the attribute location and computed vertex count.
  */
 export function setAttribute(
   gl: WebGL2RenderingContext,
   program: WebGLProgram,
   name: string,
   attribute: Attribute,
-) {
+): SetAttributeResult {
   const bufferData = getBufferData(attribute.data, name === "index");
   const location = gl.getAttribLocation(program, name);
 
   if (name === "index") {
-    createAndBindBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, bufferData);
+    bindBuffer(gl, gl.ELEMENT_ARRAY_BUFFER, bufferData);
 
     if (location === -1) {
       return { location, vertexCount: bufferData.length };
@@ -35,7 +34,7 @@ export function setAttribute(
     return { location, vertexCount: 0 };
   }
 
-  createAndBindBuffer(gl, gl.ARRAY_BUFFER, bufferData);
+  bindBuffer(gl, gl.ARRAY_BUFFER, bufferData);
 
   gl.enableVertexAttribArray(location);
   gl.vertexAttribPointer(
@@ -70,4 +69,14 @@ function getGLType(gl: WebGL2RenderingContext, data: ArrayBufferView) {
   if (data instanceof Uint32Array) return gl.UNSIGNED_INT;
   if (data instanceof Int32Array) return gl.INT;
   return gl.FLOAT;
+}
+
+/**
+ * @inline
+ */
+interface SetAttributeResult {
+  /** The location of the attribute in the shader program. */
+  location: number;
+  /** The computed vertex count based on the attribute data and configuration. */
+  vertexCount: number;
 }

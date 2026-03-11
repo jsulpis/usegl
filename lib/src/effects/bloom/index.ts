@@ -9,13 +9,14 @@ import upsampleFragment from "./glsl/upsample.frag";
 /**
  * Creates a Bloom effect using a downsampling/upsampling pyramid.
  *
+ * Based on [Custom Bloom Post-Process in Unreal Engine](https://www.froyok.fr/blog/2021-12-ue4-custom-bloom/).
+ *
  * [Example: Bloom (builtin)](/examples/post-processing/builtin-bloom/)
  *
  * @param params - Bloom configuration.
- * @returns A composite effect pass.
  */
-export function bloom(params: BloomParams = {}) {
-  const { levels = 8, radius = 0.65, mix = 0.5 } = params;
+export function bloom(params?: BloomParams) {
+  const { levels = 8, radius = 0.65, mix = 0.5 } = params || {};
 
   const downsamplePasses: EffectPass<any>[] = [];
 
@@ -91,6 +92,7 @@ export function bloom(params: BloomParams = {}) {
 /**
  * Parameters for the {@link bloom} effect.
  * @inline
+ * @internal
  */
 export type BloomParams = {
   /**

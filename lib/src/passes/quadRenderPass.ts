@@ -3,12 +3,12 @@ import { renderPass, type RenderPassParams } from "./renderPass";
 import { findAttributeName, findVaryingName } from "../internal/findName";
 
 /**
- * Creates a render pass that renders a full-screen quad (actually a single large triangle).
- * This is optimized for post-processing and full-screen effects.
+ * Creates a render pass that renders a full-screen quad (actually a single large triangle for performance reasons, see [here](https://github.com/pmndrs/postprocessing?tab=readme-ov-file#performance) and [here](https://michaldrobot.com/2014/04/01/gcn-execution-patterns-in-full-screen-passes/)).
+ *
+ * This is used for creating post-processing effect passes, but can also be used directly for any full-screen rendering.
  *
  * @param gl - The WebGL2 context.
  * @param params - Configuration for the quad render pass.
- * @returns A {@link renderPass | RenderPass} object.
  */
 export function quadRenderPass<U extends Uniforms>(
   gl: WebGL2RenderingContext | undefined,
@@ -63,7 +63,7 @@ const quadVertexPositions = [-1, -1, 3, -1, -1, 3];
 
 /**
  * Parameters for creating a {@link quadRenderPass}.
- * Inherits from {@link renderPass | RenderPassParams} but makes the vertex shader optional.
+ * Inherits from {@link RenderPassParams} but makes the vertex shader optional.
  */
 export type QuadPassParams<U extends Uniforms = Record<string, never>> = Omit<
   RenderPassParams<U>,
