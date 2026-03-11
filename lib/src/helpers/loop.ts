@@ -6,7 +6,7 @@ const allLoops: Array<LoopObj> = [];
  * @param params parameters for the loop.
  * @returns  An object with `play` and `pause` methods to control the animation loop.
  */
-export function loop(callback: ({ time, deltaTime }: LoopData) => void, params?: LoopParams) {
+export function loop(callback: (data: LoopData) => void, params?: LoopParams) {
   let animationFrameHandle: number;
   let pauseTime: number | null;
   let loopStartTime: number;
@@ -71,7 +71,11 @@ export function pauseAllLoops() {
   }
 }
 
-export interface LoopData {
+/**
+ * @inline
+ * @internal
+ */
+export type LoopData = {
   /**
    * time elapsed in milliseconds since the loop started, excluding pauses.
    *
@@ -88,8 +92,12 @@ export interface LoopData {
    * This timer is NOT paused when the loop is paused, which can cause jumps in animations. If you want to get the time elapsed excluding pauses, use `time` instead.
    */
   elapsedTime: number;
-}
+};
 
+/**
+ * @inline
+ * @internal
+ */
 export interface LoopParams {
   /**
    * If true, the loop will start immediately.
@@ -100,6 +108,10 @@ export interface LoopParams {
   immediate?: boolean;
 }
 
+/**
+ * @inline
+ * @internal
+ */
 export interface LoopObj {
   /** Play the animation loop. */
   play: () => void;

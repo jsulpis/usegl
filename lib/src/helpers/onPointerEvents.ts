@@ -41,6 +41,10 @@ export function onPointerEvents(canvas: HTMLCanvasElement, handlers: PointerEven
   return { stop, listen };
 }
 
+/**
+ * @inline
+ * @internal
+ */
 export interface PointerEventsHandlers {
   enter?: (args: HandlerArgs) => void;
   move?: (args: HandlerArgs) => void;
@@ -49,14 +53,23 @@ export interface PointerEventsHandlers {
   up?: (args: HandlerArgs) => void;
 }
 
-export interface HandlerArgs {
+export type HandlerArgs = {
   pointer: {
     x: number;
     y: number;
   };
-  canvasRect: BoundingRect;
+  canvasRect: {
+    width: number;
+    height: number;
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+    x: number;
+    y: number;
+  };
   canvasCenter: {
     x: number;
     y: number;
   };
-}
+};

@@ -3,12 +3,13 @@ import type { TypedArray } from "../types/types";
 /**
  * Creates, binds, and fills a WebGL buffer with data.
  *
+ * @internal
  * @param gl - The WebGL2 context.
  * @param target - The buffer target (e.g., gl.ARRAY_BUFFER or gl.ELEMENT_ARRAY_BUFFER).
  * @param data - The data to fill the buffer with.
  * @returns The created WebGLBuffer.
  */
-export function createAndBindBuffer(
+export function bindBuffer(
   gl: WebGL2RenderingContext,
   target: GLenum,
   data: TypedArray | number[],

@@ -59,15 +59,3 @@ export interface Attribute {
   /** The offset of the first component in the buffer. */
   offset?: number;
 }
-
-/**
- * Valid WebGL draw modes.
- */
-export type DrawMode =
-  | "POINTS"
-  | "LINES"
-  | "LINE_STRIP"
-  | "LINE_LOOP"
-  | "TRIANGLES"
-  | "TRIANGLE_STRIP"
-  | "TRIANGLE_FAN";

@@ -2,15 +2,16 @@ import { createHook } from "../internal/createHook";
 import type { Uniforms } from "../types/types";
 import type { RenderTarget } from "../core/renderTarget";
 import type { EffectPass } from "./effectPass";
-import type { RenderCallback, UpdatedCallback } from "./renderPass";
+import { renderPass as _renderPass, type RenderCallback, type UpdatedCallback } from "./renderPass";
 
 /**
  * Creates a composite effect pass from a series of sub-passes.
  * This is useful for complex effects that require multiple steps, like Bloom or Blur.
  *
+ * [Example: Multi pass](/examples/post-processing/multi-pass/)
+ *
  * @param passes - Ordered list of sub-passes to execute.
  * @param uniforms - Reactive uniform values for the composite effect.
- * @returns A composite effect pass object.
  */
 export function compositeEffectPass<U extends Uniforms = Record<string, never>>(
   passes: EffectPass<Uniforms>[],
@@ -71,11 +72,14 @@ export function compositeEffectPass<U extends Uniforms = Record<string, never>>(
 
 /**
  * An effect pass composed of multiple sub-passes.
+ *
+ * @see {@link EffectPass}
+ * @see {@link _renderPass | RenderPass}
  */
-export interface CompositeEffectPass<U extends Uniforms = Record<string, never>> extends Omit<
+export type CompositeEffectPass<U extends Uniforms = Record<string, never>> = Omit<
   EffectPass<U>,
   "fragment" | "vertex"
-> {
+> & {
   /** The sequence of sub-passes executed by this composite effect. */
   passes: EffectPass<Uniforms>[];
-}
+};

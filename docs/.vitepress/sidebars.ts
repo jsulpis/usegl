@@ -51,6 +51,7 @@ function normalizeApiSidebar(items: SidebarItem[], depth = 0): SidebarItem[] {
     ...item,
     text: formatApiLabel(item.text!, depth),
     link: depth === 0 ? `/api/${item.text}/` : item.link,
+    collapsed: depth > 0,
     items: item.items ? normalizeApiSidebar(item.items, depth + 1) : undefined,
   }));
 }
@@ -59,9 +60,7 @@ function formatApiLabel(label: string, depth: number) {
   if (depth > 1) return label;
   return upperFirst(
     label.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2"),
-  )
-    .replace(/On |Watch /, "")
-    .replace("Gl ", "GL ");
+  ).replace(/On |Watch |Gl /, "");
 }
 
 function upperFirst(str: string) {

@@ -13,13 +13,12 @@ import { floatTargetConfig } from "./effectPass";
  * - Initialization of the WebGL context for all effects.
  * - Automatic creation of intermediate floating-point render targets.
  * - Injecting `previousPass` and `inputPass` references into effect uniforms.
- * - Automatic linking of the previous pass's texture to the next effect's input.
+ * - Automatic linking of the previous pass's output texture to the next effect's input.
  * - Rendering all passes in the correct order.
  *
  * @param gl - The WebGL2 context.
  * @param renderPass - The main scene render pass.
  * @param effects - An array of post-processing effects to apply.
- * @returns A {@link Compositor} object.
  */
 export function compositor(
   gl: WebGL2RenderingContext,
@@ -113,10 +112,7 @@ function setupEffectPass(
   }
 }
 
-/**
- * The object returned by the {@link compositor} function.
- */
-export interface Compositor {
+export type Compositor = {
   /** Renders the entire chain: the main pass followed by all effects. */
   render: (opts?: { clear?: boolean }) => void;
   /** Resizes all passes and their respective render targets. */
@@ -127,4 +123,4 @@ export interface Compositor {
   onBeforeRender: (callback: () => void) => void;
   /** Registers a callback called after the whole rendering pipeline finishes. */
   onAfterRender: (callback: () => void) => void;
-}
+};

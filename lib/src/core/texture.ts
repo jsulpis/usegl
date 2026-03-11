@@ -25,6 +25,7 @@ const wrapMap: Record<WrappingMode, number> = {
  * - if the src is an HTMLImageElement or HTMLVideoElement which is not loaded yet, a single black pixel is uploaded
  * - if no src is provided, the data parameter will be used (with default to a single black pixel)
  *
+ * @internal
  * @param gl - The WebGL2 context.
  * @param texture - The WebGL texture to fill.
  * @param params - Configuration parameters for the texture.
@@ -95,9 +96,9 @@ export function fillTexture(
  * @param src - URL of the image.
  * @param params - Additional texture parameters.
  */
-export async function loadTexture<P extends BaseTextureParams>(
+export async function loadTexture(
   src: string,
-  params?: P,
+  params?: BaseTextureParams,
 ): Promise<ImageTextureParams<ImageBitmap>> {
   const response = await fetch(src);
   if (!response.ok) {
@@ -116,9 +117,9 @@ export async function loadTexture<P extends BaseTextureParams>(
  * @param src - URL of the video.
  * @param params - Additional video loading options.
  */
-export function loadVideoTexture<P extends LoadVideoParams>(
+export function loadVideoTexture(
   src: string,
-  params?: P,
+  params?: LoadVideoParams,
 ): ImageTextureParams<HTMLVideoElement> {
   if (typeof document === "undefined") {
     throw new TypeError("loadVideoTexture requires a document context.");
@@ -172,6 +173,8 @@ export function loadVideoTexture<P extends LoadVideoParams>(
  * Creates texture parameters for a float data texture.
  * Useful for passing arbitrary numerical data to shaders.
  *
+ * [Example: particles](/examples/gpgpu/particles/)
+ *
  * @param data - Flat array or Float32Array of data. Must have 4 components per element (RGBA).
  */
 export function createFloatDataTexture(data: number[] | Float32Array): DataTextureParams {
@@ -200,12 +203,17 @@ export function createFloatDataTexture(data: number[] | Float32Array): DataTextu
   };
 }
 
-export type TextureData = ArrayBufferView | null;
+/** @inline */
+type MagFilter = "linear" | "nearest";
 
-export type MagFilter = "linear" | "nearest";
-export type MinFilter = "linear" | "nearest" | "linear-mipmap-linear" | "nearest-mipmap-linear";
-export type ColorSpace = "srgb" | "linear-rgb";
-export type WrappingMode = "clamp-to-edge" | "repeat" | "mirrored-repeat";
+/** @inline */
+type MinFilter = "linear" | "nearest" | "linear-mipmap-linear" | "nearest-mipmap-linear";
+
+/** @inline */
+type ColorSpace = "srgb" | "linear-rgb";
+
+/** @inline */
+type WrappingMode = "clamp-to-edge" | "repeat" | "mirrored-repeat";
 
 /**
  * Base parameters for configuring a WebGL texture.
@@ -238,7 +246,7 @@ export type BaseTextureParams = {
   generateMipmaps?: boolean;
   /**
    * Level of anisotropic filtering to apply.
-   * @default navigator.hardwareConcurrency
+   * @default 1 (no anisotropic filtering)
    */
   anisotropy?: number;
   /**
@@ -275,12 +283,13 @@ export type BaseTextureParams = {
 
 /**
  * Parameters for creating a texture from raw data (TypedArray).
+ * @see {@link BaseTextureParams}
  */
 export type DataTextureParams = BaseTextureParams & {
   /**
    * A typed array of texture data used to fill the texture.
    */
-  data: TextureData;
+  data: ArrayBufferView | null;
   /**
    * The width of the texture in pixels.
    */
@@ -293,6 +302,7 @@ export type DataTextureParams = BaseTextureParams & {
 
 /**
  * Parameters for creating a texture from an external source (Image, Video, etc.).
+ * @see {@link BaseTextureParams}
  */
 export type ImageTextureParams<S extends TexImageSource = TexImageSource> = BaseTextureParams & {
   /**
@@ -308,11 +318,12 @@ export type TextureParams = DataTextureParams | ImageTextureParams;
 
 /**
  * Parameters for loading a video texture.
+ * @see {@link BaseTextureParams}
  */
-export interface LoadVideoParams extends BaseTextureParams {
+export type LoadVideoParams = BaseTextureParams & {
   /**
    * Timecode in seconds from which to start the video.
    * @default 0
    */
   startTime?: number;
-}
+};

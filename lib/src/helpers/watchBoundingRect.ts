@@ -2,6 +2,7 @@ import { onResize } from "./onResize";
 
 /**
  * Watch the bounding rect of an element and update it on resize and scroll events.
+ * @internal
  */
 export function watchBoundingRect(target: HTMLElement, params: WatchBoundingRectParams = {}) {
   const {
@@ -45,6 +46,9 @@ export function watchBoundingRect(target: HTMLElement, params: WatchBoundingRect
   };
 }
 
+/**
+ * @internal
+ */
 export interface WatchBoundingRectParams {
   /**
    * Listen to window resize event
@@ -60,7 +64,10 @@ export interface WatchBoundingRectParams {
   windowScroll?: boolean;
 }
 
-export interface BoundingRect {
+/**
+ * @internal
+ */
+export type BoundingRect = {
   width: number;
   height: number;
   top: number;
@@ -69,4 +76,4 @@ export interface BoundingRect {
   left: number;
   x: number;
   y: number;
-}
+};

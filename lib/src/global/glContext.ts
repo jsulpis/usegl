@@ -1,9 +1,8 @@
 /**
  * Initializes a WebGL2 rendering context for a given canvas.
  *
- * @param canvas - The canvas element, offscreen canvas, or a CSS selector.
+ * @param canvas - The canvas element to use or a CSS selector to query it.
  * @param params - WebGL2 context attributes and color space configuration.
- * @returns A gl context object with a setSize method and the canvas/gl handles.
  * @throws Error if the canvas or WebGL2 context could not be created.
  */
 export function glContext<T extends HTMLCanvasElement | OffscreenCanvas | string>(
@@ -48,10 +47,12 @@ export function glContext<T extends HTMLCanvasElement | OffscreenCanvas | string
 
 /**
  * Configuration params for the WebGL2 context.
+ * @inline
+ * @internal
  */
 export type WebGLContextParams = WebGLContextAttributes & {
   /**
    * The color space to use for the drawing buffer.
    */
-  colorSpace?: PredefinedColorSpace;
+  colorSpace?: "srgb" | "display-p3";
 };

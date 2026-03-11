@@ -1,4 +1,4 @@
-import { createAndBindBuffer } from "../core/buffer";
+import { bindBuffer } from "../core/buffer";
 import type { Attribute, Uniforms } from "../types/types";
 import type { RenderPass } from "./renderPass";
 import { renderPass } from "./renderPass";
@@ -11,7 +11,6 @@ import { renderPass } from "./renderPass";
  *
  * @param gl - The WebGL2 context.
  * @param params - Configuration for the transform feedback pass.
- * @returns A {@link TransformFeedbackPass} object.
  */
 export function transformFeedback<O extends string, U extends Uniforms>(
   gl: WebGL2RenderingContext,
@@ -23,7 +22,7 @@ export function transformFeedback<O extends string, U extends Uniforms>(
   const outputBuffers = Object.fromEntries(
     Object.entries<{ size: number }>(outputs).map(([name, { size }]) => [
       name,
-      createAndBindBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(vertexCount * size)),
+      bindBuffer(gl, gl.ARRAY_BUFFER, new Float32Array(vertexCount * size)),
     ]),
   ) as Record<O, WebGLBuffer>;
 
@@ -71,6 +70,8 @@ export function transformFeedback<O extends string, U extends Uniforms>(
 
 /**
  * Parameters for the {@link transformFeedback} pass.
+ * @inline
+ * @internal
  */
 export interface TransformFeedbackParams<
   O extends string,
@@ -92,15 +93,15 @@ export interface TransformFeedbackParams<
 /**
  * Specialized render pass for Transform Feedback.
  */
-export interface TransformFeedbackPass<
+export type TransformFeedbackPass<
   O extends string,
   U extends Uniforms = Record<string, never>,
-> extends Omit<
+> = Omit<
   RenderPass<U>,
   "initialize" | "target" | "setTarget" | "setSize" | "vertex" | "fragment"
-> {
+> & {
   /** Retrieves data from a specific output buffer. */
   getOutputData: (bufferName: O) => Float32Array;
   /** Raw WebGLBuffer handles for each output varying. */
   outputBuffers: Record<O, WebGLBuffer>;
-}
+};
