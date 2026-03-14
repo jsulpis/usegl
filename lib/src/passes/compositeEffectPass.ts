@@ -2,7 +2,11 @@ import { createHook } from "../internal/createHook";
 import type { Uniforms } from "../types/types";
 import type { RenderTarget } from "../core/renderTarget";
 import type { EffectPass } from "./effectPass";
-import { renderPass as _renderPass, type RenderCallback, type UpdatedCallback } from "./renderPass";
+import {
+  type RenderPass as _RenderPass,
+  type RenderCallback,
+  type UpdatedCallback,
+} from "./renderPass";
 
 /**
  * Creates a composite effect pass from a series of sub-passes.
@@ -74,7 +78,7 @@ export function compositeEffectPass<U extends Uniforms = Record<string, never>>(
  * An effect pass composed of multiple sub-passes.
  *
  * @see {@link EffectPass}
- * @see {@link _renderPass | RenderPass}
+ * @see {@link _RenderPass | RenderPass}
  */
 export type CompositeEffectPass<U extends Uniforms = Record<string, never>> = Omit<
   EffectPass<U>,

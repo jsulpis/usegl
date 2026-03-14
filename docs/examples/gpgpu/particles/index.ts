@@ -1,13 +1,13 @@
 import {
-  useWebGLContext,
-  useLoop,
-  usePingPongFBO,
-  useWebGLCanvas,
   createFloatDataTexture,
-} from "usegl";
+  glCanvas,
+  glContext,
+  loop,
+  pingPongFBO,
+} from "@radiancejs/gl";
 import "./styles.css";
 
-const { gl, canvas } = useWebGLContext("#glCanvas");
+const { gl, canvas } = glContext("#glCanvas");
 
 const positionsFragment = /* glsl */ `
   uniform float uDeltaTime;
@@ -33,7 +33,7 @@ const positionsFragment = /* glsl */ `
 
 const count = 100;
 
-const positions = usePingPongFBO(gl, {
+const positions = pingPongFBO(gl, {
   fragment: positionsFragment,
   uniforms: {
     uDeltaTime: 0,
@@ -57,7 +57,7 @@ const positions = usePingPongFBO(gl, {
   },
 });
 
-const renderPass = useWebGLCanvas({
+const renderPass = glCanvas({
   canvas,
   vertex: `
     uniform sampler2D uPositions;
@@ -87,7 +87,7 @@ const renderPass = useWebGLCanvas({
   blending: "normal",
 });
 
-useLoop(({ deltaTime }) => {
+loop(({ deltaTime }) => {
   positions.uniforms.uDeltaTime = deltaTime / 500;
   positions.render();
   renderPass.render();

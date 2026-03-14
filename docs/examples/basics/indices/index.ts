@@ -1,7 +1,7 @@
-import { useWebGLCanvas } from "usegl";
+import { glCanvas } from "@radiancejs/gl";
 import "./styles.css";
 
-useWebGLCanvas({
+glCanvas({
   canvas: "#glCanvas",
   vertex: /*glsl*/ `
     attribute vec2 aPosition;

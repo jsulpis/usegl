@@ -1,6 +1,6 @@
 # Quick start
 
-The documentation is a work in progress, and the API of useGL is still subject to changes. For now, you can browse the [examples](/examples/basics/full-screen/) to get an idea of how the library works.
+The documentation is a work in progress, and the API of Radiance is still subject to changes. For now, you can browse the [examples](/examples/basics/full-screen/) to get an idea of how the library works.
 
 A proper documentation will come soon !
 
@@ -9,19 +9,19 @@ A proper documentation will come soon !
 ::: code-group
 
 ```sh [npm]
-$ npm add -D usegl
+$ npm add -D @radiancejs/gl
 ```
 
 ```sh [pnpm]
-$ pnpm add -D usegl
+$ pnpm add -D @radiancejs/gl
 ```
 
 ```sh [yarn]
-$ yarn add -D usegl
+$ yarn add -D @radiancejs/gl
 ```
 
 ```sh [bun]
-$ bun add -D usegl
+$ bun add -D @radiancejs/gl
 ```
 
 :::
@@ -29,9 +29,9 @@ $ bun add -D usegl
 ## Usage
 
 ```ts
-import { useWebGLCanvas } from "usegl";
+import { glCanvas } from "@radiancejs/gl";
 
-useWebGLCanvas({
+glCanvas({
   canvas: "#glCanvas",
   fragment: /* glsl */ `
     varying vec2 vUv; // automatically provided

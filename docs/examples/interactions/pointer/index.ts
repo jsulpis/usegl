@@ -1,9 +1,9 @@
-import { usePointerEvents, useWebGLCanvas } from "usegl";
+import { glCanvas, onPointerEvents } from "@radiancejs/gl";
 import "./styles.css";
 
 const canvas = document.querySelector("canvas")!;
 
-const { uniforms, onAfterRender } = useWebGLCanvas({
+const { uniforms, onAfterRender } = glCanvas({
   canvas,
   fragment: /* glsl */ `
     varying vec2 vUv;
@@ -25,7 +25,7 @@ const { uniforms, onAfterRender } = useWebGLCanvas({
   },
 });
 
-usePointerEvents(canvas, {
+onPointerEvents(canvas, {
   move: ({ pointer, canvasCenter, canvasRect }) => {
     uniforms.uPointerPosition = [
       (pointer.x - canvasCenter.x) / Math.min(canvasRect.width, canvasRect.height),
@@ -40,7 +40,7 @@ usePointerEvents(canvas, {
   },
 });
 
-const renderCount = document.querySelector("#renderCount");
+const renderCount = document.querySelector("#renderCount")!;
 onAfterRender(() => {
   renderCount.textContent = `${Number(renderCount.textContent) + 1}`;
 });

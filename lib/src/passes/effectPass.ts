@@ -1,8 +1,8 @@
 import type { RenderTargetParams } from "../core/renderTarget";
 import { createRenderTarget } from "../core/renderTarget";
-import { glCanvas as _glCanvas } from "../global/glCanvas";
+import type { glCanvas as _glCanvas } from "../global/glCanvas";
 import type { UniformValue, Uniforms } from "../types/types";
-import { compositor as _compositor } from "./compositor";
+import type { compositor as _compositor } from "./compositor";
 import type { QuadPassParams } from "./quadRenderPass";
 import { quadRenderPass } from "./quadRenderPass";
 import type { RenderPass } from "./renderPass";

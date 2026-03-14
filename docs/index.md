@@ -3,7 +3,7 @@
 layout: home
 
 hero:
-  name: useGL
+  name: Radiance
   text: Lightweight, reactive WebGL library
   tagline: for working with shaders
   actions:

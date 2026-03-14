@@ -1,7 +1,7 @@
-import { useWebGLContext, useLoop, usePingPongFBO, useWebGLCanvas } from "usegl";
+import { glCanvas, glContext, loop, pingPongFBO } from "@radiancejs/gl";
 import "./styles.css";
 
-const { gl, canvas } = useWebGLContext("#glCanvas");
+const { gl, canvas } = glContext("#glCanvas");
 
 const gridSize = 100;
 
@@ -47,7 +47,7 @@ for (let i = 0; i < gridSize * gridSize; i++) {
   initialData.set([alive, alive, alive, 1], i * 4);
 }
 
-const gameState = usePingPongFBO(gl, {
+const gameState = pingPongFBO(gl, {
   fragment: lifeUpdateFragment,
   dataTexture: {
     name: "tCurrentState",
@@ -55,7 +55,7 @@ const gameState = usePingPongFBO(gl, {
   },
 });
 
-const renderPass = useWebGLCanvas({
+const renderPass = glCanvas({
   canvas,
   fragment: /* glsl */ `
     uniform sampler2D tCurrentState;
@@ -71,7 +71,7 @@ const renderPass = useWebGLCanvas({
 });
 
 let lastTime = 0;
-useLoop(({ elapsedTime }) => {
+loop(({ elapsedTime }) => {
   if (elapsedTime - lastTime < 50) return;
   gameState.render();
   renderPass.render();

@@ -1,4 +1,4 @@
-import { useWebGLCanvas, bloom, hableToneMapping, linearToneMapping, trails } from "usegl";
+import { glCanvas, linearToneMapping, trails } from "@radiancejs/gl";
 import { Pane } from "tweakpane";
 import vertex from "./particles.vert?raw";
 import "./styles.css";
@@ -7,7 +7,7 @@ const count = 100;
 
 const trailsEffect = trails();
 
-const { uniforms } = useWebGLCanvas({
+const { uniforms } = glCanvas({
   canvas: "#glCanvas",
   fragment: /* glsl */ `
     varying vec4 vColor;

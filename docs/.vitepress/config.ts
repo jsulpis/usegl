@@ -10,7 +10,7 @@ const env = loadEnv(process.env.VERCEL_ENV || "development", process.cwd(), "");
 
 // https://vitepress.dev/reference/site-config
 const config = defineConfig({
-  title: "useGL",
+  title: "Radiance",
   description: "Lightweight, reactive WebGL library for working with shaders",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
@@ -35,7 +35,7 @@ const config = defineConfig({
         items: [
           {
             text: "Changelog",
-            link: "https://github.com/jsulpis/usegl/blob/main/lib/CHANGELOG.md",
+            link: "https://github.com/jsulpis/radiance/releases",
           },
         ],
       },
@@ -53,11 +53,7 @@ const config = defineConfig({
       "/api/": apiSidebar,
     },
 
-    socialLinks: [
-      { icon: "github", link: "https://github.com/jsulpis/usegl" },
-      { icon: "bluesky", link: "https://bsky.app/profile/jsulpis.dev" },
-      { icon: "x", link: "https://x.com/jsulpis" },
-    ],
+    socialLinks: [{ icon: "github", link: "https://github.com/jsulpis/radiance" }],
 
     outline: {
       level: "deep",
@@ -69,7 +65,7 @@ const config = defineConfig({
 
     footer: {
       message: "Released under the MIT License.",
-      copyright: "Copyright © 2024-present Julien Sulpis",
+      copyright: "© 2024-present Julien Sulpis",
     },
   },
 

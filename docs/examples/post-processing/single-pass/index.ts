@@ -1,8 +1,8 @@
-import { useEffectPass, useWebGLCanvas, loadTexture } from "usegl";
+import { effectPass, glCanvas, loadTexture } from "@radiancejs/gl";
 import { Pane } from "tweakpane";
 import "./styles.css";
 
-const sepia = useEffectPass({
+const sepia = effectPass({
   fragment: /* glsl */ `
     uniform sampler2D uTexture; // output of the render pass
     uniform float uStrength;
@@ -29,7 +29,7 @@ const sepia = useEffectPass({
   },
 });
 
-const { onAfterRender } = useWebGLCanvas({
+const { onAfterRender } = glCanvas({
   canvas: "#glCanvas",
   fragment: /* glsl */ `
     in vec2 vUv;
@@ -46,7 +46,7 @@ const { onAfterRender } = useWebGLCanvas({
   postEffects: [sepia],
 });
 
-const renderCount = document.querySelector("#renderCount");
+const renderCount = document.querySelector("#renderCount")!;
 onAfterRender(() => {
   renderCount.textContent = `${Number(renderCount.textContent) + 1}`;
 });

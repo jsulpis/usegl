@@ -1,4 +1,4 @@
-import { useWebGLCanvas, bloom, hableToneMapping } from "usegl";
+import { bloom, glCanvas, hableToneMapping } from "@radiancejs/gl";
 import { Pane } from "tweakpane";
 import fragment from "./dots.frag?raw";
 import "./styles.css";
@@ -6,7 +6,7 @@ import "./styles.css";
 const bloomEffect = bloom();
 const toneMapping = hableToneMapping({ exposure: 3 });
 
-useWebGLCanvas({
+glCanvas({
   canvas: "#glCanvas",
   fragment,
   postEffects: [bloomEffect, toneMapping],

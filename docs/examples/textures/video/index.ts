@@ -1,7 +1,7 @@
-import { loadVideoTexture, useWebGLCanvas } from "usegl";
+import { glCanvas, loadVideoTexture } from "@radiancejs/gl";
 import "./styles.css";
 
-useWebGLCanvas({
+glCanvas({
   canvas: "#glCanvas",
   fragment: /* glsl */ `
     varying vec2 vUv;

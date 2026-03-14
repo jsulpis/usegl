@@ -19,10 +19,10 @@ export function createRenderTarget(
   let _texture = gl.createTexture()!;
   fillTexture(gl, _texture, {
     data: null,
-    width: _width,
-    height: _height,
     generateMipmaps: false,
     ...params,
+    width: _width,
+    height: _height,
   });
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
@@ -49,10 +49,10 @@ export function createRenderTarget(
     const newTexture = gl.createTexture()!;
     fillTexture(gl, newTexture, {
       data: null,
+      generateMipmaps: false,
       ...params,
       width,
       height,
-      generateMipmaps: false,
     });
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);

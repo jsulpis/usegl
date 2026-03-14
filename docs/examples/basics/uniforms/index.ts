@@ -1,8 +1,8 @@
-import { useWebGLCanvas } from "usegl";
+import { glCanvas } from "@radiancejs/gl";
 import { Pane } from "tweakpane";
 import "./styles.css";
 
-const { uniforms, onAfterRender } = useWebGLCanvas({
+const { uniforms, onAfterRender } = glCanvas({
   canvas: "#glCanvas",
   fragment: /* glsl */ `
     varying vec2 vUv;
@@ -59,7 +59,7 @@ pane
     uniforms.uPosition = [e.value.x / 2 + 0.5, -e.value.y / 2 + 0.5];
   });
 
-const renderCount = document.querySelector("#renderCount");
+const renderCount = document.querySelector("#renderCount")!;
 onAfterRender(() => {
   renderCount.textContent = `${Number(renderCount.textContent) + 1}`;
 });
