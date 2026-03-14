@@ -23,7 +23,7 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "prepack": "pnpm build",
-    "release": "changelogen --release --clean",
+    "release": "changelogen --release --clean && pnpm publish",
     "test": "playwright test",
     "test:local": "docker compose run --build --rm -p 9323:9323 test",
     "test:update": "docker compose run --build --rm -p 9323:9323 test sh -c 'xvfb-run pnpm run test -u'",
