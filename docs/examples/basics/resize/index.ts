@@ -1,7 +1,7 @@
-import { useWebGLCanvas } from "usegl";
+import { glCanvas } from "@radiancejs/gl";
 import "./styles.css";
 
-const { onAfterRender } = useWebGLCanvas({
+const { onAfterRender } = glCanvas({
   canvas: "#glCanvas",
   fragment: /* glsl */ `
     varying vec2 uv; // automatically provided
@@ -19,7 +19,7 @@ const { onAfterRender } = useWebGLCanvas({
   `,
 });
 
-const renderCount = document.querySelector("#renderCount");
+const renderCount = document.querySelector("#renderCount")!;
 onAfterRender(() => {
   renderCount.textContent = `${Number(renderCount.textContent) + 1}`;
 });

@@ -1,11 +1,11 @@
-import { useEffectPass, useWebGLCanvas, useCompositeEffectPass } from "usegl";
+import { compositeEffectPass, effectPass, glCanvas } from "@radiancejs/gl";
 import directionalBlurFragment from "./blur.frag?raw";
 import combineFragment from "./combine.frag?raw";
 import dotsFragment from "./dots.frag?raw";
 import { Pane } from "tweakpane";
 import "./styles.css";
 
-const horizontalBlur = useEffectPass({
+const horizontalBlur = effectPass({
   fragment: directionalBlurFragment,
   uniforms: {
     uTexture: ({ inputPass }) => inputPass.target!.texture, // optional, the texture uniform is automatically set
@@ -14,7 +14,7 @@ const horizontalBlur = useEffectPass({
   },
 });
 
-const verticalBlur = useEffectPass({
+const verticalBlur = effectPass({
   fragment: directionalBlurFragment,
   uniforms: {
     uTexture: () => horizontalBlur.target!.texture, // optional, the texture uniform is automatically set
@@ -23,7 +23,7 @@ const verticalBlur = useEffectPass({
   },
 });
 
-const combine = useEffectPass({
+const combine = effectPass({
   fragment: combineFragment,
   uniforms: {
     uBaseImage: ({ inputPass }) => inputPass.target!.texture,
@@ -50,9 +50,9 @@ const bloomUniforms = {
   },
 };
 
-const bloom = useCompositeEffectPass(bloomPasses, bloomUniforms);
+const bloom = compositeEffectPass(bloomPasses, bloomUniforms);
 
-useWebGLCanvas({
+glCanvas({
   canvas: "#glCanvas",
   dpr: 1,
   fragment: dotsFragment,

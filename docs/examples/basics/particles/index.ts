@@ -1,4 +1,4 @@
-import { useWebGLCanvas } from "usegl";
+import { glCanvas } from "@radiancejs/gl";
 import "./styles.css";
 
 const vertex = /* glsl */ `
@@ -44,7 +44,7 @@ const fragment = /* glsl */ `
 
 const count = 200;
 
-const { gl } = useWebGLCanvas({
+glCanvas({
   canvas: "#glCanvas",
   fragment,
   vertex,

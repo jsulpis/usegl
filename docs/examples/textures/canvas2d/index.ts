@@ -1,4 +1,4 @@
-import { useWebGLCanvas } from "usegl";
+import { glCanvas } from "@radiancejs/gl";
 import "./styles.css";
 
 const canvas2d = drawIn2dCanvas();
@@ -7,7 +7,7 @@ const webglCanvas = document.querySelector("canvas")!;
 // don't forget to make the content accessible !
 webglCanvas.ariaLabel = "TEXT rendered in a 2D canvas";
 
-useWebGLCanvas({
+glCanvas({
   canvas: webglCanvas,
   fragment: /* glsl */ `
     varying vec2 vUv;

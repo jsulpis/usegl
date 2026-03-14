@@ -1,4 +1,4 @@
-import { useWebGLContext, useLoop, usePingPongFBO, useWebGLCanvas } from "usegl";
+import { glCanvas, glContext, loop, pingPongFBO } from "@radiancejs/gl";
 import { Pane } from "tweakpane";
 import "./styles.css";
 import boidsPositions from "./positions.frag?raw";
@@ -6,11 +6,11 @@ import boidsVelocities from "./velocities.frag?raw";
 import renderPassVertex from "./render.vert?raw";
 import renderPassFragment from "./render.frag?raw";
 
-const { gl, canvas } = useWebGLContext("#glCanvas");
+const { gl, canvas } = glContext("#glCanvas");
 
 const count = 300;
 
-const velocities = usePingPongFBO(gl, {
+const velocities = pingPongFBO(gl, {
   fragment: boidsVelocities,
   uniforms: {
     uDeltaTime: 0,
@@ -36,7 +36,7 @@ const velocities = usePingPongFBO(gl, {
   },
 });
 
-const positions = usePingPongFBO(gl, {
+const positions = pingPongFBO(gl, {
   fragment: boidsPositions,
   uniforms: {
     uDeltaTime: 0,
@@ -53,7 +53,7 @@ const positions = usePingPongFBO(gl, {
   },
 });
 
-const renderPass = useWebGLCanvas({
+const renderPass = glCanvas({
   canvas,
   vertex: renderPassVertex,
   fragment: renderPassFragment,
@@ -67,7 +67,7 @@ const renderPass = useWebGLCanvas({
   blending: "normal",
 });
 
-useLoop(({ deltaTime }) => {
+loop(({ deltaTime }) => {
   velocities.uniforms.uDeltaTime = deltaTime / 500;
   velocities.render();
 
