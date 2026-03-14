@@ -9,7 +9,7 @@
     "preview": "vitepress preview"
   },
   "dependencies": {
-    "@radiance/gl": "workspace:*",
+    "@radiancejs/gl": "workspace:*",
     "@tweakpane/core": "2.0.5",
     "gray-matter": "4.0.3",
     "markdown-it-container": "4.0.0",

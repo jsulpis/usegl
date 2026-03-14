@@ -3,9 +3,9 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { glCanvas, loadTexture } from "@radiance/gl";
+  import { glCanvas, loadTexture } from "@radiancejs/gl";
   import { incrementRenderCount } from "../../components/renderCount";
-  import type { TextureParams } from "@radiance/gl";
+  import type { TextureParams } from "@radiancejs/gl";
 
   const { onAfterRender, uniforms } = glCanvas({
     canvas: "#glCanvas",

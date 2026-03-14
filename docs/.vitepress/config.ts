@@ -6,7 +6,7 @@ import { createRequire } from "node:module";
 import { examplesSidebar } from "./sidebars";
 
 const require = createRequire(import.meta.url);
-const pkg = require("../node_modules/@radiance/gl/package.json");
+const pkg = require("../node_modules/@radiancejs/gl/package.json");
 
 const env = loadEnv(process.env.VERCEL_ENV || "development", process.cwd(), "");
 

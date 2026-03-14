@@ -4,7 +4,7 @@ import Layout from "../../layouts/Layout.astro";
 ---
 
 <script>
-  import { glCanvas, loop, pauseAllLoops, playAllLoops } from "@radiance/gl";
+  import { glCanvas, loop, pauseAllLoops, playAllLoops } from "@radiancejs/gl";
   import { incrementRenderCount } from "../../components/renderCount";
 
   const { onAfterRender, uniforms } = glCanvas({

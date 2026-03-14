@@ -5,7 +5,7 @@
     "strict": true,
     "types": ["vite-plugin-glsl/ext"],
     "paths": {
-      "@radiance/gl": ["../src/index.ts"]
+      "@radiancejs/gl": ["../src/index.ts"]
     }
   }
 }

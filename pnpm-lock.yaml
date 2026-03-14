@@ -8,7 +8,7 @@ importers:
 
   docs:
     dependencies:
-      '@radiance/gl':
+      '@radiancejs/gl':
         specifier: workspace:*
         version: link:../lib
       '@tweakpane/core':

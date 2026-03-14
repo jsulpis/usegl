@@ -1,5 +1,5 @@
 {
-  "name": "@radiance/gl",
+  "name": "@radiancejs/gl",
   "version": "0.9.0",
   "description": "Lightweight, reactive WebGL library for working with shaders",
   "repository": "jsulpis/usegl",

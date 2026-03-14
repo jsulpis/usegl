@@ -1,4 +1,4 @@
-import { glCanvas, loadTexture, type GLCanvas } from "@radiance/gl";
+import { glCanvas, loadTexture, type GLCanvas } from "@radiancejs/gl";
 
 type InitMessage = {
   type: "init";
