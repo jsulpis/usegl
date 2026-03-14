@@ -1,5 +1,45 @@
 # Changelog
 
+## v0.10.0
+
+[compare changes](https://github.com/jsulpis/usegl/compare/v0.9.0...v0.10.0)
+
+### 🚀 Enhancements
+
+- Add support for matrix uniforms ([877c622](https://github.com/jsulpis/usegl/commit/877c622))
+- Add support for depthTest ([9f590d7](https://github.com/jsulpis/usegl/commit/9f590d7))
+- Add support for OffscreenCanvas in a Worker ([1153e21](https://github.com/jsulpis/usegl/commit/1153e21))
+- Add support for async uniforms ([cc195b2](https://github.com/jsulpis/usegl/commit/cc195b2))
+
+### 💅 Refactors
+
+- ⚠️  Rename all functions ([5bb3c88](https://github.com/jsulpis/usegl/commit/5bb3c88))
+- ⚠️  Rename the lib to @radiance/gl ([53de62c](https://github.com/jsulpis/usegl/commit/53de62c))
+- Reorganize project structure and rename hooks to passes ([0756a13](https://github.com/jsulpis/usegl/commit/0756a13))
+- Add JSDoc and move type definitions ([51c02e6](https://github.com/jsulpis/usegl/commit/51c02e6))
+- Remove placeholder from ImageTextureParams ([d4b5b61](https://github.com/jsulpis/usegl/commit/d4b5b61))
+- Update the signature of the onUpdated callback ([ded0e16](https://github.com/jsulpis/usegl/commit/ded0e16))
+- Extract type guards ([9ddf3f6](https://github.com/jsulpis/usegl/commit/9ddf3f6))
+
+### 📖 Documentation
+
+- Update examples with latest changes ([cacc871](https://github.com/jsulpis/usegl/commit/cacc871))
+- Add an example for the trails effect ([5fc7233](https://github.com/jsulpis/usegl/commit/5fc7233))
+
+### 🏡 Chore
+
+- Add a test of a spinning cube ([f3ba275](https://github.com/jsulpis/usegl/commit/f3ba275))
+- Add AGENTS.md files ([79249e2](https://github.com/jsulpis/usegl/commit/79249e2))
+- Extract helper functions in a dedicated package ([f3c0bdd](https://github.com/jsulpis/usegl/commit/f3c0bdd))
+- Update dependencies ([4116a96](https://github.com/jsulpis/usegl/commit/4116a96))
+- Reintegrate the helpers in the main package ([4ba2d3c](https://github.com/jsulpis/usegl/commit/4ba2d3c))
+- Rename @radiance/gl to @radiancejs/gl ([48a209d](https://github.com/jsulpis/usegl/commit/48a209d))
+
+#### ⚠️ Breaking Changes
+
+- ⚠️  Rename all functions ([5bb3c88](https://github.com/jsulpis/usegl/commit/5bb3c88))
+- ⚠️  Rename the lib to @radiance/gl ([53de62c](https://github.com/jsulpis/usegl/commit/53de62c))
+
 ## v0.9.0
 
 [compare changes](https://github.com/jsulpis/usegl/compare/v0.8.0...v0.9.0)
