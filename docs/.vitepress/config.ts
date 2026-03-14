@@ -2,13 +2,14 @@ import { defineConfig, loadEnv } from "vitepress";
 import { groupIconMdPlugin, groupIconVitePlugin } from "vitepress-plugin-group-icons";
 import container from "markdown-it-container";
 import { renderSandbox } from "vitepress-plugin-sandpack";
+import { withMermaid } from "vitepress-plugin-mermaid";
 import { apiSidebar, examplesSidebar } from "./sidebars";
 import pkg from "../../lib/package.json";
 
 const env = loadEnv(process.env.VERCEL_ENV || "development", process.cwd(), "");
 
 // https://vitepress.dev/reference/site-config
-export default defineConfig({
+const config = defineConfig({
   title: "useGL",
   description: "Lightweight, reactive WebGL library for working with shaders",
   themeConfig: {
@@ -84,6 +85,10 @@ export default defineConfig({
   ],
 
   markdown: {
+    languageAlias: {
+      frag: "glsl",
+      vert: "glsl",
+    },
     config(md) {
       md.use(groupIconMdPlugin);
       md.use(container, "example-editor", {
@@ -127,3 +132,5 @@ export default defineConfig({
 
   ignoreDeadLinks: [/\.agents/],
 });
+
+export default withMermaid(config);
