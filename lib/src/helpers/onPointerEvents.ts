@@ -1,4 +1,3 @@
-import type { BoundingRect } from "./watchBoundingRect";
 import { watchBoundingRect } from "./watchBoundingRect";
 
 /**

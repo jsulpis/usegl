@@ -28,7 +28,7 @@ $ bun add -D usegl
 
 ## Usage
 
-```js
+```ts
 import { useWebGLCanvas } from "usegl";
 
 useWebGLCanvas({
